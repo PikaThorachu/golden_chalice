@@ -1,0 +1,16 @@
+{
+  "game_version": "0.1.0",
+  "starting_location_id": "entrance",
+  "win_condition_item_id": "golden_chalice",
+  "starting_health": 100,
+  "display_preferences": {
+    "show_chinese": true,
+    "show_pinyin": true,
+    "show_english": true
+  },
+  "combat_settings": {
+    "base_damage_min": 10,
+    "base_damage_max": 30,
+    "flee_success_rate": 100
+  }
+}

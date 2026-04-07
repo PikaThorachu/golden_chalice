@@ -1,0 +1,18 @@
+{
+  "biomes": [
+    {
+      "id": "cave",
+      "name": {
+        "chinese": "洞穴",
+        "pinyin": "Dòngxué",
+        "english": "Cave"
+      },
+      "ambient_description": {
+        "chinese": "潮湿的空气中有水滴声回荡。",
+        "pinyin": "Cháoshī de kōngqì zhōng yǒu shuǐdī shēng huídàng.",
+        "english": "Water droplets echo in the damp air."
+      },
+      "environmental_effects": null
+    }
+  ]
+}

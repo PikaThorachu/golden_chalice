@@ -1,0 +1,40 @@
+{
+  "enemies": [
+    {
+      "id": "goblin",
+      "name": {
+        "chinese": "哥布林",
+        "pinyin": "Gēbùlín",
+        "english": "Goblin"
+      },
+      "health": 40,
+      "attack_power": {
+        "min": 5,
+        "max": 20
+      },
+      "defense": 0,
+      "experience_points": 50,
+      "drops": [],
+      "biome_affinity": ["cave"],
+      "special_abilities": null
+    },
+    {
+      "id": "troll",
+      "name": {
+        "chinese": "巨魔",
+        "pinyin": "Jùmó",
+        "english": "Troll"
+      },
+      "health": 80,
+      "attack_power": {
+        "min": 10,
+        "max": 25
+      },
+      "defense": 5,
+      "experience_points": 150,
+      "drops": [],
+      "biome_affinity": ["cave", "dungeon"],
+      "special_abilities": null
+    }
+  ]
+}

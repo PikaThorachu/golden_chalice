@@ -1,0 +1,24 @@
+{
+  "locations": [
+    {
+      "id": "entrance",
+      "biome_id": "cave",
+      "name": {
+        "chinese": "洞穴入口",
+        "pinyin": "Dòngxué rùkǒu",
+        "english": "Cave Entrance"
+      },
+      "description": {
+        "chinese": "你站在一个黑暗阴森的洞穴入口。冰冷的风从深处呼啸而出。",
+        "pinyin": "Nǐ zhàn zài yī gè hēi'àn yīnsēn de dòngxué rùkǒu. Bīnglěng de fēng cóng shēnchù hūxiào ér chū.",
+        "english": "You stand at the mouth of a dark, foreboding cave. Cold wind whistles out from the depths."
+      },
+      "exits": [
+        {"direction": "north", "destination": "hallway", "requires_item_id": null},
+        {"direction": "out", "destination": "outside", "requires_item_id": null}
+      ],
+      "enemy_id": null,
+      "item_id": null
+    }
+  ]
+}

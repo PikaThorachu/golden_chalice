@@ -1,0 +1,43 @@
+{
+  "items": [
+    {
+      "id": "sword",
+      "name": {
+        "chinese": "剑",
+        "pinyin": "Jiàn",
+        "english": "Sword"
+      },
+      "description": {
+        "chinese": "一把生锈但仍然锋利的剑。",
+        "pinyin": "Yī bǎ shēngxiù dàn réngrán fēnglì de jiàn.",
+        "english": "A rusty but still sharp sword."
+      },
+      "type": "weapon",
+      "properties": {
+        "damage_bonus": 10,
+        "equippable": true
+      },
+      "usable": false,
+      "consumable": false
+    },
+    {
+      "id": "golden_chalice",
+      "name": {
+        "chinese": "金杯",
+        "pinyin": "Jīn bēi",
+        "english": "Golden Chalice"
+      },
+      "description": {
+        "chinese": "一个华丽的金杯，散发着古老的魔法光芒。",
+        "pinyin": "Yī gè huálì de jīn bēi, sànfā zhe gǔlǎo de mófǎ guāngmáng.",
+        "english": "A magnificent golden chalice glowing with ancient magic."
+      },
+      "type": "quest",
+      "properties": {
+        "win_condition": true
+      },
+      "usable": false,
+      "consumable": false
+    }
+  ]
+}
