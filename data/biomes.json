@@ -13,6 +13,34 @@
         "english": "Water droplets echo in the damp air."
       },
       "environmental_effects": null
+    },
+    {
+      "id": "forest",
+      "name": {
+        "chinese": "森林",
+        "pinyin": "Sēnlín",
+        "english": "Forest"
+      },
+      "ambient_description": {
+        "chinese": "树叶在微风中沙沙作响。",
+        "pinyin": "Shùyè zài wēifēng zhōng shāshā zuò xiǎng.",
+        "english": "Leaves rustle in the gentle breeze."
+      },
+      "environmental_effects": null
+    },
+    {
+      "id": "dungeon",
+      "name": {
+        "chinese": "地牢",
+        "pinyin": "Dìláo",
+        "english": "Dungeon"
+      },
+      "ambient_description": {
+        "chinese": "远处传来滴水声和呻吟声。",
+        "pinyin": "Yuǎnchù chuán lái dīshuǐ shēng hé shēnyín shēng.",
+        "english": "Dripping water and moans echo in the distance."
+      },
+      "environmental_effects": null
     }
   ]
 }

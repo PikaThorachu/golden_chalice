@@ -11,6 +11,7 @@
   "combat_settings": {
     "base_damage_min": 10,
     "base_damage_max": 30,
-    "flee_success_rate": 100
+    "flee_success_rate": 100,
+    "player_base_defense": 0
   }
 }

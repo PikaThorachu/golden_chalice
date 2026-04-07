@@ -38,6 +38,65 @@
       },
       "usable": false,
       "consumable": false
+    },
+    {
+      "id": "rusty_key",
+      "name": {
+        "chinese": "生锈的钥匙",
+        "pinyin": "Shēngxiù de yàoshi",
+        "english": "Rusty Key"
+      },
+      "description": {
+        "chinese": "一把生锈的旧钥匙。",
+        "pinyin": "Yī bǎ shēngxiù de jiù yàoshi.",
+        "english": "An old rusty key."
+      },
+      "type": "key",
+      "properties": {
+        "opens_door_id": "dungeon_door"
+      },
+      "usable": true,
+      "consumable": false
+    },
+    {
+      "id": "health_potion",
+      "name": {
+        "chinese": "生命药水",
+        "pinyin": "Shēngmìng yàoshuǐ",
+        "english": "Health Potion"
+      },
+      "description": {
+        "chinese": "一瓶红色的药水，散发着草药的气味。",
+        "pinyin": "Yī píng hóngsè de yàoshuǐ, sànfā zhe cǎoyào de qìwèi.",
+        "english": "A red potion that smells of herbs."
+      },
+      "type": "consumable",
+      "properties": {
+        "health_restore": 30,
+        "effect_duration": null
+      },
+      "usable": true,
+      "consumable": true
+    },
+    {
+      "id": "magic_ring",
+      "name": {
+        "chinese": "魔法戒指",
+        "pinyin": "Mófǎ jièzhi",
+        "english": "Magic Ring"
+      },
+      "description": {
+        "chinese": "一枚闪烁着蓝色光芒的银戒指。",
+        "pinyin": "Yī méi shǎnshuò zhe lánsè guāngmáng de yín jièzhi.",
+        "english": "A silver ring that shimmers with blue light."
+      },
+      "type": "quest",
+      "properties": {
+        "win_condition": false,
+        "story_flag": "found_magic_ring"
+      },
+      "usable": false,
+      "consumable": false
     }
   ]
 }

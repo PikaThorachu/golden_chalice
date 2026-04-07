@@ -15,7 +15,7 @@
       "defense": 0,
       "experience_points": 50,
       "drops": [],
-      "biome_affinity": ["cave"],
+      "biome_affinity": ["cave", "forest"],
       "special_abilities": null
     },
     {
@@ -32,8 +32,59 @@
       },
       "defense": 5,
       "experience_points": 150,
-      "drops": [],
+      "drops": [
+        {
+          "item_id": "rusty_key",
+          "chance": 50
+        }
+      ],
       "biome_affinity": ["cave", "dungeon"],
+      "special_abilities": null
+    },
+    {
+      "id": "skeleton_warrior",
+      "name": {
+        "chinese": "骷髅战士",
+        "pinyin": "Kūlóu zhànshì",
+        "english": "Skeleton Warrior"
+      },
+      "health": 60,
+      "attack_power": {
+        "min": 12,
+        "max": 28
+      },
+      "defense": 3,
+      "experience_points": 100,
+      "drops": [
+        {
+          "item_id": "health_potion",
+          "chance": 30
+        }
+      ],
+      "biome_affinity": ["dungeon"],
+      "special_abilities": null
+    },
+    {
+      "id": "dark_spirit",
+      "name": {
+        "chinese": "黑暗精灵",
+        "pinyin": "Hēi'àn jīnglíng",
+        "english": "Dark Spirit"
+      },
+      "health": 45,
+      "attack_power": {
+        "min": 8,
+        "max": 22
+      },
+      "defense": 10,
+      "experience_points": 120,
+      "drops": [
+        {
+          "item_id": "magic_ring",
+          "chance": 25
+        }
+      ],
+      "biome_affinity": ["dungeon"],
       "special_abilities": null
     }
   ]

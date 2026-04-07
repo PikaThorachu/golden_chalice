@@ -1,6 +1,6 @@
 {
-  "locations": [
-    {
+  "locations": {
+    "entrance": {
       "id": "entrance",
       "biome_id": "cave",
       "name": {
@@ -14,11 +14,144 @@
         "english": "You stand at the mouth of a dark, foreboding cave. Cold wind whistles out from the depths."
       },
       "exits": [
-        {"direction": "north", "destination": "hallway", "requires_item_id": null},
-        {"direction": "out", "destination": "outside", "requires_item_id": null}
+        {
+          "direction": "north",
+          "destination": "hallway",
+          "requires_item_id": null
+        },
+        {
+          "direction": "out",
+          "destination": "outside",
+          "requires_item_id": null
+        }
       ],
-      "enemy_id": null,
-      "item_id": null
+      "enemy_ids": [],
+      "item_ids": []
+    },
+    "outside": {
+      "id": "outside",
+      "biome_id": "forest",
+      "name": {
+        "chinese": "洞外",
+        "pinyin": "Dòng wài",
+        "english": "Outside the Cave"
+      },
+      "description": {
+        "chinese": "你回到了阳光明媚的草地上。洞穴入口在南边。",
+        "pinyin": "Nǐ huí dào le yángguāng míngmèi de cǎodì shàng. Dòngxué rùkǒu zài nánbiān.",
+        "english": "You are back in the sunny meadow. The cave entrance is to the south."
+      },
+      "exits": [
+        {
+          "direction": "south",
+          "destination": "entrance",
+          "requires_item_id": null
+        }
+      ],
+      "enemy_ids": [],
+      "item_ids": []
+    },
+    "hallway": {
+      "id": "hallway",
+      "biome_id": "cave",
+      "name": {
+        "chinese": "黑暗走廊",
+        "pinyin": "Hēi'àn zǒuláng",
+        "english": "Dark Hallway"
+      },
+      "description": {
+        "chinese": "一条由粗糙石头凿成的狭长走廊。滴水声在远处回荡。",
+        "pinyin": "Yī tiáo yóu cūcāo shítou záo chéng de xiácháng zǒuláng. Dīshuǐ shēng zài yuǎnchù huídàng.",
+        "english": "A long, narrow hallway carved from rough stone. Dripping water echoes in the distance."
+      },
+      "exits": [
+        {
+          "direction": "south",
+          "destination": "entrance",
+          "requires_item_id": null
+        },
+        {
+          "direction": "east",
+          "destination": "treasury",
+          "requires_item_id": null
+        },
+        {
+          "direction": "west",
+          "destination": "armory",
+          "requires_item_id": null
+        }
+      ],
+      "enemy_ids": ["goblin"],
+      "item_ids": []
+    },
+    "armory": {
+      "id": "armory",
+      "biome_id": "cave",
+      "name": {
+        "chinese": "废弃军械库",
+        "pinyin": "Fèiqì jūnxièkù",
+        "english": "Abandoned Armory"
+      },
+      "description": {
+        "chinese": "生锈的武器挂在墙上。角落里放着一个破损的铁砧。",
+        "pinyin": "Shēngxiù de wǔqì guà zài qiáng shàng. Jiǎoluò lǐ fàng zhe yī gè pòsǔn de tiězhēn.",
+        "english": "Rusted weapons hang on the walls. A broken anvil sits in the corner."
+      },
+      "exits": [
+        {
+          "direction": "east",
+          "destination": "hallway",
+          "requires_item_id": null
+        }
+      ],
+      "enemy_ids": [],
+      "item_ids": ["sword"]
+    },
+    "treasury": {
+      "id": "treasury",
+      "biome_id": "cave",
+      "name": {
+        "chinese": "宝藏室",
+        "pinyin": "Bǎozàng shì",
+        "english": "Treasure Chamber"
+      },
+      "description": {
+        "chinese": "金币和珠宝散落一地。中央立着一个石制 pedestal。",
+        "pinyin": "Jīnbì hé zhūbǎo sànluò yī dì. Zhōngyāng lì zhe yī gè shí zhì pedestal.",
+        "english": "Gold coins and jewels are scattered across the floor. A stone pedestal stands in the center."
+      },
+      "exits": [
+        {
+          "direction": "west",
+          "destination": "hallway",
+          "requires_item_id": null
+        }
+      ],
+      "enemy_ids": ["troll"],
+      "item_ids": ["golden_chalice"]
+    },
+    "dungeon": {
+      "id": "dungeon",
+      "biome_id": "dungeon",
+      "name": {
+        "chinese": "地下地牢",
+        "pinyin": "Dìxià dìláo",
+        "english": "Underground Dungeon"
+      },
+      "description": {
+        "chinese": "潮湿的石墙长满了苔藓。铁链挂在墙上，空气中充满了绝望。",
+        "pinyin": "Cháoshī de shíqiáng zhǎng mǎn le táixiǎn. Tiěliàn guà zài qiáng shàng, kōngqì zhōng chōngmǎn le juéwàng.",
+        "english": "Damp stone walls are covered in moss. Chains hang from the walls, and the air is thick with despair."
+      },
+      "exits": [
+        {
+          "direction": "up",
+          "destination": "entrance",
+          "requires_item_id": "rusty_key"
+        }
+      ],
+      "enemy_ids": ["skeleton_warrior", "dark_spirit"],
+      "item_ids": ["health_potion", "magic_ring"]
     }
-  ]
+  }
 }
