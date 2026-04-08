@@ -1,0 +1,72 @@
+{
+  "enabled": true,
+  "auto_save_enabled": true,
+  "auto_save_interval": 5,
+  "max_save_slots": 10,
+  "save_directory": "./saves",
+  "compress_saves": false,
+  "named_slots": [
+    {
+      "name": "autosave",
+      "display_name": "自动保存",
+      "is_auto_slot": true,
+      "is_quick_slot": false,
+      "is_read_only": false,
+      "max_files": 3
+    },
+    {
+      "name": "quicksave",
+      "display_name": "快速保存",
+      "is_auto_slot": false,
+      "is_quick_slot": true,
+      "is_read_only": false,
+      "max_files": 1
+    },
+    {
+      "name": "slot1",
+      "display_name": "存档 1",
+      "is_auto_slot": false,
+      "is_quick_slot": false,
+      "is_read_only": false,
+      "max_files": 1
+    },
+    {
+      "name": "slot2",
+      "display_name": "存档 2",
+      "is_auto_slot": false,
+      "is_quick_slot": false,
+      "is_read_only": false,
+      "max_files": 1
+    },
+    {
+      "name": "slot3",
+      "display_name": "存档 3",
+      "is_auto_slot": false,
+      "is_quick_slot": false,
+      "is_read_only": false,
+      "max_files": 1
+    },
+    {
+      "name": "slot4",
+      "display_name": "存档 4",
+      "is_auto_slot": false,
+      "is_quick_slot": false,
+      "is_read_only": false,
+      "max_files": 1
+    },
+    {
+      "name": "slot5",
+      "display_name": "存档 5",
+      "is_auto_slot": false,
+      "is_quick_slot": false,
+      "is_read_only": false,
+      "max_files": 1
+    }
+  ],
+  "allow_custom_slots": true,
+  "max_custom_slots": 5,
+  "slot_name_pattern": "^[a-zA-Z0-9_\\u4e00-\\u9fa5]+$",
+  "auto_generate_names": true,
+  "show_save_time": true,
+  "show_location_in_list": true
+}
