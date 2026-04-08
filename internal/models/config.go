@@ -15,14 +15,39 @@ type CombatSettings struct {
 	PlayerBaseDefense int `json:"player_base_defense"` // Base defense before equipment
 }
 
+// InventorySettings contains inventory configuration
+type InventorySettings struct {
+	StartingSize int `json:"starting_inventory_size"` // Initial inventory capacity
+	MaxSize      int `json:"max_inventory_size"`      // Maximum possible inventory capacity
+}
+
 // Config represents the entire game configuration
 type Config struct {
 	GameVersion        string             `json:"game_version"`
 	StartingLocationID string             `json:"starting_location_id"`
 	WinConditionItemID string             `json:"win_condition_item_id"`
 	StartingHealth     int                `json:"starting_health"`
+	InventorySettings  InventorySettings  `json:"inventory_settings"` // Add this field
 	DisplayPreferences DisplayPreferences `json:"display_preferences"`
 	CombatSettings     CombatSettings     `json:"combat_settings"`
+	AutoSaveEnabled    bool               `json:"auto_save_enabled"`  // Add this
+	AutoSaveInterval   int                `json:"auto_save_interval"` // Add thisS
+}
+
+// GetStartingInventorySize returns the starting inventory capacity
+func (c *Config) GetStartingInventorySize() int {
+	if c.InventorySettings.StartingSize <= 0 {
+		return 10 // Default fallback
+	}
+	return c.InventorySettings.StartingSize
+}
+
+// GetMaxInventorySize returns the maximum inventory capacity
+func (c *Config) GetMaxInventorySize() int {
+	if c.InventorySettings.MaxSize <= 0 {
+		return 50 // Default fallback
+	}
+	return c.InventorySettings.MaxSize
 }
 
 // GetDisplayText formats a Text struct based on display preferences
@@ -138,4 +163,16 @@ func (c *Config) GetWinConditionItemID() string {
 // GetGameVersion returns the game version string
 func (c *Config) GetGameVersion() string {
 	return c.GameVersion
+}
+
+// Add getter methods (add these with the other getters)
+func (c *Config) IsAutoSaveEnabled() bool {
+	return c.AutoSaveEnabled
+}
+
+func (c *Config) GetAutoSaveInterval() int {
+	if c.AutoSaveInterval <= 0 {
+		return 5 // Default to 5 minutes
+	}
+	return c.AutoSaveInterval
 }

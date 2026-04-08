@@ -30,6 +30,7 @@ func (pc *PlayerController) NewGame(playerName string) {
 		playerName,
 		pc.Config.GetStartingLocationID(),
 		pc.Config.GetStartingHealth(),
+		pc.Config.GetStartingInventorySize(), // Add inventory size parameter
 	)
 }
 
@@ -92,6 +93,11 @@ func (pc *PlayerController) TakeItem(itemID string) error {
 
 	if !itemExists {
 		return fmt.Errorf("这里没有 %s", itemID)
+	}
+
+	// Check inventory capacity before adding
+	if pc.Player.IsInventoryFull() {
+		return fmt.Errorf("背包已满 (容量: %d/%d)", len(pc.Player.Inventory), pc.Player.InventorySize)
 	}
 
 	// Add to inventory
@@ -184,8 +190,10 @@ func (pc *PlayerController) ShowInventory() {
 		return
 	}
 
-	if pc.Player.GetInventorySize() == 0 {
+	currentInv, maxInv := pc.Player.GetInventoryCapacity()
+	if currentInv == 0 {
 		fmt.Println("背包是空的。")
+		fmt.Printf("容量: %d/%d\n", currentInv, maxInv)
 		return
 	}
 
@@ -202,7 +210,7 @@ func (pc *PlayerController) ShowInventory() {
 			fmt.Printf("  - %s%s\n", pc.Config.GetDisplayText(item.Name), equipped)
 		}
 	}
-	fmt.Printf("\n共 %d 件物品\n", pc.Player.GetInventorySize())
+	fmt.Printf("\n容量: %d/%d\n", currentInv, maxInv)
 }
 
 // ShowStatus displays player status (health, location, equipment)
@@ -217,6 +225,10 @@ func (pc *PlayerController) ShowStatus() {
 	fmt.Printf("等级: %d\n", pc.Player.Level)
 	fmt.Printf("生命: %d/%d (%s)\n", pc.Player.Health, pc.Player.MaxHealth, pc.Player.GetHealthStatus())
 	fmt.Printf("经验: %d / %d\n", pc.Player.ExperiencePoints, pc.Player.Level*100)
+
+	// Show inventory capacity
+	currentInv, maxInv := pc.Player.GetInventoryCapacity()
+	fmt.Printf("背包容量: %d/%d (%.0f%%)\n", currentInv, maxInv, float64(currentInv)/float64(maxInv)*100)
 
 	// Show equipped items
 	fmt.Println("\n装备:")
@@ -238,6 +250,16 @@ func (pc *PlayerController) ShowStatus() {
 		}
 	} else {
 		fmt.Println("  护甲: 无")
+	}
+
+	if pc.Player.HasBackpackEquipped() {
+		if backpack, exists := pc.Items[pc.Player.GetEquippedBackpackID()]; exists {
+			fmt.Printf("  背包: %s (+%d容量)\n",
+				pc.Config.GetDisplayText(backpack.Name),
+				backpack.GetSizeBonus())
+		}
+	} else {
+		fmt.Println("  背包: 无")
 	}
 
 	// Show location
@@ -274,4 +296,100 @@ func (pc *PlayerController) GetCurrentLocation() string {
 		return ""
 	}
 	return pc.Player.GetCurrentLocation()
+}
+
+// GetInventorySize returns the current inventory size
+func (pc *PlayerController) GetInventorySize() int {
+	if pc.Player == nil {
+		return 0
+	}
+	current, _ := pc.Player.GetInventoryCapacity()
+	return current
+}
+
+// GetInventoryCapacity returns the max inventory capacity
+func (pc *PlayerController) GetInventoryCapacity() int {
+	if pc.Player == nil {
+		return 0
+	}
+	_, max := pc.Player.GetInventoryCapacity()
+	return max
+}
+
+// IsInventoryFull checks if inventory is full
+func (pc *PlayerController) IsInventoryFull() bool {
+	if pc.Player == nil {
+		return true
+	}
+	return pc.Player.IsInventoryFull()
+}
+
+// EquipBackpack equips a backpack from inventory
+func (pc *PlayerController) EquipBackpack(itemID string) error {
+	if pc.Player == nil {
+		return fmt.Errorf("no active game")
+	}
+
+	if !pc.Player.HasItem(itemID) {
+		return fmt.Errorf("你没有这个物品")
+	}
+
+	item, exists := pc.Items[itemID]
+	if !exists {
+		return fmt.Errorf("物品不存在")
+	}
+
+	if !item.IsBackpack() {
+		return fmt.Errorf("这不是一个背包")
+	}
+
+	sizeBonus := item.GetSizeBonus()
+	maxSize := pc.Config.GetMaxInventorySize()
+
+	success, increase, message := pc.Player.EquipBackpack(itemID, sizeBonus, maxSize)
+	if !success {
+		return fmt.Errorf(message)
+	}
+
+	fmt.Printf("装备了 %s，背包容量 +%d (当前: %d/%d)\n",
+		pc.Config.GetDisplayText(item.Name),
+		increase,
+		len(pc.Player.Inventory),
+		pc.Player.InventorySize)
+
+	return nil
+}
+
+// UnequipBackpack removes the currently equipped backpack
+func (pc *PlayerController) UnequipBackpack() error {
+	if pc.Player == nil {
+		return fmt.Errorf("no active game")
+	}
+
+	if !pc.Player.HasBackpackEquipped() {
+		return fmt.Errorf("没有装备背包")
+	}
+
+	// Get the backpack item to know the size bonus
+	backpackID := pc.Player.GetEquippedBackpackID()
+	backpack, exists := pc.Items[backpackID]
+	if !exists {
+		pc.Player.UnequipBackpack()
+		return fmt.Errorf("卸下了背包（数据异常）")
+	}
+
+	sizeBonus := backpack.GetSizeBonus()
+
+	success, decrease, message := pc.Player.UnequipBackpackWithBonus(sizeBonus)
+	if !success {
+		return fmt.Errorf(message)
+	}
+
+	fmt.Printf("卸下了 %s，背包容量 -%d (当前: %d/%d)\n",
+		pc.Config.GetDisplayText(backpack.Name),
+		decrease,
+		len(pc.Player.Inventory),
+		pc.Player.InventorySize)
+
+	return nil
 }

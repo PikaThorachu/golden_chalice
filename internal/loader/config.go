@@ -55,6 +55,16 @@ func validateConfig(config *models.Config) error {
 		errors = append(errors, fmt.Sprintf("starting_health must be positive, got %d", config.StartingHealth))
 	}
 
+	// Validate inventory settings
+	if config.InventorySettings.StartingSize <= 0 {
+		errors = append(errors, fmt.Sprintf("starting_inventory_size must be positive, got %d", config.InventorySettings.StartingSize))
+	}
+
+	if config.InventorySettings.MaxSize < config.InventorySettings.StartingSize {
+		errors = append(errors, fmt.Sprintf("max_inventory_size (%d) cannot be less than starting_inventory_size (%d)",
+			config.InventorySettings.MaxSize, config.InventorySettings.StartingSize))
+	}
+
 	// Check display preferences (at least one should be true)
 	if !config.DisplayPreferences.ShowChinese &&
 		!config.DisplayPreferences.ShowPinyin &&

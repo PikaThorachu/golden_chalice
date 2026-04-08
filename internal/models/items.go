@@ -13,6 +13,7 @@ const (
 	ItemTypeConsumable ItemType = "consumable"
 	ItemTypeKey        ItemType = "key"
 	ItemTypeArmor      ItemType = "armor"
+	ItemTypeBackpack   ItemType = "backpack" // Add this line
 )
 
 // ItemProperties contains type-specific properties
@@ -37,6 +38,9 @@ type ItemProperties struct {
 	// Armor properties
 	DefenseBonus *int    `json:"defense_bonus"` // Extra defense when equipped
 	EquipSlot    *string `json:"equip_slot"`    // "head", "chest", "hands", etc.
+
+	// Backpack properties (add this section)
+	SizeBonus *int `json:"size_bonus"` // Additional inventory slots
 }
 
 // Item represents any item in the game
@@ -78,6 +82,19 @@ func (i *Item) IsArmor() bool {
 // IsUsable checks if the item can be used from inventory
 func (i *Item) IsUsable() bool {
 	return i.Usable
+}
+
+// IsBackpack checks if the item is a backpack
+func (i *Item) IsBackpack() bool {
+	return i.Type == ItemTypeBackpack
+}
+
+// GetSizeBonus returns the inventory size bonus for backpacks
+func (i *Item) GetSizeBonus() int {
+	if i.Type == ItemTypeBackpack && i.Properties.SizeBonus != nil {
+		return *i.Properties.SizeBonus
+	}
+	return 0
 }
 
 // GetDamageBonus returns the damage bonus for weapons

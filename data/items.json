@@ -40,25 +40,6 @@
       "consumable": false
     },
     {
-      "id": "rusty_key",
-      "name": {
-        "chinese": "生锈的钥匙",
-        "pinyin": "Shēngxiù de yàoshi",
-        "english": "Rusty Key"
-      },
-      "description": {
-        "chinese": "一把生锈的旧钥匙。",
-        "pinyin": "Yī bǎ shēngxiù de jiù yàoshi.",
-        "english": "An old rusty key."
-      },
-      "type": "key",
-      "properties": {
-        "opens_door_id": "dungeon_door"
-      },
-      "usable": true,
-      "consumable": false
-    },
-    {
       "id": "health_potion",
       "name": {
         "chinese": "生命药水",
@@ -79,21 +60,62 @@
       "consumable": true
     },
     {
-      "id": "magic_ring",
+      "id": "rusty_key",
       "name": {
-        "chinese": "魔法戒指",
-        "pinyin": "Mófǎ jièzhi",
-        "english": "Magic Ring"
+        "chinese": "生锈的钥匙",
+        "pinyin": "Shēngxiù de yàoshi",
+        "english": "Rusty Key"
       },
       "description": {
-        "chinese": "一枚闪烁着蓝色光芒的银戒指。",
-        "pinyin": "Yī méi shǎnshuò zhe lánsè guāngmáng de yín jièzhi.",
-        "english": "A silver ring that shimmers with blue light."
+        "chinese": "一把生锈的旧钥匙。",
+        "pinyin": "Yī bǎ shēngxiù de jiù yàoshi.",
+        "english": "An old rusty key."
       },
-      "type": "quest",
+      "type": "key",
       "properties": {
-        "win_condition": false,
-        "story_flag": "found_magic_ring"
+        "opens_door_id": "dungeon_door"
+      },
+      "usable": true,
+      "consumable": false
+    },
+    {
+      "id": "leather_backpack",
+      "name": {
+        "chinese": "皮革背包",
+        "pinyin": "Pígé bēibāo",
+        "english": "Leather Backpack"
+      },
+      "description": {
+        "chinese": "一个结实的皮革背包，可以携带更多物品。",
+        "pinyin": "Yī gè jiēshi de pígé bēibāo, kěyǐ xiédài gèng duō wùpǐn.",
+        "english": "A sturdy leather backpack that allows carrying more items."
+      },
+      "type": "backpack",
+      "properties": {
+        "size_bonus": 5,
+        "equippable": true,
+        "equip_slot": "back"
+      },
+      "usable": false,
+      "consumable": false
+    },
+    {
+      "id": "magic_backpack",
+      "name": {
+        "chinese": "魔法背包",
+        "pinyin": "Mófǎ bēibāo",
+        "english": "Magic Backpack"
+      },
+      "description": {
+        "chinese": "一个附魔的背包，可以大幅增加携带容量。",
+        "pinyin": "Yī gè fùmó de bēibāo, kěyǐ dàfú zēngjiā xiédài róngliàng.",
+        "english": "An enchanted backpack that greatly increases carrying capacity."
+      },
+      "type": "backpack",
+      "properties": {
+        "size_bonus": 10,
+        "equippable": true,
+        "equip_slot": "back"
       },
       "usable": false,
       "consumable": false

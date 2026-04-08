@@ -36,6 +36,8 @@ const (
 	CmdUnequip
 	CmdUse
 	CmdDrop
+	CmdEquipBackpack
+	CmdUnequipBackpack
 )
 
 // CommandHandler processes commands and returns results
@@ -190,7 +192,7 @@ func (ch *CommandHandler) ProcessCommand(input string) (string, error) {
 
 	return "", ch.formatError(
 		"未知命令。输入 '帮助' 查看可用命令",
-		"Wèizhī mìnglìng. Shūrù 'bāngzhù' chákàn kěyòng mìnglìng",
+		"Wei zhi ming ling. Shu ru 'bang zhu' cha kan ke yong ming ling",
 		"Unknown command. Type 'help' to see available commands",
 	)
 }
@@ -228,10 +230,14 @@ func (ch *CommandHandler) executeCommandByType(cmd Command) (string, error) {
 		return ch.executeUse(cmd)
 	case CmdDrop:
 		return ch.executeDrop(cmd)
+	case CmdEquipBackpack:
+		return ch.executeEquipBackpack(cmd)
+	case CmdUnequipBackpack:
+		return ch.executeUnequipBackpack()
 	default:
 		return "", ch.formatError(
 			"未知命令",
-			"Wèizhī mìnglìng",
+			"Wei zhi ming ling",
 			"Unknown command",
 		)
 	}
@@ -241,18 +247,21 @@ func (ch *CommandHandler) executeCommandByType(cmd Command) (string, error) {
 func (ch *CommandHandler) parseCommand(input string) Command {
 	inputLower := strings.ToLower(input)
 
+	// Movement commands (Chinese format)
 	if strings.HasPrefix(input, "往") {
 		if dir, err := models.ParseDirection(input); err == nil {
 			return Command{Type: CmdMove, Args: []string{dir.String()}, RawInput: input}
 		}
 	}
 
+	// Movement commands (English format)
 	if strings.HasPrefix(inputLower, "go ") || strings.HasPrefix(inputLower, "walk ") {
 		if dir, err := models.ParseDirection(input); err == nil {
 			return Command{Type: CmdMove, Args: []string{dir.String()}, RawInput: input}
 		}
 	}
 
+	// Take commands
 	if strings.HasPrefix(input, "拿") || strings.HasPrefix(input, "取") {
 		itemName := strings.TrimPrefix(input, "拿")
 		itemName = strings.TrimPrefix(itemName, "取")
@@ -263,6 +272,7 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// Take command (English)
 	if strings.HasPrefix(inputLower, "take ") {
 		itemName := strings.TrimPrefix(inputLower, "take ")
 		itemName = strings.TrimSpace(itemName)
@@ -272,26 +282,32 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// Inventory commands
 	if input == "背包" || input == "i" || input == "inventory" {
 		return Command{Type: CmdInventory, RawInput: input}
 	}
 
+	// Status commands
 	if input == "状态" || input == "status" {
 		return Command{Type: CmdStatus, RawInput: input}
 	}
 
+	// Help commands
 	if input == "帮助" || input == "help" {
 		return Command{Type: CmdHelp, RawInput: input}
 	}
 
+	// Quit commands
 	if input == "退出" || input == "quit" || input == "exit" {
 		return Command{Type: CmdQuit, RawInput: input}
 	}
 
+	// Look command
 	if input == "看" || input == "查看" || input == "look" {
 		return Command{Type: CmdLook, RawInput: input}
 	}
 
+	// Save command
 	if strings.HasPrefix(inputLower, "save ") || strings.HasPrefix(input, "保存 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -301,6 +317,7 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdSave, Args: []string{"autosave"}, RawInput: input}
 	}
 
+	// Load command
 	if strings.HasPrefix(inputLower, "load ") || strings.HasPrefix(input, "加载 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -310,10 +327,12 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// List saves command
 	if input == "saves" || input == "存档列表" {
 		return Command{Type: CmdListSaves, RawInput: input}
 	}
 
+	// Delete save command
 	if strings.HasPrefix(inputLower, "delete ") || strings.HasPrefix(input, "删除 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -323,24 +342,33 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// Equip command
 	if strings.HasPrefix(inputLower, "equip ") || strings.HasPrefix(input, "装备 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
 			itemName := parts[1]
+			if itemName == "backpack" || itemName == "背包" {
+				return Command{Type: CmdEquipBackpack, Args: []string{itemName}, RawInput: input}
+			}
 			return Command{Type: CmdEquip, Args: []string{itemName}, RawInput: input}
 		}
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// Unequip command
 	if strings.HasPrefix(inputLower, "unequip ") || strings.HasPrefix(input, "卸下 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
 			slot := parts[1]
+			if slot == "backpack" || slot == "背包" {
+				return Command{Type: CmdUnequipBackpack, RawInput: input}
+			}
 			return Command{Type: CmdUnequip, Args: []string{slot}, RawInput: input}
 		}
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// Use command
 	if strings.HasPrefix(inputLower, "use ") || strings.HasPrefix(input, "使用 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -350,6 +378,7 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// Drop command
 	if strings.HasPrefix(inputLower, "drop ") || strings.HasPrefix(input, "丢弃 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -362,12 +391,12 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 	return Command{Type: CmdUnknown, RawInput: input}
 }
 
-// executeMove handles movement commands using SafeMove
+// executeMove handles movement commands
 func (ch *CommandHandler) executeMove(cmd Command) (string, error) {
 	if len(cmd.Args) == 0 {
 		return "", ch.formatError(
 			"往哪个方向走？",
-			"Wǎng nǎge fāngxiàng zǒu?",
+			"Wang na ge fang xiang zou?",
 			"Which direction?",
 		)
 	}
@@ -389,7 +418,7 @@ func (ch *CommandHandler) executeMove(cmd Command) (string, error) {
 	default:
 		return "", ch.formatError(
 			"未知方向: "+direction,
-			"Wèizhī fāngxiàng: "+direction,
+			"Wei zhi fang xiang: "+direction,
 			"Unknown direction: "+direction,
 		)
 	}
@@ -409,12 +438,12 @@ func (ch *CommandHandler) executeMove(cmd Command) (string, error) {
 	return ch.gameState.GetCurrentRoomDescription(), nil
 }
 
-// executeTake handles item pickup commands using SafeTakeItem
+// executeTake handles item pickup commands
 func (ch *CommandHandler) executeTake(cmd Command) (string, error) {
 	if len(cmd.Args) == 0 {
 		return "", ch.formatError(
 			"拿什么？",
-			"Ná shénme?",
+			"Na shen me?",
 			"Take what?",
 		)
 	}
@@ -438,7 +467,7 @@ func (ch *CommandHandler) executeTake(cmd Command) (string, error) {
 	if matchedItemID == "" {
 		return "", ch.formatError(
 			"这里没有 "+itemName,
-			"Zhèlǐ méiyǒu "+itemName,
+			"Zhe li mei you "+itemName,
 			"There is no "+itemName+" here",
 		)
 	}
@@ -457,7 +486,7 @@ func (ch *CommandHandler) executeTake(cmd Command) (string, error) {
 
 	return ch.formatOutput(
 		"你拿起了 "+matchedItem.Name.Chinese,
-		"Nǐ ná qǐ le "+matchedItem.Name.Pinyin,
+		"Ni na qi le "+matchedItem.Name.Pinyin,
 		"You picked up: "+matchedItem.Name.English,
 	), nil
 }
@@ -504,7 +533,7 @@ func (ch *CommandHandler) executeHelp() (string, error) {
 ║   退出: quit 或 退出                                      ║
 ╚══════════════════════════════════════════════════════════╝`
 
-	helpPinyin := "=== MINGLING BANGZHU ==="
+	helpPinyin := "=== You Xi Ming Ling Bang Zhu ==="
 	helpEnglish := `╔══════════════════════════════════════════════════════════╗
 ║                      GAME COMMANDS                         ║
 ╠══════════════════════════════════════════════════════════╣
@@ -543,7 +572,7 @@ func (ch *CommandHandler) executeQuit() (string, error) {
 	ch.gameState.GameOver = true
 	return ch.formatOutput(
 		"感谢游玩！再见！",
-		"Gǎnxiè yóuwán! Zàijiàn!",
+		"Gan xie you wan! Zai jian!",
 		"Thanks for playing! Farewell!",
 	), nil
 }
@@ -553,7 +582,7 @@ func (ch *CommandHandler) executeSave(cmd Command) (string, error) {
 	if ch.saveManager == nil {
 		return "", ch.formatError(
 			"保存系统未初始化",
-			"Bǎocún xìtǒng wèi chūshǐhuà",
+			"Bao cun xi tong wei chu shi hua",
 			"Save system not initialized",
 		)
 	}
@@ -574,7 +603,7 @@ func (ch *CommandHandler) executeSave(cmd Command) (string, error) {
 	if err != nil {
 		return "", ch.formatError(
 			fmt.Sprintf("创建存档失败: %v", err),
-			fmt.Sprintf("Chuàngjiàn cúndàng shībài: %v", err),
+			fmt.Sprintf("Chuang jian cun dang shi bai: %v", err),
 			fmt.Sprintf("Failed to create save: %v", err),
 		)
 	}
@@ -583,14 +612,14 @@ func (ch *CommandHandler) executeSave(cmd Command) (string, error) {
 	if err != nil {
 		return "", ch.formatError(
 			fmt.Sprintf("保存失败: %v", err),
-			fmt.Sprintf("Bǎocún shībài: %v", err),
+			fmt.Sprintf("Bao cun shi bai: %v", err),
 			fmt.Sprintf("Save failed: %v", err),
 		)
 	}
 
 	return ch.formatOutput(
 		fmt.Sprintf("游戏已保存到: %s", slotName),
-		fmt.Sprintf("Yóuxì yǐ bǎocún dào: %s", slotName),
+		fmt.Sprintf("You xi yi bao cun dao: %s", slotName),
 		fmt.Sprintf("Game saved to: %s", slotName),
 	), nil
 }
@@ -600,7 +629,7 @@ func (ch *CommandHandler) executeLoad(cmd Command) (string, error) {
 	if ch.saveManager == nil {
 		return "", ch.formatError(
 			"保存系统未初始化",
-			"Bǎocún xìtǒng wèi chūshǐhuà",
+			"Bao cun xi tong wei chu shi hua",
 			"Save system not initialized",
 		)
 	}
@@ -608,7 +637,7 @@ func (ch *CommandHandler) executeLoad(cmd Command) (string, error) {
 	if len(cmd.Args) == 0 {
 		return "", ch.formatError(
 			"请指定要加载的存档名称",
-			"Qǐng zhǐdìng yào jiāzài de cúndàng míngchēng",
+			"Qing zhi ding yao jia zai de cun dang ming cheng",
 			"Please specify a save slot to load",
 		)
 	}
@@ -619,7 +648,7 @@ func (ch *CommandHandler) executeLoad(cmd Command) (string, error) {
 	if err != nil {
 		return "", ch.formatError(
 			fmt.Sprintf("加载失败: %v", err),
-			fmt.Sprintf("Jiāzài shībài: %v", err),
+			fmt.Sprintf("Jia zai shi bai: %v", err),
 			fmt.Sprintf("Load failed: %v", err),
 		)
 	}
@@ -633,7 +662,7 @@ func (ch *CommandHandler) executeLoad(cmd Command) (string, error) {
 
 	result := ch.formatOutput(
 		fmt.Sprintf("已加载存档: %s", slotName),
-		fmt.Sprintf("Yǐ jiāzài cúndàng: %s", slotName),
+		fmt.Sprintf("Yi jia zai cun dang: %s", slotName),
 		fmt.Sprintf("Loaded save: %s", slotName),
 	) + "\n" + ch.gameState.GetCurrentRoomDescription()
 
@@ -645,7 +674,7 @@ func (ch *CommandHandler) executeListSaves() (string, error) {
 	if ch.saveManager == nil {
 		return "", ch.formatError(
 			"保存系统未初始化",
-			"Bǎocún xìtǒng wèi chūshǐhuà",
+			"Bao cun xi tong wei chu shi hua",
 			"Save system not initialized",
 		)
 	}
@@ -654,7 +683,7 @@ func (ch *CommandHandler) executeListSaves() (string, error) {
 	if err != nil {
 		return "", ch.formatError(
 			fmt.Sprintf("无法列出存档: %v", err),
-			fmt.Sprintf("Wúfǎ lièchū cúndàng: %v", err),
+			fmt.Sprintf("Wu fa lie chu cun dang: %v", err),
 			fmt.Sprintf("Failed to list saves: %v", err),
 		)
 	}
@@ -662,13 +691,13 @@ func (ch *CommandHandler) executeListSaves() (string, error) {
 	if len(saves) == 0 {
 		return ch.formatOutput(
 			"没有找到任何存档",
-			"Méiyǒu zhǎodào rènhé cúndàng",
+			"Mei you zhao dao ren he cun dang",
 			"No saves found",
 		), nil
 	}
 
 	var result strings.Builder
-	result.WriteString(ch.formatOutput("=== 存档列表 ===", "=== Cúndàng lièbiǎo ===", "=== Save List ===") + "\n")
+	result.WriteString(ch.formatOutput("=== 存档列表 ===", "=== Cun dang lie biao ===", "=== Save List ===") + "\n")
 	for _, s := range saves {
 		result.WriteString(fmt.Sprintf("  %s - %s - %s\n",
 			s.DisplayName,
@@ -677,7 +706,7 @@ func (ch *CommandHandler) executeListSaves() (string, error) {
 	}
 	result.WriteString(ch.formatOutput(
 		fmt.Sprintf("\n共 %d 个存档", len(saves)),
-		fmt.Sprintf("Gòng %d gè cúndàng", len(saves)),
+		fmt.Sprintf("Gong %d ge cun dang", len(saves)),
 		fmt.Sprintf("Total: %d saves", len(saves)),
 	))
 
@@ -689,7 +718,7 @@ func (ch *CommandHandler) executeDeleteSave(cmd Command) (string, error) {
 	if ch.saveManager == nil {
 		return "", ch.formatError(
 			"保存系统未初始化",
-			"Bǎocún xìtǒng wèi chūshǐhuà",
+			"Bao cun xi tong wei chu shi hua",
 			"Save system not initialized",
 		)
 	}
@@ -697,7 +726,7 @@ func (ch *CommandHandler) executeDeleteSave(cmd Command) (string, error) {
 	if len(cmd.Args) == 0 {
 		return "", ch.formatError(
 			"请指定要删除的存档名称",
-			"Qǐng zhǐdìng yào shānchú de cúndàng míngchēng",
+			"Qing zhi ding yao shan chu de cun dang ming cheng",
 			"Please specify a save slot to delete",
 		)
 	}
@@ -708,14 +737,14 @@ func (ch *CommandHandler) executeDeleteSave(cmd Command) (string, error) {
 	if err != nil {
 		return "", ch.formatError(
 			fmt.Sprintf("删除失败: %v", err),
-			fmt.Sprintf("Shānchú shībài: %v", err),
+			fmt.Sprintf("Shan chu shi bai: %v", err),
 			fmt.Sprintf("Delete failed: %v", err),
 		)
 	}
 
 	return ch.formatOutput(
 		fmt.Sprintf("已删除存档: %s", slotName),
-		fmt.Sprintf("Yǐ shānchú cúndàng: %s", slotName),
+		fmt.Sprintf("Yi shan chu cun dang: %s", slotName),
 		fmt.Sprintf("Deleted save: %s", slotName),
 	), nil
 }
@@ -730,7 +759,7 @@ func (ch *CommandHandler) executeEquip(cmd Command) (string, error) {
 	if len(cmd.Args) == 0 {
 		return "", ch.formatError(
 			"装备什么？",
-			"Zhuāngbèi shénme?",
+			"Zhuang bei shen me?",
 			"Equip what?",
 		)
 	}
@@ -752,7 +781,7 @@ func (ch *CommandHandler) executeEquip(cmd Command) (string, error) {
 	if itemID == "" {
 		return "", ch.formatError(
 			"你没有 "+itemName,
-			"Nǐ méiyǒu "+itemName,
+			"Ni mei you "+itemName,
 			"You don't have "+itemName,
 		)
 	}
@@ -761,7 +790,7 @@ func (ch *CommandHandler) executeEquip(cmd Command) (string, error) {
 		ch.gameState.Player.EquipWeapon(itemID)
 		return ch.formatOutput(
 			"装备了 "+foundItem.Name.Chinese,
-			"Zhuāngbèi le "+foundItem.Name.Pinyin,
+			"Zhuang bei le "+foundItem.Name.Pinyin,
 			"Equipped: "+foundItem.Name.English,
 		), nil
 	}
@@ -770,14 +799,14 @@ func (ch *CommandHandler) executeEquip(cmd Command) (string, error) {
 		ch.gameState.Player.EquipArmor(itemID)
 		return ch.formatOutput(
 			"装备了 "+foundItem.Name.Chinese,
-			"Zhuāngbèi le "+foundItem.Name.Pinyin,
+			"Zhuang bei le "+foundItem.Name.Pinyin,
 			"Equipped: "+foundItem.Name.English,
 		), nil
 	}
 
 	return "", ch.formatError(
 		foundItem.Name.Chinese+" 无法装备",
-		foundItem.Name.Pinyin+" wúfǎ zhuāngbèi",
+		foundItem.Name.Pinyin+" wu fa zhuang bei",
 		foundItem.Name.English+" cannot be equipped",
 	)
 }
@@ -787,7 +816,7 @@ func (ch *CommandHandler) executeUnequip(cmd Command) (string, error) {
 	if len(cmd.Args) == 0 {
 		return "", ch.formatError(
 			"卸下什么？（武器/护甲）",
-			"Xièxià shénme? (wǔqì/hùjiǎ)",
+			"Xie xia shen me? (wu qi / hu jia)",
 			"Unequip what? (weapon/armor)",
 		)
 	}
@@ -799,13 +828,13 @@ func (ch *CommandHandler) executeUnequip(cmd Command) (string, error) {
 			ch.gameState.Player.UnequipWeapon()
 			return ch.formatOutput(
 				"已卸下武器",
-				"Yǐ xièxià wǔqì",
+				"Yi xie xia wu qi",
 				"Weapon unequipped",
 			), nil
 		}
 		return "", ch.formatError(
 			"没有装备武器",
-			"Méiyǒu zhuāngbèi wǔqì",
+			"Mei you zhuang bei wu qi",
 			"No weapon equipped",
 		)
 	}
@@ -815,20 +844,20 @@ func (ch *CommandHandler) executeUnequip(cmd Command) (string, error) {
 			ch.gameState.Player.UnequipArmor()
 			return ch.formatOutput(
 				"已卸下护甲",
-				"Yǐ xièxià hùjiǎ",
+				"Yi xie xia hu jia",
 				"Armor unequipped",
 			), nil
 		}
 		return "", ch.formatError(
 			"没有装备护甲",
-			"Méiyǒu zhuāngbèi hùjiǎ",
+			"Mei you zhuang bei hu jia",
 			"No armor equipped",
 		)
 	}
 
 	return "", ch.formatError(
 		"未知装备槽: "+slot,
-		"Wèizhī zhuāngbèi cáo: "+slot,
+		"Wei zhi zhuang bei cao: "+slot,
 		"Unknown equipment slot: "+slot,
 	)
 }
@@ -838,7 +867,7 @@ func (ch *CommandHandler) executeUse(cmd Command) (string, error) {
 	if len(cmd.Args) == 0 {
 		return "", ch.formatError(
 			"使用什么？",
-			"Shǐyòng shénme?",
+			"Shi yong shen me?",
 			"Use what?",
 		)
 	}
@@ -858,7 +887,7 @@ func (ch *CommandHandler) executeUse(cmd Command) (string, error) {
 	if itemID == "" {
 		return "", ch.formatError(
 			"你没有 "+itemName,
-			"Nǐ méiyǒu "+itemName,
+			"Ni mei you "+itemName,
 			"You don't have "+itemName,
 		)
 	}
@@ -883,7 +912,7 @@ func (ch *CommandHandler) executeDrop(cmd Command) (string, error) {
 	if len(cmd.Args) == 0 {
 		return "", ch.formatError(
 			"丢弃什么？",
-			"Diūqì shénme?",
+			"Diu qi shen me?",
 			"Drop what?",
 		)
 	}
@@ -905,7 +934,7 @@ func (ch *CommandHandler) executeDrop(cmd Command) (string, error) {
 	if itemID == "" {
 		return "", ch.formatError(
 			"你没有 "+itemName,
-			"Nǐ méiyǒu "+itemName,
+			"Ni mei you "+itemName,
 			"You don't have "+itemName,
 		)
 	}
@@ -922,7 +951,45 @@ func (ch *CommandHandler) executeDrop(cmd Command) (string, error) {
 
 	return ch.formatOutput(
 		"你丢弃了 "+foundItem.Name.Chinese,
-		"Nǐ diūqì le "+foundItem.Name.Pinyin,
+		"Ni diu qi le "+foundItem.Name.Pinyin,
 		"You dropped: "+foundItem.Name.English,
 	), nil
+}
+
+// executeEquipBackpack handles backpack equipment
+func (ch *CommandHandler) executeEquipBackpack(cmd Command) (string, error) {
+	if len(cmd.Args) == 0 {
+		return "", ch.formatError(
+			"装备哪个背包？",
+			"Zhuang bei na ge bei bao?",
+			"Equip which backpack?",
+		)
+	}
+
+	itemName := cmd.Args[0]
+
+	var itemID string
+	for _, id := range ch.gameState.Player.Inventory {
+		if item, exists := ch.gameState.Items[id]; exists {
+			if item.IsBackpack() && (item.Name.Chinese == itemName || strings.EqualFold(item.Name.English, itemName)) {
+				itemID = id
+				break
+			}
+		}
+	}
+
+	if itemID == "" {
+		return "", ch.formatError(
+			"你没有这个背包",
+			"Ni mei you zhe ge bei bao",
+			"You don't have this backpack",
+		)
+	}
+
+	return ch.gameState.SafeEquipBackpack(itemID)
+}
+
+// executeUnequipBackpack handles backpack unequipment
+func (ch *CommandHandler) executeUnequipBackpack() (string, error) {
+	return ch.gameState.SafeUnequipBackpack()
 }

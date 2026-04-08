@@ -1,8 +1,12 @@
 {
-  "game_version": "0.1.0",
+  "game_version": "0.2.0",
   "starting_location_id": "entrance",
   "win_condition_item_id": "golden_chalice",
   "starting_health": 100,
+  "inventory_settings": {
+    "starting_inventory_size": 10,
+    "max_inventory_size": 50
+  },
   "display_preferences": {
     "show_chinese": true,
     "show_pinyin": true,
@@ -13,5 +17,7 @@
     "base_damage_max": 30,
     "flee_success_rate": 100,
     "player_base_defense": 0
-  }
+  },
+  "auto_save_enabled": true,
+  "auto_save_interval": 5
 }

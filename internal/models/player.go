@@ -1,33 +1,38 @@
 package models
 
-// Add this constant at the top of the file
-const MaxInventorySize = 20
+import (
+	"fmt"
+)
 
 // Player represents the game character
 type Player struct {
-	Name              string   `json:"name"`                // Character name
-	Health            int      `json:"health"`              // Current health points
-	MaxHealth         int      `json:"max_health"`          // Maximum health points
-	CurrentLocationID string   `json:"current_location_id"` // Current room/location ID
-	Inventory         []string `json:"inventory"`           // Slice of item IDs
-	EquippedWeaponID  *string  `json:"equipped_weapon_id"`  // Currently equipped weapon (nil if none)
-	EquippedArmorID   *string  `json:"equipped_armor_id"`   // Currently equipped armor (nil if none)
-	ExperiencePoints  int      `json:"experience_points"`   // For future leveling system
-	Level             int      `json:"level"`               // Current level
+	Name               string   `json:"name"`                 // Character name
+	Health             int      `json:"health"`               // Current health points
+	MaxHealth          int      `json:"max_health"`           // Maximum health points
+	CurrentLocationID  string   `json:"current_location_id"`  // Current room/location ID
+	Inventory          []string `json:"inventory"`            // Slice of item IDs
+	InventorySize      int      `json:"inventory_size"`       // Current inventory capacity
+	EquippedWeaponID   *string  `json:"equipped_weapon_id"`   // Currently equipped weapon (nil if none)
+	EquippedArmorID    *string  `json:"equipped_armor_id"`    // Currently equipped armor (nil if none)
+	EquippedBackpackID *string  `json:"equipped_backpack_id"` // Equipped backpack that increases capacity
+	ExperiencePoints   int      `json:"experience_points"`    // For future leveling system
+	Level              int      `json:"level"`                // Current level
 }
 
 // NewPlayer creates a new player with default starting values
-func NewPlayer(name string, startingLocationID string, startingHealth int) *Player {
+func NewPlayer(name string, startingLocationID string, startingHealth int, startingInventorySize int) *Player {
 	return &Player{
-		Name:              name,
-		Health:            startingHealth,
-		MaxHealth:         startingHealth,
-		CurrentLocationID: startingLocationID,
-		Inventory:         []string{},
-		EquippedWeaponID:  nil,
-		EquippedArmorID:   nil,
-		ExperiencePoints:  0,
-		Level:             1,
+		Name:               name,
+		Health:             startingHealth,
+		MaxHealth:          startingHealth,
+		CurrentLocationID:  startingLocationID,
+		Inventory:          []string{},
+		InventorySize:      startingInventorySize,
+		EquippedWeaponID:   nil,
+		EquippedArmorID:    nil,
+		EquippedBackpackID: nil,
+		ExperiencePoints:   0,
+		Level:              1,
 	}
 }
 
@@ -260,29 +265,16 @@ func (p *Player) GetHealthPercentage() int {
 	return int((float64(p.Health) / float64(p.MaxHealth)) * 100)
 }
 
-// IsInventoryFull checks if inventory has reached capacity (optional, for future)
+// IsInventoryFull checks if inventory has reached current capacity
 func (p *Player) IsInventoryFull() bool {
-	// Default max capacity of 20 items
-	return len(p.Inventory) >= 20
-}
-
-// GetInventorySize returns current inventory count
-func (p *Player) GetInventorySize() int {
-	return len(p.Inventory)
-}
-
-// ClearInventory removes all items (useful for debugging or new game plus)
-func (p *Player) ClearInventory() {
-	p.Inventory = []string{}
-	p.EquippedWeaponID = nil
-	p.EquippedArmorID = nil
+	return len(p.Inventory) >= p.InventorySize
 }
 
 // AddItemWithCheck adds an item to inventory with capacity check
 // Returns (success, error message)
 func (p *Player) AddItemWithCheck(itemID string) (bool, string) {
 	if p.IsInventoryFull() {
-		return false, "背包已满，无法携带更多物品"
+		return false, fmt.Sprintf("背包已满 (容量: %d/%d)", len(p.Inventory), p.InventorySize)
 	}
 	p.Inventory = append(p.Inventory, itemID)
 	return true, ""
@@ -290,18 +282,128 @@ func (p *Player) AddItemWithCheck(itemID string) (bool, string) {
 
 // GetInventoryCapacity returns current and max inventory size
 func (p *Player) GetInventoryCapacity() (current, max int) {
-	return len(p.Inventory), MaxInventorySize
+	return len(p.Inventory), p.InventorySize
+}
+
+// GetInventoryCapacityPercent returns percentage of inventory used
+func (p *Player) GetInventoryCapacityPercent() int {
+	if p.InventorySize == 0 {
+		return 0
+	}
+	return (len(p.Inventory) * 100) / p.InventorySize
+}
+
+// IncreaseInventorySize increases inventory capacity (up to maximum)
+// Returns actual amount increased
+func (p *Player) IncreaseInventorySize(amount int, maxSize int) int {
+	newSize := p.InventorySize + amount
+	if newSize > maxSize {
+		newSize = maxSize
+	}
+	increase := newSize - p.InventorySize
+	p.InventorySize = newSize
+	return increase
+}
+
+// DecreaseInventorySize decreases inventory capacity
+// Returns actual amount decreased
+func (p *Player) DecreaseInventorySize(amount int) int {
+	newSize := p.InventorySize - amount
+	if newSize < len(p.Inventory) {
+		// Can't decrease below current item count
+		newSize = len(p.Inventory)
+	}
+	decrease := p.InventorySize - newSize
+	p.InventorySize = newSize
+	return decrease
+}
+
+// SetInventorySize sets inventory capacity directly (with validation)
+func (p *Player) SetInventorySize(newSize int, maxSize int) {
+	if newSize > maxSize {
+		newSize = maxSize
+	}
+	if newSize < len(p.Inventory) {
+		newSize = len(p.Inventory)
+	}
+	p.InventorySize = newSize
+}
+
+// EquipBackpack equips a backpack and increases inventory capacity
+// Returns (success, capacityIncrease, message)
+func (p *Player) EquipBackpack(itemID string, sizeBonus int, maxSize int) (bool, int, string) {
+	if p.EquippedBackpackID != nil {
+		return false, 0, "已经装备了一个背包"
+	}
+
+	p.EquippedBackpackID = &itemID
+	increase := p.IncreaseInventorySize(sizeBonus, maxSize)
+	return true, increase, fmt.Sprintf("装备了背包，背包容量增加了 %d", increase)
+}
+
+// UnequipBackpack removes equipped backpack and decreases inventory capacity
+// Returns (success, capacityDecrease, message)
+func (p *Player) UnequipBackpack() (bool, int, string) {
+	if p.EquippedBackpackID == nil {
+		return false, 0, "没有装备背包"
+	}
+
+	// Store the backpack ID to use for calculating size bonus
+	// Note: The caller needs to provide the size bonus since we don't store it here
+	p.EquippedBackpackID = nil
+	return true, 0, "卸下了背包"
+}
+
+// UnequipBackpackWithBonus removes equipped backpack with specific bonus amount
+// Returns (success, capacityDecrease, message)
+func (p *Player) UnequipBackpackWithBonus(sizeBonus int) (bool, int, string) {
+	if p.EquippedBackpackID == nil {
+		return false, 0, "没有装备背包"
+	}
+
+	// Check if we can decrease without going below current item count
+	if p.InventorySize-sizeBonus < len(p.Inventory) {
+		return false, 0, fmt.Sprintf("背包中有太多物品，无法卸下背包 (当前: %d/%d)", len(p.Inventory), p.InventorySize)
+	}
+
+	p.EquippedBackpackID = nil
+	decrease := p.DecreaseInventorySize(sizeBonus)
+	return true, decrease, fmt.Sprintf("卸下了背包，背包容量减少了 %d", decrease)
+}
+
+// HasBackpackEquipped checks if player has a backpack equipped
+func (p *Player) HasBackpackEquipped() bool {
+	return p.EquippedBackpackID != nil
+}
+
+// GetEquippedBackpackID returns the equipped backpack ID (empty string if none)
+func (p *Player) GetEquippedBackpackID() string {
+	if p.EquippedBackpackID == nil {
+		return ""
+	}
+	return *p.EquippedBackpackID
+}
+
+// ClearInventory removes all items (useful for debugging or new game plus)
+func (p *Player) ClearInventory() {
+	p.Inventory = []string{}
+	p.EquippedWeaponID = nil
+	p.EquippedArmorID = nil
+	p.EquippedBackpackID = nil
+	p.InventorySize = 10 // Reset to default
 }
 
 // Reset resets player to starting state (for new game)
-func (p *Player) Reset(name string, startingLocationID string, startingHealth int) {
+func (p *Player) Reset(name string, startingLocationID string, startingHealth int, startingInventorySize int) {
 	p.Name = name
 	p.Health = startingHealth
 	p.MaxHealth = startingHealth
 	p.CurrentLocationID = startingLocationID
 	p.Inventory = []string{}
+	p.InventorySize = startingInventorySize
 	p.EquippedWeaponID = nil
 	p.EquippedArmorID = nil
+	p.EquippedBackpackID = nil
 	p.ExperiencePoints = 0
 	p.Level = 1
 }

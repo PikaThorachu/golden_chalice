@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"math/rand"
 	"slices"
 	"strings"
 
@@ -159,6 +160,105 @@ func (gs *GameState) SafeUseItem(itemID string) (string, error) {
 
 	gs.Logger.LogPlayerAction("use", map[string]interface{}{"item": itemID})
 	return result, nil
+}
+
+// SafeEquipBackpack attempts to equip a backpack
+func (gs *GameState) SafeEquipBackpack(itemID string) (string, error) {
+	if gs.GameOver {
+		return "", errors.ErrGameAlreadyOver
+	}
+
+	if !gs.Player.IsAlive() {
+		return "", errors.ErrPlayerDead
+	}
+
+	if !gs.Player.HasItem(itemID) {
+		return "", errors.ErrItemNotFound
+	}
+
+	item, exists := gs.Items[itemID]
+	if !exists {
+		return "", errors.ErrItemNotFound
+	}
+
+	if !item.IsBackpack() {
+		return "", errors.New(errors.ErrTypeInventory,
+			"这不是一个背包",
+			"Zhè bùshì yī gè bēibāo",
+			"This is not a backpack")
+	}
+
+	sizeBonus := item.GetSizeBonus()
+	maxSize := gs.Config.GetMaxInventorySize()
+
+	success, increase, message := gs.Player.EquipBackpack(itemID, sizeBonus, maxSize)
+	if !success {
+		return "", errors.New(errors.ErrTypeInventory, message, message, message)
+	}
+
+	gs.Logger.LogPlayerAction("equip_backpack", map[string]interface{}{
+		"item":         itemID,
+		"size_bonus":   sizeBonus,
+		"new_capacity": gs.Player.InventorySize,
+	})
+
+	return gs.Formatter.formatInline(
+		fmt.Sprintf("装备了 %s，背包容量 +%d (当前: %d)", item.Name.Chinese, increase, gs.Player.InventorySize),
+		fmt.Sprintf("Zhuāngbèi le %s，bēibāo róngliàng +%d (dāngqián: %d)", item.Name.Pinyin, increase, gs.Player.InventorySize),
+		fmt.Sprintf("Equipped %s, inventory +%d (current: %d)", item.Name.English, increase, gs.Player.InventorySize),
+	), nil
+}
+
+// SafeUnequipBackpack attempts to unequip the current backpack
+func (gs *GameState) SafeUnequipBackpack() (string, error) {
+	if gs.GameOver {
+		return "", errors.ErrGameAlreadyOver
+	}
+
+	if !gs.Player.HasBackpackEquipped() {
+		return "", errors.New(errors.ErrTypeInventory,
+			"没有装备背包",
+			"Méiyǒu zhuāngbèi bēibāo",
+			"No backpack equipped")
+	}
+
+	// Get the backpack item to know the size bonus
+	backpackID := gs.Player.GetEquippedBackpackID()
+	backpack, exists := gs.Items[backpackID]
+	if !exists {
+		// Force unequip without bonus calculation
+		gs.Player.UnequipBackpack()
+		return "卸下了背包（数据异常）", nil
+	}
+
+	// Calculate what the size should be without the backpack
+	sizeBonus := backpack.GetSizeBonus()
+	newSize := gs.Player.InventorySize - sizeBonus
+
+	// Ensure new size is at least current item count
+	if newSize < len(gs.Player.Inventory) {
+		return "", errors.New(errors.ErrTypeInventory,
+			fmt.Sprintf("背包中有太多物品，无法卸下背包 (当前: %d/%d)", len(gs.Player.Inventory), gs.Player.InventorySize),
+			fmt.Sprintf("Bēibāo zhōng yǒu tài duō wùpǐn, wúfǎ xièxià bēibāo (dāngqián: %d/%d)", len(gs.Player.Inventory), gs.Player.InventorySize),
+			fmt.Sprintf("Too many items in inventory to unequip backpack (current: %d/%d)", len(gs.Player.Inventory), gs.Player.InventorySize))
+	}
+
+	success, decrease, message := gs.Player.UnequipBackpack()
+	if !success {
+		return "", errors.New(errors.ErrTypeInventory, message, message, message)
+	}
+
+	gs.Logger.LogPlayerAction("unequip_backpack", map[string]interface{}{
+		"item":          backpackID,
+		"size_decrease": decrease,
+		"new_capacity":  gs.Player.InventorySize,
+	})
+
+	return gs.Formatter.formatInline(
+		fmt.Sprintf("卸下了 %s，背包容量 -%d (当前: %d)", backpack.Name.Chinese, decrease, gs.Player.InventorySize),
+		fmt.Sprintf("Xièxià le %s，bēibāo róngliàng -%d (dāngqián: %d)", backpack.Name.Pinyin, decrease, gs.Player.InventorySize),
+		fmt.Sprintf("Unequipped %s, inventory -%d (current: %d)", backpack.Name.English, decrease, gs.Player.InventorySize),
+	), nil
 }
 
 // ProcessCombatTurn handles one turn of combat with logging
@@ -583,6 +683,7 @@ func (gs *GameState) NewGame(playerName string) {
 		playerName,
 		gs.Config.GetStartingLocationID(),
 		gs.Config.GetStartingHealth(),
+		gs.Config.GetStartingInventorySize(), // Added missing parameter
 	)
 	gs.DefeatedEnemies = make(map[string]bool)
 	gs.TakenItems = make(map[string]bool)
@@ -596,4 +697,26 @@ func (gs *GameState) NewGame(playerName string) {
 			"location": gs.Config.GetStartingLocationID(),
 		})
 	}
+}
+
+// AttemptFlee attempts to flee from combat
+// Returns (success, message)
+func (gs *GameState) AttemptFlee() (bool, string) {
+	fleeRate := gs.Config.CombatSettings.FleeSuccessRate
+
+	// Use random chance for flee
+	chance := rand.Intn(100)
+	if chance < fleeRate {
+		return true, gs.Formatter.formatInline(
+			"你成功逃跑了！",
+			"Ni cheng gong tao pao le!",
+			"You successfully fled!",
+		)
+	}
+
+	return false, gs.Formatter.formatInline(
+		"逃跑失败！",
+		"Tao pao shi bai!",
+		"Failed to flee!",
+	)
 }
