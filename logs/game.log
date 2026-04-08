@@ -1,0 +1,29 @@
+2026/04/08 19:23:45 [ERROR] logger.go:191 - Error: failed to load items: found 2 item validation errors:
+item 'leather_backpack' has invalid type: backpack
+item 'magic_backpack' has invalid type: backpack - Context: map[phase:load_game_data]
+2026/04/08 19:32:00 [ERROR] logger.go:191 - Error: failed to load enemies: found 1 drop validation errors:
+enemy 'dark_spirit' drop 0 references unknown item 'magic_ring' - Context: map[phase:load_game_data]
+2026/04/08 19:35:47 [ERROR] logger.go:191 - Error: failed to load enemies: failed to parse enemies.json: json: cannot unmarshal array into Go struct field EnemyDrop.enemies.drops.item_id of type string - Context: map[phase:load_game_data]
+2026/04/08 19:37:09 [ERROR] logger.go:191 - Error: failed to load world: failed to parse world.json: json: cannot unmarshal string into Go struct field Exit.locations.exits.direction of type models.Direction - Context: map[phase:load_game_data]
+2026/04/08 19:43:26 [ERROR] logger.go:191 - Error: failed to load world: world validation failed: found 1 validation errors:
+location 'dungeon' references unknown item 'magic_ring' - Context: map[phase:load_game_data]
+2026/04/08 19:47:07 [INFO] logger.go:171 - Game Event: new_game - map[location:entrance player:保罗]
+2026/04/08 19:48:46 [INFO] logger.go:181 - Combat: 保罗 attacked 哥布林 (Gēbùlín) / Goblin for 10 damage - player_attack
+2026/04/08 19:48:46 [INFO] logger.go:181 - Combat: 哥布林 (Gēbùlín) / Goblin attacked 保罗 for 5 damage - enemy_attack
+2026/04/08 19:48:49 [INFO] logger.go:181 - Combat: 保罗 attacked 哥布林 (Gēbùlín) / Goblin for 10 damage - player_attack
+2026/04/08 19:48:49 [INFO] logger.go:181 - Combat: 哥布林 (Gēbùlín) / Goblin attacked 保罗 for 12 damage - enemy_attack
+2026/04/08 19:48:53 [INFO] logger.go:181 - Combat: 保罗 attacked 哥布林 (Gēbùlín) / Goblin for 10 damage - player_attack
+2026/04/08 19:48:53 [INFO] logger.go:181 - Combat: 哥布林 (Gēbùlín) / Goblin attacked 保罗 for 20 damage - enemy_attack
+2026/04/08 19:48:57 [INFO] logger.go:181 - Combat: 保罗 attacked 哥布林 (Gēbùlín) / Goblin for 10 damage - player_attack
+2026/04/08 19:48:57 [INFO] logger.go:181 - Combat: 保罗 attacked 哥布林 (Gēbùlín) / Goblin for 10 damage - victory
+2026/04/08 19:50:10 [INFO] logger.go:181 - Combat: 保罗 attacked 巨魔 (Jùmó) / Troll for 10 damage - player_attack
+2026/04/08 19:50:10 [INFO] logger.go:181 - Combat: 巨魔 (Jùmó) / Troll attacked 保罗 for 13 damage - enemy_attack
+2026/04/08 19:50:13 [INFO] logger.go:181 - Combat: 保罗 attacked 巨魔 (Jùmó) / Troll for 10 damage - player_attack
+2026/04/08 19:50:13 [INFO] logger.go:181 - Combat: 巨魔 (Jùmó) / Troll attacked 保罗 for 11 damage - enemy_attack
+2026/04/08 19:50:15 [INFO] logger.go:181 - Combat: 保罗 attacked 巨魔 (Jùmó) / Troll for 10 damage - player_attack
+2026/04/08 19:50:15 [INFO] logger.go:181 - Combat: 巨魔 (Jùmó) / Troll attacked 保罗 for 16 damage - enemy_attack
+2026/04/08 19:50:16 [INFO] logger.go:181 - Combat: 保罗 attacked 巨魔 (Jùmó) / Troll for 10 damage - player_attack
+2026/04/08 19:50:16 [INFO] logger.go:181 - Combat: 巨魔 (Jùmó) / Troll attacked 保罗 for 18 damage - enemy_attack
+2026/04/08 19:50:17 [INFO] logger.go:181 - Combat: 保罗 attacked 巨魔 (Jùmó) / Troll for 10 damage - player_attack
+2026/04/08 19:50:17 [INFO] logger.go:181 - Combat: 巨魔 (Jùmó) / Troll attacked 保罗 for 5 damage - enemy_attack
+2026/04/08 19:50:17 [INFO] logger.go:181 - Combat: 巨魔 (Jùmó) / Troll attacked 保罗 for 5 damage - player_defeated

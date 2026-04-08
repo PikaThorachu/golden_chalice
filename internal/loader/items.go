@@ -72,7 +72,7 @@ func validateItems(items map[string]models.Item) error {
 
 		// Validate item type
 		switch item.Type {
-		case models.ItemTypeWeapon, models.ItemTypeQuest, models.ItemTypeConsumable, models.ItemTypeKey, models.ItemTypeArmor:
+		case models.ItemTypeWeapon, models.ItemTypeQuest, models.ItemTypeConsumable, models.ItemTypeKey, models.ItemTypeArmor, models.ItemTypeBackpack:
 			// Valid type
 		default:
 			errors = append(errors, fmt.Sprintf("item '%s' has invalid type: %s", id, item.Type))
@@ -134,6 +134,19 @@ func validateItemProperties(item models.Item) error {
 		}
 		if props.DefenseBonus != nil && *props.DefenseBonus < 0 {
 			return fmt.Errorf("armor has negative defense_bonus: %d", *props.DefenseBonus)
+		}
+
+	case models.ItemTypeBackpack:
+		// Backpack validation - size_bonus is required
+		if props.SizeBonus == nil {
+			return fmt.Errorf("backpack missing size_bonus")
+		}
+		if props.SizeBonus != nil && *props.SizeBonus < 0 {
+			return fmt.Errorf("backpack has negative size_bonus: %d", *props.SizeBonus)
+		}
+		// Equippable should be true for backpacks
+		if props.Equippable == nil || !*props.Equippable {
+			return fmt.Errorf("backpack should be equippable")
 		}
 	}
 

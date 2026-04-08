@@ -23,6 +23,11 @@
           "direction": "out",
           "destination": "outside",
           "requires_item_id": null
+        },
+        {
+          "direction": "down",
+          "destination": "dungeon",
+          "requires_item_id": "rusty_key"
         }
       ],
       "enemy_ids": [],
@@ -151,7 +156,7 @@
         }
       ],
       "enemy_ids": ["skeleton_warrior", "dark_spirit"],
-      "item_ids": ["health_potion", "magic_ring"]
+      "item_ids": ["health_potion"]
     }
   }
 }

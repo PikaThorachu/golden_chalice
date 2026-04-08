@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -37,6 +38,43 @@ func (d Direction) String() string {
 	}
 	return directions[d]
 }
+
+// MarshalJSON implements the json.Marshaler interface
+func (d Direction) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.String())
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface
+func (d *Direction) UnmarshalJSON(data []byte) error {
+	var dirString string
+	if err := json.Unmarshal(data, &dirString); err != nil {
+		return err
+	}
+
+	switch dirString {
+	case "north":
+		*d = North
+	case "south":
+		*d = South
+	case "east":
+		*d = East
+	case "west":
+		*d = West
+	case "up":
+		*d = Up
+	case "down":
+		*d = Down
+	case "out":
+		*d = Out
+	case "in":
+		*d = In
+	default:
+		return fmt.Errorf("invalid direction: %s", dirString)
+	}
+	return nil
+}
+
+// ... rest of your world.go file continues ...
 
 // Text holds multilingual text for display
 type Text struct {

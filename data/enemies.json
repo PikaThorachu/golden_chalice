@@ -78,12 +78,7 @@
       },
       "defense": 10,
       "experience_points": 120,
-      "drops": [
-        {
-          "item_id": "magic_ring",
-          "chance": 25
-        }
-      ],
+      "drops": [],
       "biome_affinity": ["dungeon"],
       "special_abilities": null
     }
