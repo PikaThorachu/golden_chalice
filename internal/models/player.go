@@ -1,5 +1,8 @@
 package models
 
+// Add this constant at the top of the file
+const MaxInventorySize = 20
+
 // Player represents the game character
 type Player struct {
 	Name              string   `json:"name"`                // Character name
@@ -273,6 +276,21 @@ func (p *Player) ClearInventory() {
 	p.Inventory = []string{}
 	p.EquippedWeaponID = nil
 	p.EquippedArmorID = nil
+}
+
+// AddItemWithCheck adds an item to inventory with capacity check
+// Returns (success, error message)
+func (p *Player) AddItemWithCheck(itemID string) (bool, string) {
+	if p.IsInventoryFull() {
+		return false, "背包已满，无法携带更多物品"
+	}
+	p.Inventory = append(p.Inventory, itemID)
+	return true, ""
+}
+
+// GetInventoryCapacity returns current and max inventory size
+func (p *Player) GetInventoryCapacity() (current, max int) {
+	return len(p.Inventory), MaxInventorySize
 }
 
 // Reset resets player to starting state (for new game)

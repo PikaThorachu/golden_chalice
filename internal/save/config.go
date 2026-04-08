@@ -9,12 +9,12 @@ import (
 // SaveConfig represents the configuration for the save system
 type SaveConfig struct {
 	// General settings
-	Enabled          bool   `json:"enabled"`            // Master toggle for save functionality
-	AutoSaveEnabled  bool   `json:"auto_save_enabled"`  // Enable/disable autosave
-	AutoSaveInterval int    `json:"auto_save_interval"` // Minutes between autosaves
-	MaxSaveSlots     int    `json:"max_save_slots"`     // Maximum number of named save slots
-	SaveDirectory    string `json:"save_directory"`     // Directory for save files
-	CompressSaves    bool   `json:"compress_saves"`     // Compress save files (future feature)
+	Enabled          bool `json:"enabled"`             // Master toggle for save functionality
+	AutoSaveEnabled  bool `json:"auto_save_enabled"`   // Enable/disable autosave
+	AutoSaveInterval int  `json:"auto_save_interval"`  // Minutes between autosaves
+	MaxSaveSlots     int  `json:"max_save_slots"`      // Maximum number of named save slots
+	SaveDirectory    string `json:"save_directory"`    // Directory for save files
+	CompressSaves    bool `json:"compress_saves"`      // Compress save files (future feature)
 
 	// Named slots configuration
 	NamedSlots       []NamedSlotConfig `json:"named_slots"`        // Predefined named slots
@@ -22,11 +22,11 @@ type SaveConfig struct {
 	MaxCustomSlots   int               `json:"max_custom_slots"`   // Maximum custom slots if allowed
 
 	// Slot naming
-	SlotNamePattern   string `json:"slot_name_pattern"`   // Regex pattern for valid slot names
-	AutoGenerateNames bool   `json:"auto_generate_names"` // Auto-generate names for unnamed saves
+	SlotNamePattern   string `json:"slot_name_pattern"`    // Regex pattern for valid slot names
+	AutoGenerateNames bool   `json:"auto_generate_names"`  // Auto-generate names for unnamed saves
 
 	// Display settings
-	ShowSaveTime       bool `json:"show_save_time"`        // Show save time in listings
+	ShowSaveTime       bool `json:"show_save_time"`         // Show save time in listings
 	ShowLocationInList bool `json:"show_location_in_list"` // Show location in save listings
 }
 
