@@ -94,7 +94,6 @@ func (ch *CommandHandler) formatError(chinese, pinyin, english string) error {
 
 // ProcessCommand parses and executes a player command
 func (ch *CommandHandler) ProcessCommand(input string) (string, error) {
-	// Validate and sanitize input
 	result := ch.inputValidator.ValidateAndSanitize(input)
 	if !result.IsValid {
 		return "", ch.formatError(
@@ -106,17 +105,14 @@ func (ch *CommandHandler) ProcessCommand(input string) (string, error) {
 
 	sanitized := result.Sanitized
 
-	// Log player action
 	if ch.gameState.Logger != nil {
 		ch.gameState.Logger.LogPlayerAction("command", map[string]interface{}{
 			"input": sanitized,
 		})
 	}
 
-	// Get command category for special handling
 	category := ch.inputValidator.GetCommandCategory(sanitized)
 
-	// Handle based on category
 	switch category {
 	case "movement":
 		moveResult := ch.inputValidator.ValidateMovementCommand(sanitized)
@@ -247,21 +243,22 @@ func (ch *CommandHandler) executeCommandByType(cmd Command) (string, error) {
 func (ch *CommandHandler) parseCommand(input string) Command {
 	inputLower := strings.ToLower(input)
 
-	// Movement commands (Chinese format)
 	if strings.HasPrefix(input, "往") {
 		if dir, err := models.ParseDirection(input); err == nil {
 			return Command{Type: CmdMove, Args: []string{dir.String()}, RawInput: input}
 		}
 	}
 
-	// Movement commands (English format)
 	if strings.HasPrefix(inputLower, "go ") || strings.HasPrefix(inputLower, "walk ") {
 		if dir, err := models.ParseDirection(input); err == nil {
 			return Command{Type: CmdMove, Args: []string{dir.String()}, RawInput: input}
 		}
 	}
 
-	// Take commands
+	if dir, err := models.ParseDirection(input); err == nil {
+		return Command{Type: CmdMove, Args: []string{dir.String()}, RawInput: input}
+	}
+
 	if strings.HasPrefix(input, "拿") || strings.HasPrefix(input, "取") {
 		itemName := strings.TrimPrefix(input, "拿")
 		itemName = strings.TrimPrefix(itemName, "取")
@@ -272,7 +269,6 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
-	// Take command (English)
 	if strings.HasPrefix(inputLower, "take ") {
 		itemName := strings.TrimPrefix(inputLower, "take ")
 		itemName = strings.TrimSpace(itemName)
@@ -282,32 +278,26 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
-	// Inventory commands
 	if input == "背包" || input == "i" || input == "inventory" {
 		return Command{Type: CmdInventory, RawInput: input}
 	}
 
-	// Status commands
 	if input == "状态" || input == "status" {
 		return Command{Type: CmdStatus, RawInput: input}
 	}
 
-	// Help commands
 	if input == "帮助" || input == "help" {
 		return Command{Type: CmdHelp, RawInput: input}
 	}
 
-	// Quit commands
 	if input == "退出" || input == "quit" || input == "exit" {
 		return Command{Type: CmdQuit, RawInput: input}
 	}
 
-	// Look command
 	if input == "看" || input == "查看" || input == "look" {
 		return Command{Type: CmdLook, RawInput: input}
 	}
 
-	// Save command
 	if strings.HasPrefix(inputLower, "save ") || strings.HasPrefix(input, "保存 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -317,7 +307,6 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdSave, Args: []string{"autosave"}, RawInput: input}
 	}
 
-	// Load command
 	if strings.HasPrefix(inputLower, "load ") || strings.HasPrefix(input, "加载 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -327,12 +316,10 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
-	// List saves command
 	if input == "saves" || input == "存档列表" {
 		return Command{Type: CmdListSaves, RawInput: input}
 	}
 
-	// Delete save command
 	if strings.HasPrefix(inputLower, "delete ") || strings.HasPrefix(input, "删除 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -342,7 +329,6 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
-	// Equip command
 	if strings.HasPrefix(inputLower, "equip ") || strings.HasPrefix(input, "装备 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -355,7 +341,6 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
-	// Unequip command
 	if strings.HasPrefix(inputLower, "unequip ") || strings.HasPrefix(input, "卸下 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -368,7 +353,6 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
-	// Use command
 	if strings.HasPrefix(inputLower, "use ") || strings.HasPrefix(input, "使用 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -378,7 +362,6 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
-	// Drop command
 	if strings.HasPrefix(inputLower, "drop ") || strings.HasPrefix(input, "丢弃 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -413,8 +396,22 @@ func (ch *CommandHandler) executeMove(cmd Command) (string, error) {
 		dir = models.East
 	case "west":
 		dir = models.West
+	case "northwest":
+		dir = models.Northwest
+	case "northeast":
+		dir = models.Northeast
+	case "southwest":
+		dir = models.Southwest
+	case "southeast":
+		dir = models.Southeast
+	case "up":
+		dir = models.Up
+	case "down":
+		dir = models.Down
 	case "out":
 		dir = models.Out
+	case "in":
+		dir = models.In
 	default:
 		return "", ch.formatError(
 			"未知方向: "+direction,
@@ -507,8 +504,8 @@ func (ch *CommandHandler) executeHelp() (string, error) {
 ║                      游戏命令帮助                         ║
 ╠══════════════════════════════════════════════════════════╣
 ║ 移动:                                                      ║
-║   中文: 往北走, 往南走, 往东走, 往西走, 往出走            ║
-║   英文: go north, go south, go east, go west, go out     ║
+║   中文: 北, 往北, 往北走, 西北, 往西北走, 往西北去        ║
+║   英文: go north, go northwest, walk south, etc.         ║
 ╠══════════════════════════════════════════════════════════╣
 ║ 物品操作:                                                  ║
 ║   拿取: 拿<物品名> 或 take <item>                         ║
@@ -538,8 +535,8 @@ func (ch *CommandHandler) executeHelp() (string, error) {
 ║                      GAME COMMANDS                         ║
 ╠══════════════════════════════════════════════════════════╣
 ║ Movement:                                                   ║
-║   Chinese: 往北走, 往南走, 往东走, 往西走, 往出走         ║
-║   English: go north, go south, go east, go west, go out   ║
+║   Chinese: 北, 往北, 往北走, 西北, 往西北走               ║
+║   English: go north, go northwest, walk south, etc.       ║
 ╠══════════════════════════════════════════════════════════╣
 ║ Items:                                                      ║
 ║   Take: 拿<item> or take <item>                           ║
@@ -653,12 +650,17 @@ func (ch *CommandHandler) executeLoad(cmd Command) (string, error) {
 		)
 	}
 
+	// Restore game state - saveData.Player is already *models.Player
 	ch.gameState.Player = saveData.Player
 	ch.gameState.DefeatedEnemies = saveData.DefeatedEnemies
 	ch.gameState.TakenItems = saveData.TakenItems
 	ch.gameState.PendingDrops = saveData.PendingDrops
 	ch.gameState.GameOver = false
 	ch.gameState.GameWon = false
+
+	// Reset room tracking
+	ch.gameState.CurrentRoomID = nil
+	ch.gameState.LastLocationID = ""
 
 	result := ch.formatOutput(
 		fmt.Sprintf("已加载存档: %s", slotName),
@@ -749,9 +751,9 @@ func (ch *CommandHandler) executeDeleteSave(cmd Command) (string, error) {
 	), nil
 }
 
-// executeLook redisplays the current room
+// executeLook handles look command
 func (ch *CommandHandler) executeLook() (string, error) {
-	return ch.gameState.GetCurrentRoomDescription(), nil
+	return ch.gameState.GetLookDescription(), nil
 }
 
 // executeEquip handles equipment commands

@@ -24,7 +24,7 @@ type ValidationResult struct {
 	ErrorMsgEnglish string
 }
 
-// NewInputValidator creates a new input validator with default settings
+// In NewInputValidator(), update the regex patterns:
 func NewInputValidator() *InputValidator {
 	return &InputValidator{
 		maxInputLength: 200,
@@ -39,8 +39,9 @@ func NewInputValidator() *InputValidator {
 			"load": true, "saves": true, "equip": true, "unequip": true,
 			"use": true, "drop": true, "take": true,
 		},
-		chineseDirectionPattern: regexp.MustCompile(`^往[北南东西出][走去]$`),
-		englishDirectionPattern: regexp.MustCompile(`^(go|walk)\s+(north|south|east|west|out)$`),
+		// Updated to support 1-2 character directions
+		chineseDirectionPattern: regexp.MustCompile(`^往?[北南东西西北东北西南东南出][走去]?$`),
+		englishDirectionPattern: regexp.MustCompile(`^(go|walk)\s+(north|south|east|west|northwest|northeast|southwest|southeast|out)$`),
 	}
 }
 
@@ -89,33 +90,38 @@ func (iv *InputValidator) ValidateAndSanitize(input string) ValidationResult {
 	}
 }
 
-// ValidateMovementCommand validates movement commands specifically
 func (iv *InputValidator) ValidateMovementCommand(input string) ValidationResult {
 	sanitized := strings.TrimSpace(input)
+	sanitizedLower := strings.ToLower(sanitized)
 
-	// Check Chinese format
-	if strings.HasPrefix(sanitized, "往") {
-		if iv.chineseDirectionPattern.MatchString(sanitized) {
+	// Check Chinese format (supports: 北, 往北, 往北走, 往北去, 西北, 往西北, 往西北走, etc.)
+	if iv.chineseDirectionPattern.MatchString(sanitized) {
+		return ValidationResult{
+			IsValid:   true,
+			Sanitized: sanitized,
+		}
+	}
+
+	// Check if it's a valid Chinese direction without the pattern (for raw directions like "北")
+	// Extract direction by removing optional prefix/suffix
+	cleaned := sanitized
+	cleaned = strings.TrimPrefix(cleaned, "往")
+	cleaned = strings.TrimSuffix(cleaned, "走")
+	cleaned = strings.TrimSuffix(cleaned, "去")
+
+	validDirections := []string{"北", "南", "东", "西", "西北", "东北", "西南", "东南", "出"}
+	for _, dir := range validDirections {
+		if cleaned == dir {
 			return ValidationResult{
 				IsValid:   true,
-				Sanitized: sanitized,
+				Sanitized: "往" + dir + "走", // Normalize format
 			}
-		}
-
-		// Provide specific error for malformed Chinese movement
-		return ValidationResult{
-			IsValid:         false,
-			Sanitized:       sanitized,
-			ErrorMsg:        "格式错误。请使用: 往北走, 往南走, 往东走, 往西走, 往出走",
-			ErrorMsgPinyin:  "Géshì cuòwù. Qǐng shǐyòng: wǎng běi zǒu, wǎng nán zǒu, wǎng dōng zǒu, wǎng xī zǒu, wǎng chū zǒu",
-			ErrorMsgEnglish: "Invalid format. Please use: go north, go south, go east, go west, go out",
 		}
 	}
 
 	// Check English format
-	lowerInput := strings.ToLower(sanitized)
-	if strings.HasPrefix(lowerInput, "go ") || strings.HasPrefix(lowerInput, "walk ") {
-		if iv.englishDirectionPattern.MatchString(lowerInput) {
+	if strings.HasPrefix(sanitizedLower, "go ") || strings.HasPrefix(sanitizedLower, "walk ") {
+		if iv.englishDirectionPattern.MatchString(sanitizedLower) {
 			return ValidationResult{
 				IsValid:   true,
 				Sanitized: sanitized,
@@ -125,9 +131,24 @@ func (iv *InputValidator) ValidateMovementCommand(input string) ValidationResult
 		return ValidationResult{
 			IsValid:         false,
 			Sanitized:       sanitized,
-			ErrorMsg:        "Invalid direction. Please use: go north, go south, go east, go west, go out",
-			ErrorMsgPinyin:  "Wúxiào fāngxiàng. Qǐng shǐyòng: go north, go south, go east, go west, go out",
-			ErrorMsgEnglish: "Invalid direction. Please use: go north, go south, go east, go west, go out",
+			ErrorMsg:        "Invalid direction. Please use: go north/south/east/west/northwest/northeast/southwest/southeast/out",
+			ErrorMsgPinyin:  "Wu xiao fang xiang. Qing shi yong: go north/south/east/west/northwest/northeast/southwest/southeast/out",
+			ErrorMsgEnglish: "Invalid direction. Please use: go north/south/east/west/northwest/northeast/southwest/southeast/out",
+		}
+	}
+
+	// Check if it looks like a direction but missing proper format
+	cleanedLower := strings.ToLower(cleaned)
+	englishDirections := []string{"north", "south", "east", "west", "northwest", "northeast", "southwest", "southeast", "out"}
+	for _, dir := range englishDirections {
+		if cleanedLower == dir {
+			return ValidationResult{
+				IsValid:         false,
+				Sanitized:       sanitized,
+				ErrorMsg:        "请输入 'go " + dir + "' 或 '往" + getChineseDirection(dir) + "走'",
+				ErrorMsgPinyin:  "Qing shu ru 'go " + dir + "' huo 'wang " + getChineseDirection(dir) + " zou'",
+				ErrorMsgEnglish: "Please use 'go " + dir + "' or '往" + getChineseDirection(dir) + "走'",
+			}
 		}
 	}
 
@@ -135,8 +156,34 @@ func (iv *InputValidator) ValidateMovementCommand(input string) ValidationResult
 		IsValid:         false,
 		Sanitized:       sanitized,
 		ErrorMsg:        "未知命令",
-		ErrorMsgPinyin:  "Wèizhī mìnglìng",
+		ErrorMsgPinyin:  "Wei zhi ming ling",
 		ErrorMsgEnglish: "Unknown command",
+	}
+}
+
+// Helper function to get Chinese direction from English
+func getChineseDirection(english string) string {
+	switch english {
+	case "north":
+		return "北"
+	case "south":
+		return "南"
+	case "east":
+		return "东"
+	case "west":
+		return "西"
+	case "northwest":
+		return "西北"
+	case "northeast":
+		return "东北"
+	case "southwest":
+		return "西南"
+	case "southeast":
+		return "东南"
+	case "out":
+		return "出"
+	default:
+		return english
 	}
 }
 
@@ -277,7 +324,6 @@ func (iv *InputValidator) IsSimpleCommand(input string) bool {
 	return iv.allowedCommands[sanitized]
 }
 
-// GetCommandCategory returns the category of a command
 func (iv *InputValidator) GetCommandCategory(input string) string {
 	sanitized := strings.TrimSpace(strings.ToLower(input))
 
@@ -295,16 +341,30 @@ func (iv *InputValidator) GetCommandCategory(input string) string {
 	case "saves", "存档列表":
 		return "list_saves"
 	default:
-		// Check for movement
-		if strings.HasPrefix(sanitized, "往") || strings.HasPrefix(sanitized, "go ") || strings.HasPrefix(sanitized, "walk ") {
+		// Check for movement (Chinese)
+		cleaned := strings.TrimPrefix(sanitized, "往")
+		cleaned = strings.TrimSuffix(cleaned, "走")
+		cleaned = strings.TrimSuffix(cleaned, "去")
+
+		validDirections := []string{"北", "南", "东", "西", "西北", "东北", "西南", "东南", "出"}
+		for _, dir := range validDirections {
+			if strings.Contains(sanitized, dir) {
+				return "movement"
+			}
+		}
+
+		// Check for movement (English)
+		if strings.HasPrefix(sanitized, "go ") || strings.HasPrefix(sanitized, "walk ") {
 			return "movement"
 		}
+
 		// Check for item commands
 		for prefix := range map[string]bool{"拿": true, "取": true, "take": true, "使用": true, "use": true, "装备": true, "equip": true, "丢弃": true, "drop": true} {
 			if strings.HasPrefix(sanitized, prefix) {
 				return "item"
 			}
 		}
+
 		// Check for save commands
 		if strings.HasPrefix(sanitized, "save ") || strings.HasPrefix(sanitized, "保存 ") ||
 			strings.HasPrefix(sanitized, "load ") || strings.HasPrefix(sanitized, "加载 ") ||

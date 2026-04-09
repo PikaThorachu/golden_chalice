@@ -22,11 +22,15 @@ type GameState struct {
 
 	// Dynamic game state
 	Player          *models.Player
-	DefeatedEnemies map[string]bool
+	DefeatedEnemies map[string]bool // Make sure this line exists
 	TakenItems      map[string]bool
 	PendingDrops    map[string][]string
 	GameOver        bool
 	GameWon         bool
+
+	// Room tracking
+	CurrentRoomID  *string `json:"current_room_id"`  // Track current room (nil if not in a room)
+	LastLocationID string  `json:"last_location_id"` // Track last location for room entry detection	DefeatedEnemies map[string]bool
 
 	// Formatter and Logger
 	Formatter *DisplayFormatter
@@ -55,6 +59,8 @@ func NewGameState(
 		GameWon:         false,
 		Formatter:       NewDisplayFormatter(config),
 		Logger:          logger,
+		CurrentRoomID:   nil,
+		LastLocationID:  "",
 	}
 }
 
@@ -78,12 +84,13 @@ func (gs *GameState) SafeMove(direction models.Direction) error {
 		gs.Logger.LogMovement(gs.Player.CurrentLocationID, "", direction.String())
 		return errors.Wrap(errors.ErrEnemyBlocks, errors.ErrTypeMovement,
 			fmt.Sprintf("有%s挡住了去路", gs.GetDisplayName(enemy.Name)),
-			fmt.Sprintf("Yǒu %s dǎngzhùle qùlù", enemy.Name.Pinyin),
+			fmt.Sprintf("You %s dang zhu le qu lu", enemy.Name.Pinyin),
 			fmt.Sprintf("%s blocks your path", enemy.Name.English))
 	}
 
 	// Log movement attempt
-	gs.Logger.LogMovement(gs.Player.CurrentLocationID, "unknown", direction.String())
+	oldLocationID := gs.Player.CurrentLocationID
+	gs.Logger.LogMovement(oldLocationID, "unknown", direction.String())
 
 	// Attempt movement
 	destID, err := gs.World.GetDestination(
@@ -92,7 +99,6 @@ func (gs *GameState) SafeMove(direction models.Direction) error {
 		gs.Player.Inventory,
 	)
 	if err != nil {
-		// Check if it's a locked door error
 		if strings.Contains(err.Error(), "需要") {
 			gs.Logger.LogError(errors.ErrExitLocked, map[string]interface{}{"direction": direction.String()})
 			return errors.Wrap(errors.ErrExitLocked, errors.ErrTypeMovement, err.Error(), err.Error(), err.Error())
@@ -103,7 +109,12 @@ func (gs *GameState) SafeMove(direction models.Direction) error {
 
 	// Move player
 	gs.Player.CurrentLocationID = destID
-	gs.Logger.LogMovement(gs.Player.CurrentLocationID, destID, direction.String())
+	gs.LastLocationID = oldLocationID
+
+	// Check if we entered a new room
+	gs.updateCurrentRoom()
+
+	gs.Logger.LogMovement(oldLocationID, destID, direction.String())
 	return nil
 }
 
@@ -480,40 +491,46 @@ func (gs *GameState) CheckLossCondition() bool {
 	return false
 }
 
-// GetCurrentRoomDescription returns formatted current room description
+// GetCurrentRoomDescription returns the room description if entering a new room
 func (gs *GameState) GetCurrentRoomDescription() string {
-	room, err := gs.GetCurrentRoom()
+	// Check if we just entered a new room
+	currentRoom, err := gs.World.GetCurrentRoom(gs.Player.CurrentLocationID)
 	if err != nil {
-		return "无法获取房间描述"
+		return gs.getLocationDescription()
 	}
 
+	var currentRoomID *string
+	if currentRoom != nil {
+		currentRoomID = &currentRoom.ID
+	}
+
+	// If entering a new room, show room description
+	if (gs.CurrentRoomID == nil && currentRoomID != nil) ||
+		(gs.CurrentRoomID != nil && currentRoomID != nil && *gs.CurrentRoomID != *currentRoomID) ||
+		gs.LastLocationID == "" { // First entry
+		gs.CurrentRoomID = currentRoomID
+		if currentRoom != nil {
+			return gs.getRoomEntryDescription(currentRoom)
+		}
+	}
+
+	// Otherwise just show location description
+	return gs.getLocationDescription()
+}
+
+// getRoomEntryDescription returns the room description when first entering
+func (gs *GameState) getRoomEntryDescription(room *models.Room) string {
 	var result strings.Builder
 
+	// Room name with decoration
 	result.WriteString(gs.Formatter.FormatRoomTitle(room.Name))
+
+	// Room description
 	result.WriteString(gs.Formatter.FormatDescription(room.Description))
 	result.WriteString("\n\n")
 
-	biome, err := gs.GetCurrentBiome()
-	if err == nil && (biome.AmbientDescription.Chinese != "" || biome.AmbientDescription.English != "") {
-		result.WriteString(gs.Formatter.FormatDescription(biome.AmbientDescription))
-		result.WriteString("\n\n")
-	}
-
-	items := gs.GetItemsAtCurrentLocation()
-	if len(items) > 0 {
-		itemNames := make([]string, len(items))
-		for i, itemID := range items {
-			if item, exists := gs.Items[itemID]; exists {
-				itemNames[i] = gs.GetDisplayName(item.Name)
-			}
-		}
-		result.WriteString(gs.Formatter.FormatItemList(itemNames))
-		result.WriteString("\n\n")
-	}
-
-	exits := gs.GetAvailableExits()
-	result.WriteString(gs.Formatter.FormatExitList(exits))
-	result.WriteString("\n")
+	// Then show current location details
+	result.WriteString(gs.getLocationDescription())
 
 	return result.String()
 }
@@ -683,13 +700,15 @@ func (gs *GameState) NewGame(playerName string) {
 		playerName,
 		gs.Config.GetStartingLocationID(),
 		gs.Config.GetStartingHealth(),
-		gs.Config.GetStartingInventorySize(), // Added missing parameter
+		gs.Config.GetStartingInventorySize(),
 	)
 	gs.DefeatedEnemies = make(map[string]bool)
 	gs.TakenItems = make(map[string]bool)
 	gs.PendingDrops = make(map[string][]string)
 	gs.GameOver = false
 	gs.GameWon = false
+	gs.CurrentRoomID = nil
+	gs.LastLocationID = ""
 
 	if gs.Logger != nil {
 		gs.Logger.LogGameEvent("new_game", map[string]interface{}{
@@ -719,4 +738,97 @@ func (gs *GameState) AttemptFlee() (bool, string) {
 		"Tao pao shi bai!",
 		"Failed to flee!",
 	)
+}
+
+// GetLookDescription returns the full look description including room description
+func (gs *GameState) GetLookDescription() string {
+	var result strings.Builder
+
+	// Show room description if in a room
+	currentRoom, err := gs.World.GetCurrentRoom(gs.Player.CurrentLocationID)
+	if err == nil && currentRoom != nil {
+		result.WriteString(gs.Formatter.FormatRoomTitle(currentRoom.Name))
+		result.WriteString(gs.Formatter.FormatDescription(currentRoom.Description))
+		result.WriteString("\n\n")
+	}
+
+	// Show current location info
+	result.WriteString(gs.getLocationDescription())
+
+	return result.String()
+}
+
+// getLocationDescription returns just the location description (no room header)
+func (gs *GameState) getLocationDescription() string {
+	location, err := gs.GetCurrentRoom()
+	if err != nil {
+		return "无法获取位置描述"
+	}
+
+	var result strings.Builder
+
+	// Location name (only show if not in a room or as subheader)
+	if gs.CurrentRoomID == nil {
+		result.WriteString(gs.Formatter.FormatRoomTitle(location.Name))
+	} else {
+		result.WriteString(gs.Formatter.FormatSubHeader(location.Name))
+	}
+
+	// Note: Location descriptions have been removed - rooms provide the atmospheric description
+	// Only show biome ambient description and items/exits
+
+	// Biome ambient description
+	biome, err := gs.GetCurrentBiome()
+	if err == nil && (biome.AmbientDescription.Chinese != "" || biome.AmbientDescription.English != "") {
+		result.WriteString(gs.Formatter.FormatDescription(biome.AmbientDescription))
+		result.WriteString("\n\n")
+	}
+
+	// Items in location
+	items := gs.GetItemsAtCurrentLocation()
+	if len(items) > 0 {
+		itemNames := make([]string, len(items))
+		for i, itemID := range items {
+			if item, exists := gs.Items[itemID]; exists {
+				itemNames[i] = gs.GetDisplayName(item.Name)
+			}
+		}
+		result.WriteString(gs.Formatter.FormatItemList(itemNames))
+		result.WriteString("\n\n")
+	}
+
+	// Available exits
+	exits := gs.GetAvailableExits()
+	result.WriteString(gs.Formatter.FormatExitList(exits))
+	result.WriteString("\n")
+
+	return result.String()
+}
+
+// updateCurrentRoom checks if the player has entered a new room and updates state
+func (gs *GameState) updateCurrentRoom() {
+	newRoom, err := gs.World.GetCurrentRoom(gs.Player.CurrentLocationID)
+	if err != nil {
+		return
+	}
+
+	oldRoomID := gs.CurrentRoomID
+	var newRoomID *string
+	if newRoom != nil {
+		newRoomID = &newRoom.ID
+	}
+
+	gs.CurrentRoomID = newRoomID
+
+	// Log room entry if changed
+	if gs.Logger != nil && newRoom != nil &&
+		((oldRoomID == nil && newRoomID != nil) ||
+			(oldRoomID != nil && newRoomID != nil && *oldRoomID != *newRoomID)) {
+		gs.Logger.LogGameEvent("enter_room", map[string]interface{}{
+			"room_id":       newRoom.ID,
+			"room_name":     newRoom.Name.Chinese,
+			"from_location": gs.LastLocationID,
+			"to_location":   gs.Player.CurrentLocationID,
+		})
+	}
 }

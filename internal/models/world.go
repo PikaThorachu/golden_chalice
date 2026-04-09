@@ -14,6 +14,10 @@ const (
 	South
 	East
 	West
+	Northwest
+	Northeast
+	Southwest
+	Southeast
 	Up
 	Down
 	Out
@@ -27,6 +31,10 @@ func (d Direction) String() string {
 		"south",
 		"east",
 		"west",
+		"northwest",
+		"northeast",
+		"southwest",
+		"southeast",
 		"up",
 		"down",
 		"out",
@@ -60,6 +68,14 @@ func (d *Direction) UnmarshalJSON(data []byte) error {
 		*d = East
 	case "west":
 		*d = West
+	case "northwest":
+		*d = Northwest
+	case "northeast":
+		*d = Northeast
+	case "southwest":
+		*d = Southwest
+	case "southeast":
+		*d = Southeast
 	case "up":
 		*d = Up
 	case "down":
@@ -73,8 +89,6 @@ func (d *Direction) UnmarshalJSON(data []byte) error {
 	}
 	return nil
 }
-
-// ... rest of your world.go file continues ...
 
 // Text holds multilingual text for display
 type Text struct {
@@ -90,24 +104,32 @@ type Exit struct {
 	RequiredItem  *string   `json:"requires_item_id"` // nil means no item required
 }
 
-// Location represents a place in the game world
-type Location struct {
-	ID          string   `json:"id"`
-	BiomeID     string   `json:"biome_id"`
-	Name        Text     `json:"name"`
-	Description Text     `json:"description"`
-	Exits       []Exit   `json:"exits"`
-	EnemyIDs    []string `json:"enemy_ids"`
-	ItemIDs     []string `json:"item_ids"`
+// Room represents a larger area containing multiple locations
+type Room struct {
+	ID          string `json:"id"`
+	Name        Text   `json:"name"`
+	Description Text   `json:"description"`
 }
 
-// World contains all locations in the game
+// Location represents a place within a Room
+type Location struct {
+	ID       string   `json:"id"`
+	RoomID   *string  `json:"room_id"` // Optional reference to a Room (nil if no room)
+	BiomeID  string   `json:"biome_id"`
+	Name     Text     `json:"name"`
+	Exits    []Exit   `json:"exits"`
+	EnemyIDs []string `json:"enemy_ids"`
+	ItemIDs  []string `json:"item_ids"`
+}
+
+// World contains all locations and rooms
 type World struct {
 	Locations map[string]Location `json:"locations"`
+	Rooms     map[string]Room     `json:"rooms"`
 }
 
 // ParseDirection converts user input to a Direction enum
-// Supports Chinese format: "往<方向>走" or "往<方向>去"
+// Supports Chinese format: "往<方向>走" or "往<方向>去" (方向 can be 1-2 characters)
 // Supports English format: "Go <direction>" or "Walk <direction>"
 func ParseDirection(input string) (Direction, error) {
 	// Trim whitespace
@@ -127,47 +149,101 @@ func ParseDirection(input string) (Direction, error) {
 		return parseEnglishDirection(lowerInput)
 	}
 
+	// Also try to parse as raw Chinese direction (without 往 prefix)
+	// This handles inputs like "北", "西北", etc.
+	dir, err := parseRawChineseDirection(trimmed)
+	if err == nil {
+		return dir, nil
+	}
+
 	// Invalid format
 	return North, fmt.Errorf("请输入'往<方向>走'或'往<方向>去'的格式")
 }
 
-// parseChineseDirection handles "往<方向>走" or "往<方向>去" format
-func parseChineseDirection(input string) (Direction, error) {
-	// Must be exactly 3 characters: 往 + direction + 走/去
-	runes := []rune(input)
-	if len(runes) != 3 {
-		return North, fmt.Errorf("请输入'往<方向>走'或'往<方向>去'的格式")
+// parseRawChineseDirection handles Chinese direction without prefix
+func parseRawChineseDirection(input string) (Direction, error) {
+	// Remove any trailing 走 or 去
+	cleaned := strings.TrimSuffix(input, "走")
+	cleaned = strings.TrimSuffix(cleaned, "去")
+	cleaned = strings.TrimSpace(cleaned)
+
+	if cleaned == "" {
+		return North, fmt.Errorf("请输入方向")
 	}
 
-	// First character must be '往'
-	if runes[0] != '往' {
-		return North, fmt.Errorf("请输入'往<方向>走'或'往<方向>去'的格式")
-	}
-
-	// Last character must be '走' or '去'
-	lastChar := runes[2]
-	if lastChar != '走' && lastChar != '去' {
-		return North, fmt.Errorf("请输入'往<方向>走'或'往<方向>去'的格式")
-	}
-
-	// Middle character is the direction
-	dirChar := runes[1]
-
-	// Map Chinese direction characters to Direction enum
-	switch dirChar {
-	case '北':
+	// Handle single-character directions
+	switch cleaned {
+	case "北":
 		return North, nil
-	case '南':
+	case "南":
 		return South, nil
-	case '东':
+	case "东":
 		return East, nil
-	case '西':
+	case "西":
 		return West, nil
-	case '出':
+	case "出":
 		return Out, nil
-	default:
-		return North, fmt.Errorf("未知的方向: %c", dirChar)
 	}
+
+	// Handle two-character diagonal directions
+	switch cleaned {
+	case "西北":
+		return Northwest, nil
+	case "东北":
+		return Northeast, nil
+	case "西南":
+		return Southwest, nil
+	case "东南":
+		return Southeast, nil
+	}
+
+	return North, fmt.Errorf("未知的方向: %s", cleaned)
+}
+
+// parseChineseDirection handles Chinese direction formats
+// Supports: 北, 南, 东, 西, 西北, 东北, 西南, 东南, 出
+// With optional prefix: 往北走, 往北去, 往西北走, 往西北去
+func parseChineseDirection(input string) (Direction, error) {
+	// Remove prefix "往" and suffixes "走"/"去" in any combination
+	// Using TrimPrefix/TrimSuffix is safe - they return original string if not found
+	trimmed := strings.TrimPrefix(input, "往")
+	trimmed = strings.TrimSuffix(trimmed, "走")
+	trimmed = strings.TrimSuffix(trimmed, "去")
+
+	// Trim any remaining spaces
+	trimmed = strings.TrimSpace(trimmed)
+
+	if trimmed == "" {
+		return North, fmt.Errorf("请输入方向")
+	}
+
+	// Handle single-character directions
+	switch trimmed {
+	case "北":
+		return North, nil
+	case "南":
+		return South, nil
+	case "东":
+		return East, nil
+	case "西":
+		return West, nil
+	case "出":
+		return Out, nil
+	}
+
+	// Handle two-character diagonal directions
+	switch trimmed {
+	case "西北":
+		return Northwest, nil
+	case "东北":
+		return Northeast, nil
+	case "西南":
+		return Southwest, nil
+	case "东南":
+		return Southeast, nil
+	}
+
+	return North, fmt.Errorf("未知的方向: %s", trimmed)
 }
 
 // parseEnglishDirection handles "Go <direction>" or "Walk <direction>" format
@@ -197,6 +273,14 @@ func parseEnglishDirection(input string) (Direction, error) {
 		return East, nil
 	case "west":
 		return West, nil
+	case "northwest":
+		return Northwest, nil
+	case "northeast":
+		return Northeast, nil
+	case "southwest":
+		return Southwest, nil
+	case "southeast":
+		return Southeast, nil
 	case "out":
 		return Out, nil
 	default:
@@ -211,6 +295,33 @@ func (w *World) GetLocation(id string) (Location, error) {
 		return Location{}, fmt.Errorf("location '%s' not found", id)
 	}
 	return location, nil
+}
+
+// GetRoom retrieves a room by ID
+func (w *World) GetRoom(id string) (Room, error) {
+	room, exists := w.Rooms[id]
+	if !exists {
+		return Room{}, fmt.Errorf("room '%s' not found", id)
+	}
+	return room, nil
+}
+
+// GetCurrentRoom returns the room the player is currently in (if any)
+func (w *World) GetCurrentRoom(locationID string) (*Room, error) {
+	location, err := w.GetLocation(locationID)
+	if err != nil {
+		return nil, err
+	}
+
+	if location.RoomID == nil {
+		return nil, nil // No room associated
+	}
+
+	room, err := w.GetRoom(*location.RoomID)
+	if err != nil {
+		return nil, err
+	}
+	return &room, nil
 }
 
 // GetExit finds an exit in the specified location by direction

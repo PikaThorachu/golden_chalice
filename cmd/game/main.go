@@ -384,6 +384,7 @@ func loadGame(gs *game.GameState, saveMgr *save.SaveManager, reader *bufio.Reade
 		fmt.Sprintf("Zheng zai jia zai cun dang %s...", selectedSave.DisplayName),
 		fmt.Sprintf("Loading save %s...", selectedSave.DisplayName),
 	)
+
 	saveData, err := saveMgr.LoadFromFile(selectedSave.SlotName)
 	if err != nil {
 		printTrilingual(
@@ -394,13 +395,17 @@ func loadGame(gs *game.GameState, saveMgr *save.SaveManager, reader *bufio.Reade
 		return false
 	}
 
-	// Restore game state
+	// Restore game state - saveData.Player is already *models.Player
 	gs.Player = saveData.Player
 	gs.DefeatedEnemies = saveData.DefeatedEnemies
 	gs.TakenItems = saveData.TakenItems
 	gs.PendingDrops = saveData.PendingDrops
 	gs.GameOver = false
 	gs.GameWon = false
+
+	// Reset room tracking
+	gs.CurrentRoomID = nil
+	gs.LastLocationID = ""
 
 	printTrilingual(
 		fmt.Sprintf("欢迎回来, %s!", gs.Player.Name),
@@ -508,10 +513,8 @@ func runCombat(gs *game.GameState, enemy *models.Enemy, reader *bufio.Reader) st
 		action, _ := reader.ReadString('\n')
 		action = strings.TrimSpace(strings.ToLower(action))
 
-		// Use tagged switch instead of if-else chain
 		switch action {
 		case "攻", "攻击", "a":
-			// Player attacks
 			victory, defeat, msg := gs.ProcessCombatTurn(enemy, true)
 			fmt.Println(msg)
 
@@ -527,7 +530,6 @@ func runCombat(gs *game.GameState, enemy *models.Enemy, reader *bufio.Reader) st
 				return "defeated"
 			}
 
-			// Enemy counterattacks
 			victory, defeat, msg = gs.ProcessCombatTurn(enemy, false)
 			fmt.Println(msg)
 
@@ -536,7 +538,6 @@ func runCombat(gs *game.GameState, enemy *models.Enemy, reader *bufio.Reader) st
 			}
 
 		case "跑", "逃跑", "r":
-			// Flee logic
 			success, msg := gs.AttemptFlee()
 			fmt.Println(msg)
 			if success {
@@ -580,7 +581,6 @@ func printMainMenu() {
 // printTrilingual prints a message in Chinese, Pinyin, and English
 func printTrilingual(chinese, pinyin, english string) {
 	if displayFormatter != nil {
-		// Use the display formatter if available
 		text := models.Text{
 			Chinese: chinese,
 			Pinyin:  pinyin,
@@ -588,7 +588,6 @@ func printTrilingual(chinese, pinyin, english string) {
 		}
 		fmt.Println(displayFormatter.FormatText(text))
 	} else {
-		// Fallback to Chinese only if formatter not available
 		fmt.Println(chinese)
 	}
 }

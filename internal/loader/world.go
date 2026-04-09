@@ -23,6 +23,11 @@ func LoadWorld(filePath string) (*models.World, error) {
 		return nil, fmt.Errorf("failed to parse world.json: %w", err)
 	}
 
+	// Initialize empty rooms map if nil
+	if world.Rooms == nil {
+		world.Rooms = make(map[string]models.Room)
+	}
+
 	return &world, nil
 }
 
@@ -56,11 +61,29 @@ func validateWorld(
 ) error {
 	var errors []string
 
+	// Validate rooms first
+	for id, room := range world.Rooms {
+		if room.ID != id {
+			errors = append(errors, fmt.Sprintf("room map key '%s' does not match room.ID '%s'", id, room.ID))
+		}
+		// Room names should have content
+		if room.Name.Chinese == "" && room.Name.English == "" {
+			errors = append(errors, fmt.Sprintf("room '%s' has empty name", id))
+		}
+	}
+
 	// Check each location
 	for id, location := range world.Locations {
 		// Check location ID matches map key
 		if location.ID != id {
 			errors = append(errors, fmt.Sprintf("location map key '%s' does not match location.ID '%s'", id, location.ID))
+		}
+
+		// Check room exists if referenced
+		if location.RoomID != nil {
+			if _, exists := world.Rooms[*location.RoomID]; !exists {
+				errors = append(errors, fmt.Sprintf("location '%s' references unknown room '%s'", id, *location.RoomID))
+			}
 		}
 
 		// Check biome exists
@@ -101,7 +124,6 @@ func validateWorld(
 	// Check bidirectional exits (warnings only, not fatal)
 	checkBidirectionalExits(world)
 
-	// If there were errors, return them all
 	if len(errors) > 0 {
 		return fmt.Errorf("found %d validation errors:\n%s", len(errors), strings.Join(errors, "\n"))
 	}

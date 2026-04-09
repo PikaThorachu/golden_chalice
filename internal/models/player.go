@@ -6,17 +6,17 @@ import (
 
 // Player represents the game character
 type Player struct {
-	Name               string   `json:"name"`                 // Character name
-	Health             int      `json:"health"`               // Current health points
-	MaxHealth          int      `json:"max_health"`           // Maximum health points
-	CurrentLocationID  string   `json:"current_location_id"`  // Current room/location ID
-	Inventory          []string `json:"inventory"`            // Slice of item IDs
-	InventorySize      int      `json:"inventory_size"`       // Current inventory capacity
-	EquippedWeaponID   *string  `json:"equipped_weapon_id"`   // Currently equipped weapon (nil if none)
-	EquippedArmorID    *string  `json:"equipped_armor_id"`    // Currently equipped armor (nil if none)
-	EquippedBackpackID *string  `json:"equipped_backpack_id"` // Equipped backpack that increases capacity
-	ExperiencePoints   int      `json:"experience_points"`    // For future leveling system
-	Level              int      `json:"level"`                // Current level
+	Name               string   `json:"name"`
+	Health             int      `json:"health"`
+	MaxHealth          int      `json:"max_health"`
+	CurrentLocationID  string   `json:"current_location_id"`
+	Inventory          []string `json:"inventory"`
+	InventorySize      int      `json:"inventory_size"`
+	EquippedWeaponID   *string  `json:"equipped_weapon_id"`
+	EquippedArmorID    *string  `json:"equipped_armor_id"`
+	EquippedBackpackID *string  `json:"equipped_backpack_id"`
+	ExperiencePoints   int      `json:"experience_points"`
+	Level              int      `json:"level"`
 }
 
 // NewPlayer creates a new player with default starting values
