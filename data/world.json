@@ -1,24 +1,24 @@
 {
   "rooms": {
-    "entrance_complex": {
-      "id": "entrance_complex",
+    "entrance_chamber": {
+      "id": "entrance_chamber",
       "name": {
-        "chinese": "入口 Complex",
-        "pinyin": "Rùkǒu Complex",
-        "english": "Entrance Complex"
+        "chinese": "入口厅",
+        "pinyin": "Rùkǒu Tīng",
+        "english": "Entrance Chamber"
       },
       "description": {
-        "chinese": "错综复杂的入口通道网络展现在你面前。石壁上刻着古老的符文，微弱的光芒从裂缝中透出。",
-        "pinyin": "Cuòzōng fùzá de rùkǒu tōngdào wǎngluò zhǎnxiàn zài nǐ miànqián. Shíbì shàng kèzhe gǔlǎo de fúwén, wēiruò de guāngmáng cóng lièfèng zhōng tòu chū.",
-        "english": "A complex network of entrance passages spreads before you. Ancient runes are carved into the stone walls, and faint light filters through cracks."
+        "chinese": "一条狭窄的入口通道呈现在你眼前。石壁上刻着古老的符文，微弱的光线透过缝隙透射进来。入口厅的后方设有出口，或许值得前去一探究竟。",
+        "pinyin": "Yītiáo xiázhǎi de rùkǒu tōngdào chéngxiàn zài nǐ yǎnqián. Shíbì shàng kèzhe gǔlǎo de fú wén, wéiruò de guāngxiàn tòuguò fèngxì tòushè jìnlái. Rùkǒu tīng de hòufāng shè yǒu chūkǒu, huòxǔ zhídé qián qù yī tàn jiùjìng.",
+        "english": "A small entrance passage opens before you. Ancient runes are carved into the stone walls, and faint light filters through cracks. There are exits at the back of the entrance chamber that may be worth exploring."
       }
     },
-    "storage_area": {
-      "id": "storage_area",
+    "store_room": {
+      "id": "store_room",
       "name": {
-        "chinese": "储藏区",
-        "pinyin": "Chǔcáng Qū",
-        "english": "Storage Area"
+        "chinese": "储藏室",
+        "pinyin": "Chǔcáng Shì",
+        "english": "Store Room"
       },
       "description": {
         "chinese": "一个用于存放物资的区域。货架上堆满了各种容器，空气中弥漫着灰尘和霉味。",
@@ -26,34 +26,21 @@
         "english": "An area used for storing supplies. Shelves are stacked with various containers, and the air is thick with dust and mustiness."
       }
     },
-    "armory_complex": {
-      "id": "armory_complex",
+    "armory": {
+      "id": "armory",
       "name": {
-        "chinese": "军械库 Complex",
-        "pinyin": "Jūnxièkù Complex",
-        "english": "Armory Complex"
+        "chinese": "军械库",
+        "pinyin": "Jūnxièkù",
+        "english": "Armory"
       },
       "description": {
-        "chinese": "广阔的军械库网络，墙上挂满了武器和盔甲。锻造炉的余温仍然可以感受到。",
-        "pinyin": "Guǎngkuò de jūnxièkù wǎngluò, qiáng shàng guà mǎnle wǔqì hé kuījiǎ. Duànzào lú de yú wēn réngrán kěyǐ gǎnshòu dào.",
-        "english": "A vast armory network, with weapons and armor hanging on the walls. The residual heat of the forge can still be felt."
+        "chinese": "这是一间小型军械库，墙上悬挂着古老的武器与盔甲。四处皆布满尘埃与蛛网。显然，这间屋子已许久未曾使用。",
+        "pinyin": "Zhè shì yī jiàn xiǎoxíng jūnxiè kù, qiáng shàng xuánguàzhe gǔlǎo de wǔqì yǔ kuījiǎ. Sìchù jiē bù mǎn chén'āi yǔ zhūwǎng. Xiǎnrán, zhè jiān wūzǐ yǐ xǔjiǔ wèicéng shǐyòng.",
+        "english": "A small armory with ancient weapons and armor hanging on the walls. There is dust and spiderwebs hanging every. This room has clearly not been used in a long time."
       }
     },
-    "hallway_b_complex": {
-      "id": "hallway_b_complex",
-      "name": {
-        "chinese": "走廊B Complex",
-        "pinyin": "Zǒuláng B Complex",
-        "english": "Hallway B Complex"
-      },
-      "description": {
-        "chinese": "一条漫长的走廊，墙壁上装饰着褪色的壁画。脚步声在空旷的通道中回荡。",
-        "pinyin": "Yī tiáo màncháng de zǒuláng, qiángbì shàng zhuāngshì zhe tuìsè de bìhuà. Jiǎobù shēng zài kōngkuàng de tōngdào zhōng huídàng.",
-        "english": "A long hallway adorned with faded murals. Footsteps echo through the empty passages."
-      }
-    },
-    "anteroom_complex": {
-      "id": "anteroom_complex",
+    "anteroom": {
+      "id": "anteroom",
       "name": {
         "chinese": "前厅 Complex",
         "pinyin": "Qiántīng Complex",
@@ -65,21 +52,8 @@
         "english": "A complex network of anterooms connecting multiple areas. Ornate stone pillars support the high ceiling."
       }
     },
-    "hallway_c_complex": {
-      "id": "hallway_c_complex",
-      "name": {
-        "chinese": "走廊C Complex",
-        "pinyin": "Zǒuláng C Complex",
-        "english": "Hallway C Complex"
-      },
-      "description": {
-        "chinese": "一条通向王座室的走廊。空气变得更加沉重，远处隐约传来王座室的光芒。",
-        "pinyin": "Yī tiáo tōng xiàng wángzuò shì de zǒuláng. Kōngqì biàn de gèngjiā chénzhòng, yuǎn chù yǐnyuē chuán lái wángzuò shì de guāngmáng.",
-        "english": "A hallway leading to the throne room. The air grows heavier, and the glow of the throne room can be faintly seen in the distance."
-      }
-    },
-    "throne_complex": {
-      "id": "throne_complex",
+    "throne_room": {
+      "id": "throne_room",
       "name": {
         "chinese": "王座 Complex",
         "pinyin": "Wángzuò Complex",
@@ -90,798 +64,835 @@
         "pinyin": "Hóngwěi de wángzuò complex zhǎnxiàn zài nǐ miànqián. Gāosǒng de shízhù zhīchēng zhe gǒngxíng tiānhuābǎn, qiáng shàng guà zhe gǔlǎo de guàtǎn. Kōngqì zhōng mí màn zhe quánlì hé lìshǐ de hòuzhòng gǎn.",
         "english": "The magnificent Throne Complex spreads before you. Towering stone pillars support arched ceilings, and ancient tapestries hang from the walls. The air is thick with the weight of power and history."
       }
+    },
+    "hallway_a": {
+      "id": "hallway_a",
+      "name": {
+        "chinese": "走廊A",
+        "pinyin": "Zǒuláng A",
+        "english": "Hallway A"
+      },
+      "description": {
+        "chinese": "一条漫长的走廊，墙壁上装饰着褪色的壁画。脚步声在空旷的通道中回荡。",
+        "pinyin": "Yī tiáo màncháng de zǒuláng, qiángbì shàng zhuāngshì zhe tuìsè de bìhuà. Jiǎobù shēng zài kōngkuàng de tōngdào zhōng huídàng.",
+        "english": "A long hallway adorned with faded murals. Footsteps echo through the empty passages."
+      }
+    },
+    "hallway_b": {
+      "id": "hallway_b",
+      "name": {
+        "chinese": "走廊B",
+        "pinyin": "Zǒuláng B",
+        "english": "Hallway B"
+      },
+      "description": {
+        "chinese": "一条漫长的走廊，墙壁上装饰着褪色的壁画。脚步声在空旷的通道中回荡。",
+        "pinyin": "Yī tiáo màncháng de zǒuláng, qiángbì shàng zhuāngshì zhe tuìsè de bìhuà. Jiǎobù shēng zài kōngkuàng de tōngdào zhōng huídàng.",
+        "english": "A long hallway adorned with faded murals. Footsteps echo through the empty passages."
+      }
+    },
+    "hallway_c": {
+      "id": "hallway_c",
+      "name": {
+        "chinese": "走廊C",
+        "pinyin": "Zǒuláng C",
+        "english": "Hallway C"
+      },
+      "description": {
+        "chinese": "一条通向王座室的走廊。空气变得更加沉重，远处隐约传来王座室的光芒。",
+        "pinyin": "Yī tiáo tōng xiàng wángzuò shì de zǒuláng. Kōngqì biàn de gèngjiā chénzhòng, yuǎn chù yǐnyuē chuán lái wángzuò shì de guāngmáng.",
+        "english": "A hallway leading to the throne room. The air grows heavier, and the glow of the throne room can be faintly seen in the distance."
+      }
     }
   },
   "locations": {
-    "Entr_1": {
-      "id": "Entr_1",
-      "room_id": "entrance_complex",
-      "biome_id": null,
+    "Entrance_1": {
+      "id": "Entrance_1",
+      "room_id": "entrance_chamber",
+      "biome_id": "cave",
       "name": {
         "chinese": "入口通道一",
         "pinyin": "Rùkǒu tōngdào yī",
         "english": "Entrance Passage 1"
       },
       "exits": [
-        {"direction": "north", "destination": "Entr_2", "requires_item_id": null},
-        {"direction": "south", "destination": "Entr_3", "requires_item_id": null}
+        {"direction": "northwest", "destination": "Entrance_2", "requires_item_id": null},
+        {"direction": "northeast", "destination": "Entrance_3", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Entr_2": {
-      "id": "Entr_2",
-      "room_id": "entrance_complex",
-      "biome_id": null,
+    "Entrance_2": {
+      "id": "Entrance_2",
+      "room_id": "entrance_chamber",
+      "biome_id": "cave",
       "name": {
         "chinese": "入口通道二",
         "pinyin": "Rùkǒu tōngdào èr",
         "english": "Entrance Passage 2"
       },
       "exits": [
-        {"direction": "south", "destination": "Entr_1", "requires_item_id": null},
-        {"direction": "east", "destination": "Entr_3", "requires_item_id": null},
-        {"direction": "north", "destination": "Entr_4", "requires_item_id": null},
-        {"direction": "west", "destination": "Entr_5", "requires_item_id": null}
+        {"direction": "southeast", "destination": "Entrance_1", "requires_item_id": null},
+        {"direction": "east", "destination": "Entrance_3", "requires_item_id": null},
+        {"direction": "north", "destination": "Entrance_4", "requires_item_id": null},
+        {"direction": "northeast", "destination": "Entrance_5", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Entr_3": {
-      "id": "Entr_3",
-      "room_id": "entrance_complex",
-      "biome_id": null,
+    "Entrance_3": {
+      "id": "Entrance_3",
+      "room_id": "entrance_chamber",
+      "biome_id": "cave",
       "name": {
         "chinese": "入口通道三",
         "pinyin": "Rùkǒu tōngdào sān",
         "english": "Entrance Passage 3"
       },
       "exits": [
-        {"direction": "west", "destination": "Entr_1", "requires_item_id": null},
-        {"direction": "south", "destination": "Entr_2", "requires_item_id": null},
-        {"direction": "north", "destination": "Entr_5", "requires_item_id": null},
-        {"direction": "east", "destination": "Entr_6", "requires_item_id": null}
+        {"direction": "southwest", "destination": "Entrance_1", "requires_item_id": null},
+        {"direction": "west", "destination": "Entrance_2", "requires_item_id": null},
+        {"direction": "northwest", "destination": "Entrance_5", "requires_item_id": null},
+        {"direction": "northeast", "destination": "Entrance_6", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Entr_4": {
-      "id": "Entr_4",
-      "room_id": "entrance_complex",
-      "biome_id": null,
+    "Entrance_4": {
+      "id": "Entrance_4",
+      "room_id": "entrance_chamber",
+      "biome_id": "cave",
       "name": {
         "chinese": "入口通道四",
         "pinyin": "Rùkǒu tōngdào sì",
         "english": "Entrance Passage 4"
       },
       "exits": [
-        {"direction": "south", "destination": "Entr_2", "requires_item_id": null},
-        {"direction": "west", "destination": "Entr_5", "requires_item_id": null},
-        {"direction": "north", "destination": "Entr_7", "requires_item_id": null},
-        {"direction": "east", "destination": "Entr_8", "requires_item_id": null}
+        {"direction": "southeast", "destination": "Entrance_2", "requires_item_id": null},
+        {"direction": "east", "destination": "Entrance_5", "requires_item_id": null},
+        {"direction": "north", "destination": "Entrance_7", "requires_item_id": null},
+        {"direction": "northeast", "destination": "Entrance_8", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Entr_5": {
-      "id": "Entr_5",
-      "room_id": "entrance_complex",
-      "biome_id": null,
+    "Entrance_5": {
+      "id": "Entrance_5",
+      "room_id": "entrance_chamber",
+      "biome_id": "cave",
       "name": {
         "chinese": "入口通道五",
         "pinyin": "Rùkǒu tōngdào wǔ",
         "english": "Entrance Passage 5"
       },
       "exits": [
-        {"direction": "north", "destination": "Entr_2", "requires_item_id": null},
-        {"direction": "west", "destination": "Entr_3", "requires_item_id": null},
-        {"direction": "south", "destination": "Entr_4", "requires_item_id": null},
-        {"direction": "east", "destination": "Entr_6", "requires_item_id": null},
-        {"direction": "northeast", "destination": "Entr_7", "requires_item_id": null},
-        {"direction": "southeast", "destination": "Entr_8", "requires_item_id": null},
-        {"direction": "northwest", "destination": "Entr_9", "requires_item_id": null}
+        {"direction": "southwest", "destination": "Entrance_2", "requires_item_id": null},
+        {"direction": "southeast", "destination": "Entrance_3", "requires_item_id": null},
+        {"direction": "west", "destination": "Entrance_4", "requires_item_id": null},
+        {"direction": "east", "destination": "Entrance_6", "requires_item_id": null},
+        {"direction": "northwest", "destination": "Entrance_7", "requires_item_id": null},
+        {"direction": "north", "destination": "Entrance_8", "requires_item_id": null},
+        {"direction": "northeast", "destination": "Entrance_9", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Entr_6": {
-      "id": "Entr_6",
-      "room_id": "entrance_complex",
-      "biome_id": null,
+    "Entrance_6": {
+      "id": "Entrance_6",
+      "room_id": "entrance_chamber",
+      "biome_id": "cave",
       "name": {
         "chinese": "入口通道六",
         "pinyin": "Rùkǒu tōngdào liù",
         "english": "Entrance Passage 6"
       },
       "exits": [
-        {"direction": "west", "destination": "Entr_3", "requires_item_id": null},
-        {"direction": "south", "destination": "Entr_5", "requires_item_id": null},
-        {"direction": "north", "destination": "Entr_8", "requires_item_id": null},
-        {"direction": "east", "destination": "Entr_9", "requires_item_id": null}
+        {"direction": "southwest", "destination": "Entrance_3", "requires_item_id": null},
+        {"direction": "west", "destination": "Entrance_5", "requires_item_id": null},
+        {"direction": "northwest", "destination": "Entrance_8", "requires_item_id": null},
+        {"direction": "north", "destination": "Entrance_9", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Entr_7": {
-      "id": "Entr_7",
-      "room_id": "entrance_complex",
-      "biome_id": null,
+    "Entrance_7": {
+      "id": "Entrance_7",
+      "room_id": "entrance_chamber",
+      "biome_id": "cave",
       "name": {
         "chinese": "入口通道七",
         "pinyin": "Rùkǒu tōngdào qī",
         "english": "Entrance Passage 7"
       },
       "exits": [
-        {"direction": "south", "destination": "Entr_4", "requires_item_id": null},
-        {"direction": "east", "destination": "Entr_5", "requires_item_id": null},
-        {"direction": "west", "destination": "Entr_8", "requires_item_id": null},
-        {"direction": "north", "destination": "HwyA_1", "requires_item_id": null}
+        {"direction": "south", "destination": "Entrance_4", "requires_item_id": null},
+        {"direction": "southeast", "destination": "Entrance_5", "requires_item_id": null},
+        {"direction": "east", "destination": "Entrance_8", "requires_item_id": null},
+        {"direction": "west", "destination": "hallway_a1", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Entr_8": {
-      "id": "Entr_8",
-      "room_id": "entrance_complex",
-      "biome_id": null,
+    "Entrance_8": {
+      "id": "Entrance_8",
+      "room_id": "entrance_chamber",
+      "biome_id": "cave",
       "name": {
         "chinese": "入口通道八",
         "pinyin": "Rùkǒu tōngdào bā",
         "english": "Entrance Passage 8"
       },
       "exits": [
-        {"direction": "north", "destination": "Entr_4", "requires_item_id": null},
-        {"direction": "south", "destination": "Entr_5", "requires_item_id": null},
-        {"direction": "east", "destination": "Entr_6", "requires_item_id": null},
-        {"direction": "west", "destination": "Entr_7", "requires_item_id": null},
-        {"direction": "northeast", "destination": "Entr_9", "requires_item_id": null}
+        {"direction": "southwest", "destination": "Entrance_4", "requires_item_id": null},
+        {"direction": "south", "destination": "Entrance_5", "requires_item_id": null},
+        {"direction": "southeast", "destination": "Entrance_6", "requires_item_id": null},
+        {"direction": "west", "destination": "Entrance_7", "requires_item_id": null},
+        {"direction": "east", "destination": "Entrance_9", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Entr_9": {
-      "id": "Entr_9",
-      "room_id": "entrance_complex",
-      "biome_id": null,
+    "Entrance_9": {
+      "id": "Entrance_9",
+      "room_id": "entrance_chamber",
+      "biome_id": "cave",
       "name": {
         "chinese": "入口通道九",
         "pinyin": "Rùkǒu tōngdào jiǔ",
         "english": "Entrance Passage 9"
       },
       "exits": [
-        {"direction": "south", "destination": "Entr_5", "requires_item_id": null},
-        {"direction": "west", "destination": "Entr_6", "requires_item_id": null},
-        {"direction": "north", "destination": "Entr_8", "requires_item_id": null},
-        {"direction": "east", "destination": "Amry_1", "requires_item_id": null},
-        {"direction": "northeast", "destination": "HwyB_1", "requires_item_id": null}
+        {"direction": "southwest", "destination": "Entrance_5", "requires_item_id": null},
+        {"direction": "south", "destination": "Entrance_6", "requires_item_id": null},
+        {"direction": "west", "destination": "Entrance_8", "requires_item_id": null},
+        {"direction": "east", "destination": "armory_1", "requires_item_id": null},
+        {"direction": "north", "destination": "hallway_b1", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "HwyA_1": {
-      "id": "HwyA_1",
-      "room_id": "storage_area",
-      "biome_id": null,
+    "hallway_a1": {
+      "id": "hallway_a1",
+      "room_id": "store_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "走廊A一",
         "pinyin": "Zǒuláng A yī",
         "english": "Hallway A1"
       },
       "exits": [
-        {"direction": "south", "destination": "Entr_7", "requires_item_id": null},
-        {"direction": "north", "destination": "HwyA_2", "requires_item_id": null}
+        {"direction": "east", "destination": "Entrance_7", "requires_item_id": null},
+        {"direction": "west", "destination": "hallway_a2", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "HwyA_2": {
-      "id": "HwyA_2",
-      "room_id": "storage_area",
-      "biome_id": null,
+    "hallway_a2": {
+      "id": "hallway_a2",
+      "room_id": "store_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "走廊A二",
         "pinyin": "Zǒuláng A èr",
         "english": "Hallway A2"
       },
       "exits": [
-        {"direction": "south", "destination": "HwyA_1", "requires_item_id": null},
-        {"direction": "north", "destination": "Store_1", "requires_item_id": null}
+        {"direction": "east", "destination": "hallway_a1", "requires_item_id": null},
+        {"direction": "south", "destination": "Store_1", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Store_1": {
       "id": "Store_1",
-      "room_id": "storage_area",
-      "biome_id": null,
+      "room_id": "store_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "储藏室一",
         "pinyin": "Chǔcáng shì yī",
         "english": "Storage Room 1"
       },
       "exits": [
-        {"direction": "south", "destination": "HwyA_2", "requires_item_id": null},
-        {"direction": "north", "destination": "Store_2", "requires_item_id": null}
+        {"direction": "north", "destination": "hallway_a2", "requires_item_id": null},
+        {"direction": "south", "destination": "Store_2", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Store_2": {
       "id": "Store_2",
-      "room_id": "storage_area",
-      "biome_id": null,
+      "room_id": "store_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "储藏室二",
         "pinyin": "Chǔcáng shì èr",
         "english": "Storage Room 2"
       },
       "exits": [
-        {"direction": "south", "destination": "Store_1", "requires_item_id": null},
-        {"direction": "north", "destination": "Store_3", "requires_item_id": null},
-        {"direction": "east", "destination": "Store_4", "requires_item_id": null}
+        {"direction": "north", "destination": "Store_1", "requires_item_id": null},
+        {"direction": "southeast", "destination": "Store_3", "requires_item_id": null},
+        {"direction": "southwest", "destination": "Store_4", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Store_3": {
       "id": "Store_3",
-      "room_id": "storage_area",
-      "biome_id": null,
+      "room_id": "store_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "储藏室三",
         "pinyin": "Chǔcáng shì sān",
         "english": "Storage Room 3"
       },
       "exits": [
-        {"direction": "south", "destination": "Store_2", "requires_item_id": null},
-        {"direction": "east", "destination": "Store_4", "requires_item_id": null}
+        {"direction": "northwest", "destination": "Store_2", "requires_item_id": null},
+        {"direction": "west", "destination": "Store_4", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Store_4": {
       "id": "Store_4",
-      "room_id": "storage_area",
-      "biome_id": null,
+      "room_id": "store_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "储藏室四",
         "pinyin": "Chǔcáng shì sì",
         "english": "Storage Room 4"
       },
       "exits": [
-        {"direction": "west", "destination": "Store_2", "requires_item_id": null},
-        {"direction": "south", "destination": "Store_3", "requires_item_id": null}
+        {"direction": "northeast", "destination": "Store_2", "requires_item_id": null},
+        {"direction": "east", "destination": "Store_3", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Amry_1": {
-      "id": "Amry_1",
-      "room_id": "armory_complex",
-      "biome_id": null,
+    "armory_1": {
+      "id": "armory_1",
+      "room_id": "armory",
+      "biome_id": "cave",
       "name": {
         "chinese": "军械库一",
         "pinyin": "Jūnxièkù yī",
         "english": "Armory 1"
       },
       "exits": [
-        {"direction": "west", "destination": "Amry_2", "requires_item_id": null},
-        {"direction": "south", "destination": "Amry_3", "requires_item_id": null},
-        {"direction": "north", "destination": "Entr_9", "requires_item_id": null}
+        {"direction": "west", "destination": "armory_2", "requires_item_id": null},
+        {"direction": "northeast", "destination": "armory_3", "requires_item_id": null},
+        {"direction": "southeast", "destination": "Entrance_9", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Amry_2": {
-      "id": "Amry_2",
-      "room_id": "armory_complex",
-      "biome_id": null,
+    "armory_2": {
+      "id": "armory_2",
+      "room_id": "armory",
+      "biome_id": "cave",
       "name": {
         "chinese": "军械库二",
         "pinyin": "Jūnxièkù èr",
         "english": "Armory 2"
       },
       "exits": [
-        {"direction": "east", "destination": "Amry_1", "requires_item_id": null},
-        {"direction": "west", "destination": "Amry_2", "requires_item_id": null},
-        {"direction": "north", "destination": "Amry_4", "requires_item_id": null},
-        {"direction": "south", "destination": "Amry_5", "requires_item_id": null}
+        {"direction": "southwest", "destination": "armory_1", "requires_item_id": null},
+        {"direction": "south", "destination": "armory_3", "requires_item_id": null},
+        {"direction": "northeast", "destination": "armory_4", "requires_item_id": null},
+        {"direction": "southeast", "destination": "armory_5", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Amry_3": {
-      "id": "Amry_3",
-      "room_id": "armory_complex",
-      "biome_id": null,
+    "armory_3": {
+      "id": "armory_3",
+      "room_id": "armory",
+      "biome_id": "cave",
       "name": {
         "chinese": "军械库三",
         "pinyin": "Jūnxièkù sān",
         "english": "Armory 3"
       },
       "exits": [
-        {"direction": "north", "destination": "Amry_1", "requires_item_id": null},
-        {"direction": "east", "destination": "Amry_2", "requires_item_id": null},
-        {"direction": "west", "destination": "Amry_5", "requires_item_id": null},
-        {"direction": "south", "destination": "Amry_6", "requires_item_id": null}
+        {"direction": "northwest", "destination": "armory_1", "requires_item_id": null},
+        {"direction": "north", "destination": "armory_2", "requires_item_id": null},
+        {"direction": "northeast", "destination": "armory_5", "requires_item_id": null},
+        {"direction": "southeast", "destination": "armory_6", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Amry_4": {
-      "id": "Amry_4",
-      "room_id": "armory_complex",
-      "biome_id": null,
+    "armory_4": {
+      "id": "armory_4",
+      "room_id": "armory",
+      "biome_id": "cave",
       "name": {
         "chinese": "军械库四",
         "pinyin": "Jūnxièkù sì",
         "english": "Armory 4"
       },
       "exits": [
-        {"direction": "south", "destination": "Amry_2", "requires_item_id": null},
-        {"direction": "west", "destination": "Amry_5", "requires_item_id": null},
-        {"direction": "north", "destination": "Amry_7", "requires_item_id": null}
+        {"direction": "southwest", "destination": "armory_2", "requires_item_id": null},
+        {"direction": "south", "destination": "armory_5", "requires_item_id": null},
+        {"direction": "southeast", "destination": "armory_7", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Amry_5": {
-      "id": "Amry_5",
-      "room_id": "armory_complex",
-      "biome_id": null,
+    "armory_5": {
+      "id": "armory_5",
+      "room_id": "armory",
+      "biome_id": "cave",
       "name": {
         "chinese": "军械库五",
         "pinyin": "Jūnxièkù wǔ",
         "english": "Armory 5"
       },
       "exits": [
-        {"direction": "north", "destination": "Amry_2", "requires_item_id": null},
-        {"direction": "east", "destination": "Amry_3", "requires_item_id": null},
-        {"direction": "south", "destination": "Amry_4", "requires_item_id": null},
-        {"direction": "west", "destination": "Amry_6", "requires_item_id": null},
-        {"direction": "northeast", "destination": "Amry_7", "requires_item_id": null},
-        {"direction": "southeast", "destination": "Amry_8", "requires_item_id": null}
+        {"direction": "northwest", "destination": "armory_2", "requires_item_id": null},
+        {"direction": "southwest", "destination": "armory_3", "requires_item_id": null},
+        {"direction": "north", "destination": "armory_4", "requires_item_id": null},
+        {"direction": "south", "destination": "armory_6", "requires_item_id": null},
+        {"direction": "northeast", "destination": "armory_7", "requires_item_id": null},
+        {"direction": "southeast", "destination": "armory_8", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Amry_6": {
-      "id": "Amry_6",
-      "room_id": "armory_complex",
-      "biome_id": null,
+    "armory_6": {
+      "id": "armory_6",
+      "room_id": "armory",
+      "biome_id": "cave",
       "name": {
         "chinese": "军械库六",
         "pinyin": "Jūnxièkù liù",
         "english": "Armory 6"
       },
       "exits": [
-        {"direction": "north", "destination": "Amry_3", "requires_item_id": null},
-        {"direction": "east", "destination": "Amry_5", "requires_item_id": null},
-        {"direction": "south", "destination": "Amry_8", "requires_item_id": null}
+        {"direction": "northwest", "destination": "armory_3", "requires_item_id": null},
+        {"direction": "north", "destination": "armory_5", "requires_item_id": null},
+        {"direction": "northeast", "destination": "armory_8", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Amry_7": {
-      "id": "Amry_7",
-      "room_id": "armory_complex",
-      "biome_id": null,
+    "armory_7": {
+      "id": "armory_7",
+      "room_id": "armory",
+      "biome_id": "cave",
       "name": {
         "chinese": "军械库七",
         "pinyin": "Jūnxièkù qī",
         "english": "Armory 7"
       },
       "exits": [
-        {"direction": "south", "destination": "Amry_4", "requires_item_id": null},
-        {"direction": "west", "destination": "Amry_5", "requires_item_id": null},
-        {"direction": "east", "destination": "Amry_8", "requires_item_id": null}
+        {"direction": "northwest", "destination": "armory_4", "requires_item_id": null},
+        {"direction": "southwest", "destination": "armory_5", "requires_item_id": null},
+        {"direction": "south", "destination": "armory_8", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Amry_8": {
-      "id": "Amry_8",
-      "room_id": "armory_complex",
-      "biome_id": null,
+    "armory_8": {
+      "id": "armory_8",
+      "room_id": "armory",
+      "biome_id": "cave",
       "name": {
         "chinese": "军械库八",
         "pinyin": "Jūnxièkù bā",
         "english": "Armory 8"
       },
       "exits": [
-        {"direction": "west", "destination": "Amry_5", "requires_item_id": null},
-        {"direction": "north", "destination": "Amry_6", "requires_item_id": null},
-        {"direction": "south", "destination": "Amry_7", "requires_item_id": null}
+        {"direction": "northwest", "destination": "armory_5", "requires_item_id": null},
+        {"direction": "southwest", "destination": "armory_6", "requires_item_id": null},
+        {"direction": "north", "destination": "armory_7", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "HwyB_1": {
-      "id": "HwyB_1",
-      "room_id": "hallway_b_complex",
-      "biome_id": null,
+    "hallway_b1": {
+      "id": "hallway_b1",
+      "room_id": "hallway_b",
+      "biome_id": "cave",
       "name": {
         "chinese": "走廊B一",
         "pinyin": "Zǒuláng B yī",
         "english": "Hallway B1"
       },
       "exits": [
-        {"direction": "north", "destination": "HwyB_2", "requires_item_id": null},
-        {"direction": "south", "destination": "Entr_9", "requires_item_id": null}
+        {"direction": "north", "destination": "hallway_b2", "requires_item_id": null},
+        {"direction": "south", "destination": "Entrance_9", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "HwyB_2": {
-      "id": "HwyB_2",
-      "room_id": "hallway_b_complex",
-      "biome_id": null,
+    "hallway_b2": {
+      "id": "hallway_b2",
+      "room_id": "hallway_b",
+      "biome_id": "cave",
       "name": {
         "chinese": "走廊B二",
         "pinyin": "Zǒuláng B èr",
         "english": "Hallway B2"
       },
       "exits": [
-        {"direction": "south", "destination": "HwyB_1", "requires_item_id": null},
-        {"direction": "north", "destination": "HwyB_3", "requires_item_id": null}
+        {"direction": "south", "destination": "hallway_b1", "requires_item_id": null},
+        {"direction": "west", "destination": "hallway_b2", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "HwyB_3": {
-      "id": "HwyB_3",
-      "room_id": "hallway_b_complex",
-      "biome_id": null,
+    "hallway_b3": {
+      "id": "hallway_b3",
+      "room_id": "hallway_b",
+      "biome_id": "cave",
       "name": {
         "chinese": "走廊B三",
         "pinyin": "Zǒuláng B sān",
         "english": "Hallway B3"
       },
       "exits": [
-        {"direction": "south", "destination": "HwyB_3", "requires_item_id": null},
-        {"direction": "north", "destination": "HwyB_4", "requires_item_id": null}
+        {"direction": "east", "destination": "hallway_b3", "requires_item_id": null},
+        {"direction": "north", "destination": "hallway_b4", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "HwyB_4": {
-      "id": "HwyB_4",
-      "room_id": "hallway_b_complex",
-      "biome_id": null,
+    "hallway_b4": {
+      "id": "hallway_b4",
+      "room_id": "hallway_b",
+      "biome_id": "cave",
       "name": {
         "chinese": "走廊B四",
         "pinyin": "Zǒuláng B sì",
         "english": "Hallway B4"
       },
       "exits": [
-        {"direction": "south", "destination": "HwyB_3", "requires_item_id": null},
-        {"direction": "north", "destination": "HwyB_5", "requires_item_id": null}
+        {"direction": "south", "destination": "hallway_b3", "requires_item_id": null},
+        {"direction": "north", "destination": "hallway_b5", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "HwyB_5": {
-      "id": "HwyB_5",
-      "room_id": "hallway_b_complex",
-      "biome_id": null,
+    "hallway_b5": {
+      "id": "hallway_b5",
+      "room_id": "hallway_b",
+      "biome_id": "cave",
       "name": {
         "chinese": "走廊B五",
         "pinyin": "Zǒuláng B wǔ",
         "english": "Hallway B5"
       },
       "exits": [
-        {"direction": "south", "destination": "HwyB_4", "requires_item_id": null},
-        {"direction": "north", "destination": "Ante_1", "requires_item_id": null}
+        {"direction": "south", "destination": "hallway_b4", "requires_item_id": null},
+        {"direction": "east", "destination": "anteroom_1", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Ante_1": {
-      "id": "Ante_1",
-      "room_id": "anteroom_complex",
-      "biome_id": null,
+    "anteroom_1": {
+      "id": "anteroom_1",
+      "room_id": "anteroom",
+      "biome_id": "cave",
       "name": {
         "chinese": "前厅一",
         "pinyin": "Qiántīng yī",
         "english": "Anteroom 1"
       },
       "exits": [
-        {"direction": "north", "destination": "Ante_2", "requires_item_id": null},
-        {"direction": "east", "destination": "Ante_3", "requires_item_id": null},
-        {"direction": "south", "destination": "HwyB_5", "requires_item_id": null}
+        {"direction": "northeast", "destination": "anteroom_2", "requires_item_id": null},
+        {"direction": "southeast", "destination": "anteroom_3", "requires_item_id": null},
+        {"direction": "west", "destination": "hallway_b5", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Ante_2": {
-      "id": "Ante_2",
-      "room_id": "anteroom_complex",
-      "biome_id": null,
+    "anteroom_2": {
+      "id": "anteroom_2",
+      "room_id": "anteroom",
+      "biome_id": "cave",
       "name": {
         "chinese": "前厅二",
         "pinyin": "Qiántīng èr",
         "english": "Anteroom 2"
       },
       "exits": [
-        {"direction": "south", "destination": "Ante_1", "requires_item_id": null},
-        {"direction": "west", "destination": "Ante_3", "requires_item_id": null},
-        {"direction": "north", "destination": "Ante_4", "requires_item_id": null},
-        {"direction": "east", "destination": "Ante_5", "requires_item_id": null},
-        {"direction": "northeast", "destination": "Ante_6", "requires_item_id": null}
+        {"direction": "southwest", "destination": "anteroom_1", "requires_item_id": null},
+        {"direction": "south", "destination": "anteroom_3", "requires_item_id": null},
+        {"direction": "northeast", "destination": "anteroom_4", "requires_item_id": null},
+        {"direction": "southeast", "destination": "anteroom_5", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Ante_3": {
-      "id": "Ante_3",
-      "room_id": "anteroom_complex",
-      "biome_id": null,
+    "anteroom_3": {
+      "id": "anteroom_3",
+      "room_id": "anteroom",
+      "biome_id": "cave",
       "name": {
         "chinese": "前厅三",
         "pinyin": "Qiántīng sān",
         "english": "Anteroom 3"
       },
       "exits": [
-        {"direction": "west", "destination": "Ante_1", "requires_item_id": null},
-        {"direction": "north", "destination": "Ante_2", "requires_item_id": null},
-        {"direction": "south", "destination": "Ante_4", "requires_item_id": null},
-        {"direction": "east", "destination": "Ante_5", "requires_item_id": null},
-        {"direction": "northeast", "destination": "Ante_6", "requires_item_id": null}
+        {"direction": "northwest", "destination": "anteroom_1", "requires_item_id": null},
+        {"direction": "north", "destination": "anteroom_2", "requires_item_id": null},
+        {"direction": "northeast", "destination": "anteroom_5", "requires_item_id": null},
+        {"direction": "southeast", "destination": "anteroom_6", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Ante_4": {
-      "id": "Ante_4",
-      "room_id": "anteroom_complex",
-      "biome_id": null,
+    "anteroom_4": {
+      "id": "anteroom_4",
+      "room_id": "anteroom",
+      "biome_id": "cave",
       "name": {
         "chinese": "前厅四",
         "pinyin": "Qiántīng sì",
         "english": "Anteroom 4"
       },
       "exits": [
-        {"direction": "south", "destination": "Ante_2", "requires_item_id": null},
-        {"direction": "west", "destination": "Ante_5", "requires_item_id": null},
-        {"direction": "north", "destination": "HwyC_1", "requires_item_id": null}
+        {"direction": "southwest", "destination": "anteroom_2", "requires_item_id": null},
+        {"direction": "south", "destination": "anteroom_5", "requires_item_id": null},
+        {"direction": "southeast", "destination": "hallway_c1", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Ante_5": {
-      "id": "Ante_5",
-      "room_id": "anteroom_complex",
-      "biome_id": null,
+    "anteroom_5": {
+      "id": "anteroom_5",
+      "room_id": "anteroom",
+      "biome_id": "cave",
       "name": {
         "chinese": "前厅五",
         "pinyin": "Qiántīng wǔ",
         "english": "Anteroom 5"
       },
       "exits": [
-        {"direction": "south", "destination": "Ante_2", "requires_item_id": null},
-        {"direction": "east", "destination": "Ante_3", "requires_item_id": null},
-        {"direction": "west", "destination": "Ante_4", "requires_item_id": null},
-        {"direction": "north", "destination": "Ante_6", "requires_item_id": null},
-        {"direction": "northeast", "destination": "HwyC_1", "requires_item_id": null}
+        {"direction": "northwest", "destination": "anteroom_2", "requires_item_id": null},
+        {"direction": "southwest", "destination": "anteroom_3", "requires_item_id": null},
+        {"direction": "north", "destination": "anteroom_4", "requires_item_id": null},
+        {"direction": "south", "destination": "anteroom_6", "requires_item_id": null},
+        {"direction": "east", "destination": "hallway_c1", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "Ante_6": {
-      "id": "Ante_6",
-      "room_id": "anteroom_complex",
-      "biome_id": null,
+    "anteroom_6": {
+      "id": "anteroom_6",
+      "room_id": "anteroom",
+      "biome_id": "cave",
       "name": {
         "chinese": "前厅六",
         "pinyin": "Qiántīng liù",
         "english": "Anteroom 6"
       },
       "exits": [
-        {"direction": "west", "destination": "Ante_3", "requires_item_id": null},
-        {"direction": "south", "destination": "Ante_5", "requires_item_id": null},
-        {"direction": "north", "destination": "HwyC_1", "requires_item_id": null}
+        {"direction": "northwest", "destination": "anteroom_3", "requires_item_id": null},
+        {"direction": "north", "destination": "anteroom_5", "requires_item_id": null},
+        {"direction": "northeast", "destination": "hallway_c1", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "HwyC_1": {
-      "id": "HwyC_1",
-      "room_id": "hallway_c_complex",
-      "biome_id": null,
+    "hallway_c1": {
+      "id": "hallway_c1",
+      "room_id": "hallway_c",
+      "biome_id": "cave",
       "name": {
         "chinese": "走廊C一",
         "pinyin": "Zǒuláng C yī",
         "english": "Hallway C1"
       },
       "exits": [
-        {"direction": "south", "destination": "HwyC_2", "requires_item_id": null},
-        {"direction": "west", "destination": "Ante_4", "requires_item_id": null},
-        {"direction": "north", "destination": "Ante_5", "requires_item_id": null},
-        {"direction": "east", "destination": "Ante_6", "requires_item_id": null}
+        {"direction": "east", "destination": "hallway_c2", "requires_item_id": null},
+        {"direction": "northwest", "destination": "anteroom_4", "requires_item_id": null},
+        {"direction": "west", "destination": "anteroom_5", "requires_item_id": null},
+        {"direction": "southwest", "destination": "anteroom_6", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "HwyC_2": {
-      "id": "HwyC_2",
-      "room_id": "hallway_c_complex",
-      "biome_id": null,
+    "hallway_c2": {
+      "id": "hallway_c2",
+      "room_id": "hallway_c",
+      "biome_id": "cave",
       "name": {
         "chinese": "走廊C二",
         "pinyin": "Zǒuláng C èr",
         "english": "Hallway C2"
       },
       "exits": [
-        {"direction": "north", "destination": "HwyC_1", "requires_item_id": null},
-        {"direction": "south", "destination": "HwyC_3", "requires_item_id": null}
+        {"direction": "west", "destination": "hallway_c1", "requires_item_id": null},
+        {"direction": "east", "destination": "hallway_c3", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "HwyC_3": {
-      "id": "HwyC_3",
-      "room_id": "hallway_c_complex",
-      "biome_id": null,
+    "hallway_c3": {
+      "id": "hallway_c3",
+      "room_id": "hallway_c",
+      "biome_id": "cave",
       "name": {
         "chinese": "走廊C三",
         "pinyin": "Zǒuláng C sān",
         "english": "Hallway C3"
       },
       "exits": [
-        {"direction": "north", "destination": "HwyC_2", "requires_item_id": null},
-        {"direction": "south", "destination": "HwyC_4", "requires_item_id": null}
+        {"direction": "west", "destination": "hallway_c2", "requires_item_id": null},
+        {"direction": "north", "destination": "hallway_c4", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "HwyC_4": {
-      "id": "HwyC_4",
-      "room_id": "hallway_c_complex",
-      "biome_id": null,
+    "hallway_c4": {
+      "id": "hallway_c4",
+      "room_id": "hallway_c",
+      "biome_id": "cave",
       "name": {
         "chinese": "走廊C四",
         "pinyin": "Zǒuláng C sì",
         "english": "Hallway C4"
       },
       "exits": [
-        {"direction": "north", "destination": "HwyC_3", "requires_item_id": null},
-        {"direction": "south", "destination": "HwyC_5", "requires_item_id": null}
+        {"direction": "south", "destination": "hallway_c3", "requires_item_id": null},
+        {"direction": "north", "destination": "hallway_c5", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
-    "HwyC_5": {
-      "id": "HwyC_5",
-      "room_id": "hallway_c_complex",
-      "biome_id": null,
+    "hallway_c5": {
+      "id": "hallway_c5",
+      "room_id": "hallway_c",
+      "biome_id": "cave",
       "name": {
         "chinese": "走廊C五",
         "pinyin": "Zǒuláng C wǔ",
         "english": "Hallway C5"
       },
       "exits": [
-        {"direction": "north", "destination": "HwyC_4", "requires_item_id": null},
-        {"direction": "south", "destination": "Throne_01", "requires_item_id": null}
+        {"direction": "south", "destination": "hallway_c4", "requires_item_id": null},
+        {"direction": "north", "destination": "Throne_01", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Throne_01": {
       "id": "Throne_01",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室一",
         "pinyin": "Wángzuò shì yī",
         "english": "Throne Room 1"
       },
       "exits": [
-        {"direction": "east", "destination": "Throne_03", "requires_item_id": null},
-        {"direction": "south", "destination": "Throne_04", "requires_item_id": null},
-        {"direction": "west", "destination": "Throne_05", "requires_item_id": null},
-        {"direction": "north", "destination": "HwyC_5", "requires_item_id": null}
+        {"direction": "northwest", "destination": "Throne_03", "requires_item_id": null},
+        {"direction": "north", "destination": "Throne_04", "requires_item_id": null},
+        {"direction": "northeast", "destination": "Throne_05", "requires_item_id": null},
+        {"direction": "south", "destination": "hallway_c5", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Throne_02": {
       "id": "Throne_02",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室二",
         "pinyin": "Wángzuò shì èr",
         "english": "Throne Room 2"
       },
       "exits": [
-        {"direction": "south", "destination": "Throne_03", "requires_item_id": null},
+        {"direction": "east", "destination": "Throne_03", "requires_item_id": null},
         {"direction": "north", "destination": "Throne_07", "requires_item_id": null},
-        {"direction": "east", "destination": "Throne_08", "requires_item_id": null}
+        {"direction": "northeast", "destination": "Throne_08", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Throne_03": {
       "id": "Throne_03",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室三",
         "pinyin": "Wángzuò shì sān",
         "english": "Throne Room 3"
       },
       "exits": [
-        {"direction": "west", "destination": "Throne_01", "requires_item_id": null},
-        {"direction": "north", "destination": "Throne_02", "requires_item_id": null},
-        {"direction": "south", "destination": "Throne_04", "requires_item_id": null},
-        {"direction": "northeast", "destination": "Throne_07", "requires_item_id": null},
-        {"direction": "east", "destination": "Throne_08", "requires_item_id": null},
-        {"direction": "southeast", "destination": "Throne_09", "requires_item_id": null}
+        {"direction": "southwest", "destination": "Throne_01", "requires_item_id": null},
+        {"direction": "west", "destination": "Throne_02", "requires_item_id": null},
+        {"direction": "east", "destination": "Throne_04", "requires_item_id": null},
+        {"direction": "northwest", "destination": "Throne_07", "requires_item_id": null},
+        {"direction": "north", "destination": "Throne_08", "requires_item_id": null},
+        {"direction": "northeast", "destination": "Throne_09", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Throne_04": {
       "id": "Throne_04",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室四",
         "pinyin": "Wángzuò shì sì",
         "english": "Throne Room 4"
       },
       "exits": [
-        {"direction": "north", "destination": "Throne_01", "requires_item_id": null},
+        {"direction": "south", "destination": "Throne_01", "requires_item_id": null},
         {"direction": "west", "destination": "Throne_03", "requires_item_id": null},
-        {"direction": "south", "destination": "Throne_05", "requires_item_id": null},
-        {"direction": "northeast", "destination": "Throne_08", "requires_item_id": null},
-        {"direction": "east", "destination": "Throne_09", "requires_item_id": null},
-        {"direction": "southeast", "destination": "Throne_10", "requires_item_id": null}
+        {"direction": "east", "destination": "Throne_05", "requires_item_id": null},
+        {"direction": "northwest", "destination": "Throne_08", "requires_item_id": null},
+        {"direction": "north", "destination": "Throne_09", "requires_item_id": null},
+        {"direction": "northeast", "destination": "Throne_10", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Throne_05": {
       "id": "Throne_05",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室五",
         "pinyin": "Wángzuò shì wǔ",
         "english": "Throne Room 5"
       },
       "exits": [
-        {"direction": "north", "destination": "Throne_01", "requires_item_id": null},
-        {"direction": "east", "destination": "Throne_04", "requires_item_id": null},
-        {"direction": "south", "destination": "Throne_06", "requires_item_id": null},
-        {"direction": "northeast", "destination": "Throne_09", "requires_item_id": null},
-        {"direction": "east", "destination": "Throne_10", "requires_item_id": null},
-        {"direction": "southeast", "destination": "Throne_11", "requires_item_id": null}
+        {"direction": "southwest", "destination": "Throne_01", "requires_item_id": null},
+        {"direction": "west", "destination": "Throne_04", "requires_item_id": null},
+        {"direction": "east", "destination": "Throne_06", "requires_item_id": null},
+        {"direction": "northwest", "destination": "Throne_09", "requires_item_id": null},
+        {"direction": "north", "destination": "Throne_10", "requires_item_id": null},
+        {"direction": "northeast", "destination": "Throne_11", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Throne_06": {
       "id": "Throne_06",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室六",
         "pinyin": "Wángzuò shì liù",
         "english": "Throne Room 6"
       },
       "exits": [
-        {"direction": "north", "destination": "Throne_05", "requires_item_id": null},
-        {"direction": "west", "destination": "Throne_10", "requires_item_id": null},
-        {"direction": "east", "destination": "Throne_11", "requires_item_id": null}
+        {"direction": "west", "destination": "Throne_05", "requires_item_id": null},
+        {"direction": "northwest", "destination": "Throne_10", "requires_item_id": null},
+        {"direction": "north", "destination": "Throne_11", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Throne_07": {
       "id": "Throne_07",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室七",
         "pinyin": "Wángzuò shì qī",
@@ -889,7 +900,7 @@
       },
       "exits": [
         {"direction": "south", "destination": "Throne_02", "requires_item_id": null},
-        {"direction": "west", "destination": "Throne_03", "requires_item_id": null},
+        {"direction": "southeast", "destination": "Throne_03", "requires_item_id": null},
         {"direction": "east", "destination": "Throne_08", "requires_item_id": null},
         {"direction": "north", "destination": "Throne_12", "requires_item_id": null},
         {"direction": "northeast", "destination": "Throne_13", "requires_item_id": null}
@@ -899,93 +910,93 @@
     },
     "Throne_08": {
       "id": "Throne_08",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室八",
         "pinyin": "Wángzuò shì bā",
         "english": "Throne Room 8"
       },
       "exits": [
-        {"direction": "west", "destination": "Throne_02", "requires_item_id": null},
+        {"direction": "southwest", "destination": "Throne_02", "requires_item_id": null},
         {"direction": "south", "destination": "Throne_03", "requires_item_id": null},
-        {"direction": "north", "destination": "Throne_04", "requires_item_id": null},
-        {"direction": "northwest", "destination": "Throne_07", "requires_item_id": null},
-        {"direction": "northeast", "destination": "Throne_09", "requires_item_id": null},
-        {"direction": "east", "destination": "Throne_12", "requires_item_id": null},
-        {"direction": "southeast", "destination": "Throne_13", "requires_item_id": null},
-        {"direction": "southwest", "destination": "Throne_14", "requires_item_id": null}
+        {"direction": "southeast", "destination": "Throne_04", "requires_item_id": null},
+        {"direction": "west", "destination": "Throne_07", "requires_item_id": null},
+        {"direction": "east", "destination": "Throne_09", "requires_item_id": null},
+        {"direction": "northwest", "destination": "Throne_12", "requires_item_id": null},
+        {"direction": "north", "destination": "Throne_13", "requires_item_id": null},
+        {"direction": "northeast", "destination": "Throne_14", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Throne_09": {
       "id": "Throne_09",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室九",
         "pinyin": "Wángzuò shì jiǔ",
         "english": "Throne Room 9"
       },
       "exits": [
-        {"direction": "northwest", "destination": "Throne_03", "requires_item_id": null},
-        {"direction": "west", "destination": "Throne_04", "requires_item_id": null},
-        {"direction": "southwest", "destination": "Throne_05", "requires_item_id": null},
-        {"direction": "south", "destination": "Throne_08", "requires_item_id": null},
+        {"direction": "southwest", "destination": "Throne_03", "requires_item_id": null},
+        {"direction": "south", "destination": "Throne_04", "requires_item_id": null},
+        {"direction": "southeast", "destination": "Throne_05", "requires_item_id": null},
+        {"direction": "west", "destination": "Throne_08", "requires_item_id": null},
         {"direction": "east", "destination": "Throne_10", "requires_item_id": null},
-        {"direction": "north", "destination": "Throne_13", "requires_item_id": null},
-        {"direction": "northeast", "destination": "Throne_14", "requires_item_id": null},
-        {"direction": "southeast", "destination": "Throne_15", "requires_item_id": null}
+        {"direction": "northwest", "destination": "Throne_13", "requires_item_id": null},
+        {"direction": "north", "destination": "Throne_14", "requires_item_id": null},
+        {"direction": "northeast", "destination": "Throne_15", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Throne_10": {
       "id": "Throne_10",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室十",
         "pinyin": "Wángzuò shì shí",
         "english": "Throne Room 10"
       },
       "exits": [
-        {"direction": "northwest", "destination": "Throne_04", "requires_item_id": null},
-        {"direction": "west", "destination": "Throne_05", "requires_item_id": null},
-        {"direction": "southwest", "destination": "Throne_06", "requires_item_id": null},
-        {"direction": "south", "destination": "Throne_09", "requires_item_id": null},
+        {"direction": "southwest", "destination": "Throne_04", "requires_item_id": null},
+        {"direction": "south", "destination": "Throne_05", "requires_item_id": null},
+        {"direction": "southeast", "destination": "Throne_06", "requires_item_id": null},
+        {"direction": "west", "destination": "Throne_09", "requires_item_id": null},
         {"direction": "east", "destination": "Throne_11", "requires_item_id": null},
-        {"direction": "north", "destination": "Throne_14", "requires_item_id": null},
-        {"direction": "northeast", "destination": "Throne_15", "requires_item_id": null},
-        {"direction": "southeast", "destination": "Throne_16", "requires_item_id": null}
+        {"direction": "northwest", "destination": "Throne_14", "requires_item_id": null},
+        {"direction": "north", "destination": "Throne_15", "requires_item_id": null},
+        {"direction": "northeast", "destination": "Throne_16", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Throne_11": {
       "id": "Throne_11",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室十一",
         "pinyin": "Wángzuò shì shíyī",
         "english": "Throne Room 11"
       },
       "exits": [
-        {"direction": "northwest", "destination": "Throne_05", "requires_item_id": null},
-        {"direction": "west", "destination": "Throne_06", "requires_item_id": null},
-        {"direction": "south", "destination": "Throne_10", "requires_item_id": null},
-        {"direction": "east", "destination": "Throne_15", "requires_item_id": null},
-        {"direction": "northeast", "destination": "Throne_16", "requires_item_id": null}
+        {"direction": "southwest", "destination": "Throne_05", "requires_item_id": null},
+        {"direction": "south", "destination": "Throne_06", "requires_item_id": null},
+        {"direction": "west", "destination": "Throne_10", "requires_item_id": null},
+        {"direction": "northwest", "destination": "Throne_15", "requires_item_id": null},
+        {"direction": "north", "destination": "Throne_16", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
     },
     "Throne_12": {
       "id": "Throne_12",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室十二",
         "pinyin": "Wángzuò shì shíèr",
@@ -993,7 +1004,7 @@
       },
       "exits": [
         {"direction": "south", "destination": "Throne_07", "requires_item_id": null},
-        {"direction": "west", "destination": "Throne_08", "requires_item_id": null},
+        {"direction": "southeast", "destination": "Throne_08", "requires_item_id": null},
         {"direction": "east", "destination": "Throne_13", "requires_item_id": null}
       ],
       "enemy_ids": null,
@@ -1001,18 +1012,18 @@
     },
     "Throne_13": {
       "id": "Throne_13",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室十三",
         "pinyin": "Wángzuò shì shísān",
         "english": "Throne Room 13"
       },
       "exits": [
-        {"direction": "north", "destination": "Throne_07", "requires_item_id": null},
-        {"direction": "northwest", "destination": "Throne_08", "requires_item_id": null},
-        {"direction": "west", "destination": "Throne_09", "requires_item_id": null},
-        {"direction": "south", "destination": "Throne_12", "requires_item_id": null},
+        {"direction": "southwest", "destination": "Throne_07", "requires_item_id": null},
+        {"direction": "south", "destination": "Throne_08", "requires_item_id": null},
+        {"direction": "southeast", "destination": "Throne_09", "requires_item_id": null},
+        {"direction": "west", "destination": "Throne_12", "requires_item_id": null},
         {"direction": "east", "destination": "Throne_14", "requires_item_id": null}
       ],
       "enemy_ids": null,
@@ -1020,18 +1031,18 @@
     },
     "Throne_14": {
       "id": "Throne_14",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室十四",
         "pinyin": "Wángzuò shì shísì",
         "english": "Throne Room 14"
       },
       "exits": [
-        {"direction": "northwest", "destination": "Throne_08", "requires_item_id": null},
-        {"direction": "west", "destination": "Throne_09", "requires_item_id": null},
-        {"direction": "southwest", "destination": "Throne_10", "requires_item_id": null},
-        {"direction": "north", "destination": "Throne_13", "requires_item_id": null},
+        {"direction": "southwest", "destination": "Throne_08", "requires_item_id": null},
+        {"direction": "south", "destination": "Throne_09", "requires_item_id": null},
+        {"direction": "southeast", "destination": "Throne_10", "requires_item_id": null},
+        {"direction": "west", "destination": "Throne_13", "requires_item_id": null},
         {"direction": "east", "destination": "Throne_15", "requires_item_id": null}
       ],
       "enemy_ids": null,
@@ -1039,18 +1050,18 @@
     },
     "Throne_15": {
       "id": "Throne_15",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室十五",
         "pinyin": "Wángzuò shì shíwǔ",
         "english": "Throne Room 15"
       },
       "exits": [
-        {"direction": "northwest", "destination": "Throne_09", "requires_item_id": null},
-        {"direction": "west", "destination": "Throne_10", "requires_item_id": null},
-        {"direction": "southwest", "destination": "Throne_11", "requires_item_id": null},
-        {"direction": "north", "destination": "Throne_14", "requires_item_id": null},
+        {"direction": "southwest", "destination": "Throne_09", "requires_item_id": null},
+        {"direction": "south", "destination": "Throne_10", "requires_item_id": null},
+        {"direction": "southeast", "destination": "Throne_11", "requires_item_id": null},
+        {"direction": "west", "destination": "Throne_14", "requires_item_id": null},
         {"direction": "east", "destination": "Throne_16", "requires_item_id": null}
       ],
       "enemy_ids": null,
@@ -1058,17 +1069,17 @@
     },
     "Throne_16": {
       "id": "Throne_16",
-      "room_id": "throne_complex",
-      "biome_id": null,
+      "room_id": "throne_room",
+      "biome_id": "cave",
       "name": {
         "chinese": "王座室十六",
         "pinyin": "Wángzuò shì shíliù",
         "english": "Throne Room 16"
       },
       "exits": [
-        {"direction": "northwest", "destination": "Throne_10", "requires_item_id": null},
-        {"direction": "west", "destination": "Throne_11", "requires_item_id": null},
-        {"direction": "south", "destination": "Throne_15", "requires_item_id": null}
+        {"direction": "southwest", "destination": "Throne_10", "requires_item_id": null},
+        {"direction": "south", "destination": "Throne_11", "requires_item_id": null},
+        {"direction": "west", "destination": "Throne_15", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null

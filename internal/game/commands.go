@@ -243,22 +243,40 @@ func (ch *CommandHandler) executeCommandByType(cmd Command) (string, error) {
 func (ch *CommandHandler) parseCommand(input string) Command {
 	inputLower := strings.ToLower(input)
 
+	fmt.Printf("DEBUG: parseCommand received: '%s'\n", input) // Debug line
+	inputLower = strings.ToLower(input)
+
+	if input == "退出" || input == "quit" || input == "exit" || input == "退" {
+		fmt.Println("DEBUG: Quit command detected") // Debug line
+		return Command{Type: CmdQuit, RawInput: input}
+	}
+
+	// ========== CHECK QUIT COMMANDS FIRST ==========
+	if input == "退出" || input == "quit" || input == "exit" || input == "退" {
+		return Command{Type: CmdQuit, RawInput: input}
+	}
+
+	// ========== MOVEMENT COMMANDS ==========
+	// Movement commands (Chinese format: 往北走, 往北去)
 	if strings.HasPrefix(input, "往") {
 		if dir, err := models.ParseDirection(input); err == nil {
 			return Command{Type: CmdMove, Args: []string{dir.String()}, RawInput: input}
 		}
 	}
 
+	// Movement commands (English format: go north, walk north)
 	if strings.HasPrefix(inputLower, "go ") || strings.HasPrefix(inputLower, "walk ") {
 		if dir, err := models.ParseDirection(input); err == nil {
 			return Command{Type: CmdMove, Args: []string{dir.String()}, RawInput: input}
 		}
 	}
 
+	// Raw Chinese direction (e.g., "北", "西北")
 	if dir, err := models.ParseDirection(input); err == nil {
 		return Command{Type: CmdMove, Args: []string{dir.String()}, RawInput: input}
 	}
 
+	// ========== TAKE COMMANDS ==========
 	if strings.HasPrefix(input, "拿") || strings.HasPrefix(input, "取") {
 		itemName := strings.TrimPrefix(input, "拿")
 		itemName = strings.TrimPrefix(itemName, "取")
@@ -269,6 +287,7 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// Take command (English)
 	if strings.HasPrefix(inputLower, "take ") {
 		itemName := strings.TrimPrefix(inputLower, "take ")
 		itemName = strings.TrimSpace(itemName)
@@ -278,26 +297,27 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// ========== INVENTORY COMMANDS ==========
 	if input == "背包" || input == "i" || input == "inventory" {
 		return Command{Type: CmdInventory, RawInput: input}
 	}
 
+	// ========== STATUS COMMANDS ==========
 	if input == "状态" || input == "status" {
 		return Command{Type: CmdStatus, RawInput: input}
 	}
 
+	// ========== HELP COMMANDS ==========
 	if input == "帮助" || input == "help" {
 		return Command{Type: CmdHelp, RawInput: input}
 	}
 
-	if input == "退出" || input == "quit" || input == "exit" {
-		return Command{Type: CmdQuit, RawInput: input}
-	}
-
+	// ========== LOOK COMMANDS ==========
 	if input == "看" || input == "查看" || input == "look" {
 		return Command{Type: CmdLook, RawInput: input}
 	}
 
+	// ========== SAVE COMMANDS ==========
 	if strings.HasPrefix(inputLower, "save ") || strings.HasPrefix(input, "保存 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -307,6 +327,7 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdSave, Args: []string{"autosave"}, RawInput: input}
 	}
 
+	// ========== LOAD COMMANDS ==========
 	if strings.HasPrefix(inputLower, "load ") || strings.HasPrefix(input, "加载 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -316,10 +337,12 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// ========== LIST SAVES COMMANDS ==========
 	if input == "saves" || input == "存档列表" {
 		return Command{Type: CmdListSaves, RawInput: input}
 	}
 
+	// ========== DELETE SAVE COMMANDS ==========
 	if strings.HasPrefix(inputLower, "delete ") || strings.HasPrefix(input, "删除 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -329,6 +352,7 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// ========== EQUIP COMMANDS ==========
 	if strings.HasPrefix(inputLower, "equip ") || strings.HasPrefix(input, "装备 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -341,6 +365,7 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// ========== UNEQUIP COMMANDS ==========
 	if strings.HasPrefix(inputLower, "unequip ") || strings.HasPrefix(input, "卸下 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -353,6 +378,7 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// ========== USE COMMANDS ==========
 	if strings.HasPrefix(inputLower, "use ") || strings.HasPrefix(input, "使用 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -362,6 +388,7 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// ========== DROP COMMANDS ==========
 	if strings.HasPrefix(inputLower, "drop ") || strings.HasPrefix(input, "丢弃 ") {
 		parts := strings.Fields(input)
 		if len(parts) >= 2 {
@@ -564,7 +591,7 @@ func (ch *CommandHandler) executeHelp() (string, error) {
 	return ch.formatOutput(helpChinese, helpPinyin, helpEnglish), nil
 }
 
-// executeQuit handles quit command
+// executeQuit handles quit command - now just sets the flag
 func (ch *CommandHandler) executeQuit() (string, error) {
 	ch.gameState.GameOver = true
 	return ch.formatOutput(

@@ -1,6 +1,6 @@
 {
   "game_version": "0.2.0",
-  "starting_location_id": "entrance",
+  "starting_location_id": "Entrance_1",
   "win_condition_item_id": "golden_chalice",
   "starting_health": 100,
   "inventory_settings": {
@@ -18,6 +18,6 @@
     "flee_success_rate": 100,
     "player_base_defense": 0
   },
-  "auto_save_enabled": true,
+  "auto_save_enabled": false,
   "auto_save_interval": 5
 }

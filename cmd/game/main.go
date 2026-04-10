@@ -129,7 +129,17 @@ func main() {
 		fmt.Print(getTrilingualInputPrompt())
 
 		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(input)
+		input = strings.TrimSpace(strings.ToLower(input))
+
+		// Check for quit commands from main menu
+		if input == "退出" || input == "quit" || input == "exit" || input == "退" {
+			printTrilingual(
+				"\n感谢游玩！再见！",
+				"\nGan xie you wan! Zai jian!",
+				"\nThanks for playing! Farewell!",
+			)
+			return
+		}
 
 		switch input {
 		case "1":
@@ -395,7 +405,7 @@ func loadGame(gs *game.GameState, saveMgr *save.SaveManager, reader *bufio.Reade
 		return false
 	}
 
-	// Restore game state - saveData.Player is already *models.Player
+	// Restore game state
 	gs.Player = saveData.Player
 	gs.DefeatedEnemies = saveData.DefeatedEnemies
 	gs.TakenItems = saveData.TakenItems
@@ -485,6 +495,53 @@ func runGameLoop(gs *game.GameState, saveMgr *save.SaveManager, reader *bufio.Re
 		fmt.Print("\n> ")
 		input, _ := reader.ReadString('\n')
 		input = strings.TrimSpace(input)
+
+		// Check for quit commands first
+		lowerInput := strings.ToLower(input)
+		if input == "退出" || input == "quit" || input == "exit" || input == "退" || lowerInput == "quit" || lowerInput == "exit" {
+			// Confirm quit
+			printTrilingual(
+				"确定要退出吗？(y/n): ",
+				"Que ding yao tui chu ma? (y/n): ",
+				"Are you sure you want to quit? (y/n): ",
+			)
+			confirm, _ := reader.ReadString('\n')
+			confirm = strings.TrimSpace(strings.ToLower(confirm))
+			if confirm == "y" || confirm == "yes" || confirm == "是" {
+				// Auto-save before quitting
+				if saveMgr != nil && gs.Config.IsAutoSaveEnabled() {
+					err := saveMgr.AutoSave(
+						gs.Player,
+						gs.DefeatedEnemies,
+						gs.TakenItems,
+						gs.PendingDrops,
+						gs.Config.GameVersion,
+						gs.Player.Name,
+					)
+					if err == nil {
+						printTrilingual(
+							"游戏已自动保存。",
+							"You xi yi zi dong bao cun.",
+							"Game has been auto-saved.",
+						)
+					}
+				}
+				printTrilingual(
+					"\n感谢游玩！再见！",
+					"\nGan xie you wan! Zai jian!",
+					"\nThanks for playing! Farewell!",
+				)
+				gs.GameOver = true
+				return
+			} else {
+				printTrilingual(
+					"继续游戏。",
+					"Ji xu you xi.",
+					"Continuing game.",
+				)
+				continue
+			}
+		}
 
 		// Process command
 		result, err := cmdHandler.ProcessCommand(input)

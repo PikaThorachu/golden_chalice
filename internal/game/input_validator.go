@@ -24,14 +24,14 @@ type ValidationResult struct {
 	ErrorMsgEnglish string
 }
 
-// In NewInputValidator(), update the regex patterns:
 func NewInputValidator() *InputValidator {
 	return &InputValidator{
 		maxInputLength: 200,
 		allowedCommands: map[string]bool{
 			// Chinese commands
 			"帮助": true, "背包": true, "状态": true, "查看": true, "看": true,
-			"退出": true, "保存": true, "加载": true, "存档列表": true,
+			"退出": true, "退": true, // Add "退" here
+			"保存": true, "加载": true, "存档列表": true,
 			"装备": true, "卸下": true, "使用": true, "丢弃": true, "拿": true, "取": true,
 			// English commands
 			"help": true, "inventory": true, "i": true, "status": true,
@@ -39,7 +39,6 @@ func NewInputValidator() *InputValidator {
 			"load": true, "saves": true, "equip": true, "unequip": true,
 			"use": true, "drop": true, "take": true,
 		},
-		// Updated to support 1-2 character directions
 		chineseDirectionPattern: regexp.MustCompile(`^往?[北南东西西北东北西南东南出][走去]?$`),
 		englishDirectionPattern: regexp.MustCompile(`^(go|walk)\s+(north|south|east|west|northwest|northeast|southwest|southeast|out)$`),
 	}
@@ -324,8 +323,14 @@ func (iv *InputValidator) IsSimpleCommand(input string) bool {
 	return iv.allowedCommands[sanitized]
 }
 
+// GetCommandCategory returns the category of a command
 func (iv *InputValidator) GetCommandCategory(input string) string {
 	sanitized := strings.TrimSpace(strings.ToLower(input))
+
+	// Check quit commands first
+	if sanitized == "quit" || sanitized == "exit" || sanitized == "退出" || sanitized == "退" {
+		return "quit"
+	}
 
 	switch sanitized {
 	case "help", "帮助":
@@ -336,12 +341,10 @@ func (iv *InputValidator) GetCommandCategory(input string) string {
 		return "status"
 	case "look", "看", "查看":
 		return "look"
-	case "quit", "exit", "退出":
-		return "quit"
 	case "saves", "存档列表":
 		return "list_saves"
 	default:
-		// Check for movement (Chinese)
+		// Check for movement
 		cleaned := strings.TrimPrefix(sanitized, "往")
 		cleaned = strings.TrimSuffix(cleaned, "走")
 		cleaned = strings.TrimSuffix(cleaned, "去")
