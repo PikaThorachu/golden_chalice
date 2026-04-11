@@ -8,12 +8,14 @@ import (
 type ItemType string
 
 const (
-	ItemTypeWeapon     ItemType = "weapon"
-	ItemTypeQuest      ItemType = "quest"
-	ItemTypeConsumable ItemType = "consumable"
-	ItemTypeKey        ItemType = "key"
-	ItemTypeArmor      ItemType = "armor"
-	ItemTypeBackpack   ItemType = "backpack" // Add this line
+	ItemTypeWeapon      ItemType = "weapon"
+	ItemTypeQuest       ItemType = "quest"
+	ItemTypeConsumable  ItemType = "consumable"
+	ItemTypeKey         ItemType = "key"
+	ItemTypeArmor       ItemType = "armor"
+	ItemTypeBackpack    ItemType = "backpack"    // Add this line
+	ItemTypeInspectable ItemType = "inspectable" // Add this line
+	ItemTypeJunk        ItemType = "junk"        // Add this line
 )
 
 // ItemProperties contains type-specific properties
@@ -41,6 +43,11 @@ type ItemProperties struct {
 
 	// Backpack properties (add this section)
 	SizeBonus *int `json:"size_bonus"` // Additional inventory slots
+
+	// Inspectable properties (add these)
+	ContainsItemID *string `json:"contains_item_id"` // Item ID found inside
+	TrapEnemyID    *string `json:"trap_enemy_id"`    // Enemy ID that spawns on inspect
+	InspectMessage *string `json:"inspect_message"`  // Message shown when inspecting
 }
 
 // Item represents any item in the game
@@ -87,6 +94,16 @@ func (i *Item) IsUsable() bool {
 // IsBackpack checks if the item is a backpack
 func (i *Item) IsBackpack() bool {
 	return i.Type == ItemTypeBackpack
+}
+
+// IsInspectable checks if the item can be inspected
+func (i *Item) IsInspectable() bool {
+	return i.Type == ItemTypeInspectable
+}
+
+// IsJunk checks if the item is junk (no gameplay effect)
+func (i *Item) IsJunk() bool {
+	return i.Type == ItemTypeJunk
 }
 
 // GetSizeBonus returns the inventory size bonus for backpacks
@@ -214,4 +231,28 @@ func (i *Item) GetDisplayName(config *Config) string {
 // GetDisplayDescription returns the item's description in the user's preferred language
 func (i *Item) GetDisplayDescription(config *Config) string {
 	return config.GetDisplayText(i.Description)
+}
+
+// GetContainsItemID returns the item ID contained in this inspectable item
+func (i *Item) GetContainsItemID() string {
+	if i.Type == ItemTypeInspectable && i.Properties.ContainsItemID != nil {
+		return *i.Properties.ContainsItemID
+	}
+	return ""
+}
+
+// GetTrapEnemyID returns the enemy ID that spawns when inspecting
+func (i *Item) GetTrapEnemyID() string {
+	if i.Type == ItemTypeInspectable && i.Properties.TrapEnemyID != nil {
+		return *i.Properties.TrapEnemyID
+	}
+	return ""
+}
+
+// GetInspectMessage returns the message shown when inspecting
+func (i *Item) GetInspectMessage() string {
+	if i.Type == ItemTypeInspectable && i.Properties.InspectMessage != nil {
+		return *i.Properties.InspectMessage
+	}
+	return ""
 }

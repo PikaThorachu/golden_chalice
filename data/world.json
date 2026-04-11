@@ -42,27 +42,27 @@
     "anteroom": {
       "id": "anteroom",
       "name": {
-        "chinese": "前厅 Complex",
-        "pinyin": "Qiántīng Complex",
-        "english": "Anteroom Complex"
+        "chinese": "前厅",
+        "pinyin": "Qiántīng",
+        "english": "Anteroom"
       },
       "description": {
-        "chinese": "一个复杂的前厅网络，连接着多个区域。华丽的石柱支撑着高高的天花板。",
-        "pinyin": "Yī gè fùzá de qiántīng wǎngluò, liánjiē zhe duō gè qūyù. Huálì de shízhù zhīchēng zhe gāogāo de tiānhuābǎn.",
-        "english": "A complex network of anterooms connecting multiple areas. Ornate stone pillars support the high ceiling."
+        "chinese": "一间狭小的房间，一张破旧的办公桌正对着一张破损不堪的沙发。墙上歪斜地挂着几幅褪了色的画作，画中人物皆是早已作古的统治者。",
+        "pinyin": "Yī jiàn xiáxiǎo de fángjiān, yī zhāng pòjiù de bàngōng zhuō zhèng duìzhe yī zhāng pòsǔn bùkān dì shāfā. Qiáng shàng wāixié dì guàzhe jǐ fú tuìle sè de huàzuò, huà zhōng rénwù jiē shì zǎoyǐ zuògǔ de tǒngzhì zhě.",
+        "english": "A small room with a broken old desk across from a broken, tattered couch. Faded paintings of long-dead rulers hang askew on the walls."
       }
     },
     "throne_room": {
       "id": "throne_room",
       "name": {
-        "chinese": "王座 Complex",
-        "pinyin": "Wángzuò Complex",
-        "english": "Throne Complex"
+        "chinese": "王座室",
+        "pinyin": "Wángzuò shì",
+        "english": "Throne Room"
       },
       "description": {
-        "chinese": "宏伟的王座 Complex 展现在你面前。高耸的石柱支撑着拱形天花板，墙上挂着古老的挂毯。空气中弥漫着权力和历史的厚重感。",
-        "pinyin": "Hóngwěi de wángzuò complex zhǎnxiàn zài nǐ miànqián. Gāosǒng de shízhù zhīchēng zhe gǒngxíng tiānhuābǎn, qiáng shàng guà zhe gǔlǎo de guàtǎn. Kōngqì zhōng mí màn zhe quánlì hé lìshǐ de hòuzhòng gǎn.",
-        "english": "The magnificent Throne Complex spreads before you. Towering stone pillars support arched ceilings, and ancient tapestries hang from the walls. The air is thick with the weight of power and history."
+        "chinese": "一间宽敞的大厅在你的眼前铺展开来。环顾四周，随处可见精巧繁复的装饰、陈列着的武器与盔甲，以及摆放着珠宝的展示柜。大厅深处，一座雕工精美的王座端坐于高台之上。空气中弥漫着一种厚重的力量感与历史气息。",
+        "pinyin": "Yī jiàn kuānchǎng de dàtīng zài nǐ de yǎnqián pūzhǎn kāi lái. Huángù sìzhōu, suíchù kějiàn jīngqiǎo fánfù de zhuāngshì, chénlièzhe de wǔqì yǔ kuījiǎ, yǐjí bǎi fàngzhe zhūbǎo de zhǎnshì guì. Dàtīng shēn chù, yīzuò diāo gōng jīngměi de wángzuò duān zuò yú gāotái zhī shàng. Kōngqì zhòng mímànzhe yī zhǒng hòuzhòng de lìliàng gǎn yǔ lìshǐ qìxí.",
+        "english": "A large room spreads out before you. All around the room, you can see elaborate decorations, weapons and armor displays, display cases with jewels. At the back of the room, an elaborate throne sits on a dias. The air is thick with a sense of power and history."
       }
     },
     "hallway_a": {
@@ -120,7 +120,7 @@
         {"direction": "northeast", "destination": "Entrance_3", "requires_item_id": null}
       ],
       "enemy_ids": null,
-      "item_ids": null
+      "item_ids": ["rusty_knife"]
     },
     "Entrance_2": {
       "id": "Entrance_2",
@@ -156,7 +156,7 @@
         {"direction": "northeast", "destination": "Entrance_6", "requires_item_id": null}
       ],
       "enemy_ids": null,
-      "item_ids": null
+      "item_ids": ["health_potion"]
     },
     "Entrance_4": {
       "id": "Entrance_4",
@@ -350,7 +350,7 @@
         {"direction": "west", "destination": "Store_4", "requires_item_id": null}
       ],
       "enemy_ids": null,
-      "item_ids": null
+      "item_ids": ["old_chest"]
     },
     "Store_4": {
       "id": "Store_4",
@@ -382,7 +382,7 @@
         {"direction": "northeast", "destination": "armory_3", "requires_item_id": null},
         {"direction": "southeast", "destination": "Entrance_9", "requires_item_id": null}
       ],
-      "enemy_ids": null,
+      "enemy_ids": ["skeleton_guard"],
       "item_ids": null
     },
     "armory_2": {
@@ -419,7 +419,7 @@
         {"direction": "southeast", "destination": "armory_6", "requires_item_id": null}
       ],
       "enemy_ids": null,
-      "item_ids": null
+      "item_ids": ["steel_armor"]
     },
     "armory_4": {
       "id": "armory_4",
@@ -436,7 +436,7 @@
         {"direction": "southeast", "destination": "armory_7", "requires_item_id": null}
       ],
       "enemy_ids": null,
-      "item_ids": null
+      "item_ids": ["old_desk"]
     },
     "armory_5": {
       "id": "armory_5",
@@ -772,7 +772,7 @@
       },
       "exits": [
         {"direction": "south", "destination": "hallway_c4", "requires_item_id": null},
-        {"direction": "north", "destination": "Throne_01", "requires_item_id": null}
+        {"direction": "north", "destination": "Throne_01", "requires_item_id": "bronze_key"}
       ],
       "enemy_ids": null,
       "item_ids": null
@@ -905,7 +905,8 @@
         {"direction": "north", "destination": "Throne_12", "requires_item_id": null},
         {"direction": "northeast", "destination": "Throne_13", "requires_item_id": null}
       ],
-      "enemy_ids": null,
+      "enemy_ids": ["shadow_knight"],
+      "first_visit_only": true,
       "item_ids": null
     },
     "Throne_08": {
@@ -1081,8 +1082,8 @@
         {"direction": "south", "destination": "Throne_11", "requires_item_id": null},
         {"direction": "west", "destination": "Throne_15", "requires_item_id": null}
       ],
-      "enemy_ids": null,
-      "item_ids": null
+      "enemy_ids": ["lich_king"],
+      "item_ids": ["golden_chalice"]
     }
   }
 }

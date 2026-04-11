@@ -186,15 +186,24 @@ func getChineseDirection(english string) string {
 	}
 }
 
-// ValidateItemCommand validates take/use/drop/equip commands
+// In ValidateItemCommand, add support for natural Chinese verbs:
+
 func (iv *InputValidator) ValidateItemCommand(input string) (command string, itemName string, isValid bool, errorMsg string) {
 	sanitized := strings.TrimSpace(input)
 
-	// Define command prefixes
+	// Define command prefixes including natural Chinese
 	commandPrefixes := map[string]string{
+		// Take commands
 		"拿": "take", "取": "take", "take": "take",
+		// Use commands
 		"使用": "use", "use": "use",
-		"装备": "equip", "equip": "equip",
+		// Equip commands - natural Chinese
+		"装备": "equip", "带上": "equip", "戴上": "equip", "佩上": "equip",
+		"佩带": "equip", "穿着": "equip", "穿上": "equip",
+		// Unequip commands
+		"卸下": "unequip", "取下": "unequip", "脱下": "unequip",
+		"摘下": "unequip", "解下": "unequip", "unequip": "unequip",
+		// Drop commands
 		"丢弃": "drop", "drop": "drop",
 	}
 

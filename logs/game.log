@@ -158,3 +158,35 @@ location 'Throne_07' references unknown biome '' - Context: map[phase:load_game_
 2026/04/09 23:21:27 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:冒险者]
 2026/04/10 09:19:25 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:Entrance_9 room_id:armory room_name:军械库 to_location:armory_1]
 2026/04/10 09:20:00 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:tc]
+2026/04/11 01:00:23 [ERROR] logger.go:191 - Error: failed to load items: found 6 item validation errors:
+item 'old_desk' has invalid type: inspectable
+item 'old_chest' has invalid type: inspectable
+item 'old_helmet' has invalid type: junk
+item 'old_shield' has invalid type: junk
+item 'old_scroll' has invalid type: junk
+item 'old_boot' has invalid type: junk - Context: map[phase:load_game_data]
+2026/04/11 01:14:26 [ERROR] logger.go:191 - Error: failed to load items: found 6 item validation errors:
+item 'old_boot' has invalid type: junk
+item 'old_helmet' has invalid type: junk
+item 'old_scroll' has invalid type: junk
+item 'old_desk' has invalid type: inspectable
+item 'old_chest' has invalid type: inspectable
+item 'old_shield' has invalid type: junk - Context: map[phase:load_game_data]
+2026/04/11 01:16:33 [ERROR] logger.go:191 - Error: failed to load world: world validation failed: found 1 validation errors:
+location 'Throne_01' exit 0 references unknown required item 'null' - Context: map[phase:load_game_data]
+2026/04/11 01:18:32 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:宇宙大王]
+2026/04/11 01:23:50 [ERROR] logger.go:191 - Error: 一堵石墙挡住了你的去路 - Context: map[direction:northwest]
+2026/04/11 01:26:24 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:Entrance_7 room_id:store_room room_name:储藏室 to_location:hallway_a1]
+2026/04/11 01:28:12 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:hallway_a1 room_id:entrance_chamber room_name:入口厅 to_location:Entrance_7]
+2026/04/11 01:28:51 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:Entrance_9 room_id:armory room_name:军械库 to_location:armory_1]
+2026/04/11 01:29:02 [INFO] logger.go:181 - Combat: 宇宙大王 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/11 01:29:02 [INFO] logger.go:181 - Combat: 骷髅守卫 (Kulou shouwei) / Skeleton Guard attacked 宇宙大王 for 18 damage - enemy_attack
+2026/04/11 01:31:54 [INFO] logger.go:181 - Combat: 宇宙大王 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/11 01:31:54 [INFO] logger.go:181 - Combat: 骷髅守卫 (Kulou shouwei) / Skeleton Guard attacked 宇宙大王 for 20 damage - enemy_attack
+2026/04/11 01:32:33 [INFO] logger.go:181 - Combat: 宇宙大王 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/11 01:32:33 [INFO] logger.go:181 - Combat: 骷髅守卫 (Kulou shouwei) / Skeleton Guard attacked 宇宙大王 for 20 damage - enemy_attack
+2026/04/11 01:32:42 [INFO] logger.go:181 - Combat: 宇宙大王 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/11 01:32:42 [INFO] logger.go:181 - Combat: 骷髅守卫 (Kulou shouwei) / Skeleton Guard attacked 宇宙大王 for 16 damage - enemy_attack
+2026/04/11 01:32:43 [INFO] logger.go:181 - Combat: 宇宙大王 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/11 01:32:43 [INFO] logger.go:181 - Combat: 宇宙大王 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - victory
+2026/04/11 01:35:16 [ERROR] logger.go:191 - Error: 一堵石墙挡住了你的去路 - Context: map[direction:southwest]

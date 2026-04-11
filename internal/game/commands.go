@@ -352,12 +352,28 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
+	// In parseCommand function, update the EQUIP section:
+
 	// ========== EQUIP COMMANDS ==========
-	if strings.HasPrefix(inputLower, "equip ") || strings.HasPrefix(input, "装备 ") {
-		parts := strings.Fields(input)
-		if len(parts) >= 2 {
-			itemName := parts[1]
-			if itemName == "backpack" || itemName == "背包" {
+	// Chinese equip variations: 装备, 带上, 戴上, 佩上, 佩带, 穿着, 穿上
+	if strings.HasPrefix(input, "装备") ||
+		strings.HasPrefix(input, "带上") ||
+		strings.HasPrefix(input, "戴上") ||
+		strings.HasPrefix(input, "佩上") ||
+		strings.HasPrefix(input, "佩带") ||
+		strings.HasPrefix(input, "穿着") ||
+		strings.HasPrefix(input, "穿上") {
+
+		// Extract item name by removing the verb prefix
+		itemName := input
+		for _, prefix := range []string{"装备", "带上", "戴上", "佩上", "佩带", "穿着", "穿上"} {
+			itemName = strings.TrimPrefix(itemName, prefix)
+		}
+		itemName = strings.TrimSpace(itemName)
+
+		if itemName != "" {
+			// Check if it's a backpack
+			if itemName == "背包" || strings.Contains(itemName, "背包") {
 				return Command{Type: CmdEquipBackpack, Args: []string{itemName}, RawInput: input}
 			}
 			return Command{Type: CmdEquip, Args: []string{itemName}, RawInput: input}
@@ -366,14 +382,26 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 	}
 
 	// ========== UNEQUIP COMMANDS ==========
-	if strings.HasPrefix(inputLower, "unequip ") || strings.HasPrefix(input, "卸下 ") {
-		parts := strings.Fields(input)
-		if len(parts) >= 2 {
-			slot := parts[1]
-			if slot == "backpack" || slot == "背包" {
+	// Chinese unequip variations: 卸下, 取下, 脱下, 摘下, 解下
+	if strings.HasPrefix(input, "卸下") ||
+		strings.HasPrefix(input, "取下") ||
+		strings.HasPrefix(input, "脱下") ||
+		strings.HasPrefix(input, "摘下") ||
+		strings.HasPrefix(input, "解下") {
+
+		// Extract item name by removing the verb prefix
+		slotOrItem := input
+		for _, prefix := range []string{"卸下", "取下", "脱下", "摘下", "解下"} {
+			slotOrItem = strings.TrimPrefix(slotOrItem, prefix)
+		}
+		slotOrItem = strings.TrimSpace(slotOrItem)
+
+		if slotOrItem != "" {
+			// Check if it's a backpack
+			if slotOrItem == "背包" || slotOrItem == "backpack" {
 				return Command{Type: CmdUnequipBackpack, RawInput: input}
 			}
-			return Command{Type: CmdUnequip, Args: []string{slot}, RawInput: input}
+			return Command{Type: CmdUnequip, Args: []string{slotOrItem}, RawInput: input}
 		}
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
@@ -815,21 +843,52 @@ func (ch *CommandHandler) executeEquip(cmd Command) (string, error) {
 		)
 	}
 
+	// Determine appropriate verb based on item type
+	var equipVerb string
+	var equipVerbPinyin string
+	var equipVerbEnglish string
+
+	if foundItem.IsWeapon() {
+		equipVerb = "佩上了"
+		equipVerbPinyin = "Pei shang le"
+		equipVerbEnglish = "equipped"
+	} else if foundItem.IsArmor() {
+		equipVerb = "穿上了"
+		equipVerbPinyin = "Chuan shang le"
+		equipVerbEnglish = "put on"
+	} else if foundItem.IsBackpack() {
+		equipVerb = "带上了"
+		equipVerbPinyin = "Dai shang le"
+		equipVerbEnglish = "equipped"
+	} else if strings.Contains(foundItem.Name.Chinese, "戒指") || strings.Contains(foundItem.Name.English, "ring") {
+		equipVerb = "戴上了"
+		equipVerbPinyin = "Dai shang le"
+		equipVerbEnglish = "put on"
+	} else if strings.Contains(foundItem.Name.Chinese, "项链") || strings.Contains(foundItem.Name.English, "necklace") {
+		equipVerb = "戴上了"
+		equipVerbPinyin = "Dai shang le"
+		equipVerbEnglish = "put on"
+	} else {
+		equipVerb = "装备了"
+		equipVerbPinyin = "Zhuang bei le"
+		equipVerbEnglish = "equipped"
+	}
+
 	if foundItem.IsWeapon() {
 		ch.gameState.Player.EquipWeapon(itemID)
 		return ch.formatOutput(
-			"装备了 "+foundItem.Name.Chinese,
-			"Zhuang bei le "+foundItem.Name.Pinyin,
-			"Equipped: "+foundItem.Name.English,
+			equipVerb+" "+foundItem.Name.Chinese,
+			equipVerbPinyin+" "+foundItem.Name.Pinyin,
+			equipVerbEnglish+" "+foundItem.Name.English,
 		), nil
 	}
 
 	if foundItem.IsArmor() {
 		ch.gameState.Player.EquipArmor(itemID)
 		return ch.formatOutput(
-			"装备了 "+foundItem.Name.Chinese,
-			"Zhuang bei le "+foundItem.Name.Pinyin,
-			"Equipped: "+foundItem.Name.English,
+			equipVerb+" "+foundItem.Name.Chinese,
+			equipVerbPinyin+" "+foundItem.Name.Pinyin,
+			equipVerbEnglish+" "+foundItem.Name.English,
 		), nil
 	}
 
@@ -852,9 +911,36 @@ func (ch *CommandHandler) executeUnequip(cmd Command) (string, error) {
 
 	slot := cmd.Args[0]
 
+	// Determine appropriate verb based on item type
+	var unequipVerb string
+	var unequipVerbPinyin string
+	var unequipVerbEnglish string
+
 	if slot == "武器" || slot == "weapon" {
 		if ch.gameState.Player.HasEquippedWeapon() {
+			weaponID := ch.gameState.Player.GetEquippedWeaponID()
+			weapon, exists := ch.gameState.Items[weaponID]
+
+			// Choose verb based on weapon type
+			if strings.Contains(weapon.Name.Chinese, "剑") {
+				unequipVerb = "解下了"
+				unequipVerbPinyin = "Jie xia le"
+				unequipVerbEnglish = "unstrapped"
+			} else {
+				unequipVerb = "卸下了"
+				unequipVerbPinyin = "Xie xia le"
+				unequipVerbEnglish = "unequipped"
+			}
+
 			ch.gameState.Player.UnequipWeapon()
+
+			if exists {
+				return ch.formatOutput(
+					unequipVerb+" "+weapon.Name.Chinese,
+					unequipVerbPinyin+" "+weapon.Name.Pinyin,
+					unequipVerbEnglish+" "+weapon.Name.English,
+				), nil
+			}
 			return ch.formatOutput(
 				"已卸下武器",
 				"Yi xie xia wu qi",
@@ -870,7 +956,22 @@ func (ch *CommandHandler) executeUnequip(cmd Command) (string, error) {
 
 	if slot == "护甲" || slot == "armor" {
 		if ch.gameState.Player.HasEquippedArmor() {
+			armorID := ch.gameState.Player.GetEquippedArmorID()
+			armor, exists := ch.gameState.Items[armorID]
+
+			unequipVerb = "脱下了"
+			unequipVerbPinyin = "Tuo xia le"
+			unequipVerbEnglish = "took off"
+
 			ch.gameState.Player.UnequipArmor()
+
+			if exists {
+				return ch.formatOutput(
+					unequipVerb+" "+armor.Name.Chinese,
+					unequipVerbPinyin+" "+armor.Name.Pinyin,
+					unequipVerbEnglish+" "+armor.Name.English,
+				), nil
+			}
 			return ch.formatOutput(
 				"已卸下护甲",
 				"Yi xie xia hu jia",
@@ -989,8 +1090,8 @@ func (ch *CommandHandler) executeDrop(cmd Command) (string, error) {
 func (ch *CommandHandler) executeEquipBackpack(cmd Command) (string, error) {
 	if len(cmd.Args) == 0 {
 		return "", ch.formatError(
-			"装备哪个背包？",
-			"Zhuang bei na ge bei bao?",
+			"带上哪个背包？",
+			"Dai shang na ge bei bao?",
 			"Equip which backpack?",
 		)
 	}
@@ -1020,5 +1121,10 @@ func (ch *CommandHandler) executeEquipBackpack(cmd Command) (string, error) {
 
 // executeUnequipBackpack handles backpack unequipment
 func (ch *CommandHandler) executeUnequipBackpack() (string, error) {
-	return ch.gameState.SafeUnequipBackpack()
+	result, err := ch.gameState.SafeUnequipBackpack()
+	if err != nil {
+		return "", err
+	}
+	// Replace the generic message with more natural Chinese
+	return strings.Replace(result, "卸下了", "取下了", 1), nil
 }

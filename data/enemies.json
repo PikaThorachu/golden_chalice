@@ -81,6 +81,145 @@
       "drops": [],
       "biome_affinity": ["dungeon"],
       "special_abilities": null
+    },
+    {
+      "id": "rat",
+      "name": {"chinese": "老鼠", "pinyin": "Laoshu", "english": "Rat"},
+      "health": 15,
+      "attack_power": {"min": 3, "max": 8},
+      "defense": 0,
+      "experience_points": 15,
+      "drops": [],
+      "biome_affinity": ["cave"],
+      "special_abilities": null
+    },
+    {
+      "id": "bat",
+      "name": {"chinese": "蝙蝠", "pinyin": "Bianfu", "english": "Bat"},
+      "health": 12,
+      "attack_power": {"min": 2, "max": 6},
+      "defense": 0,
+      "experience_points": 10,
+      "drops": [],
+      "biome_affinity": ["cave"],
+      "special_abilities": null
+    },
+    {
+      "id": "spider",
+      "name": {"chinese": "蜘蛛", "pinyin": "Zhizhu", "english": "Spider"},
+      "health": 18,
+      "attack_power": {"min": 4, "max": 9},
+      "defense": 0,
+      "experience_points": 20,
+      "drops": [],
+      "biome_affinity": ["cave"],
+      "special_abilities": null
+    },
+    {
+      "id": "mimic",
+      "name": {"chinese": "模仿者", "pinyin": "Mofangzhe", "english": "Mimic"},
+      "health": 45,
+      "attack_power": {"min": 10, "max": 18},
+      "defense": 5,
+      "experience_points": 60,
+      "drops": [{"item_id": "health_potion", "chance": 30}],
+      "biome_affinity": ["storage_area"],
+      "special_abilities": null
+    },
+    {
+      "id": "skeleton_guard",
+      "name": {"chinese": "骷髅守卫", "pinyin": "Kulou shouwei", "english": "Skeleton Guard"},
+      "health": 50,
+      "attack_power": {"min": 12, "max": 20},
+      "defense": 8,
+      "experience_points": 70,
+      "drops": [],
+      "biome_affinity": ["armory_complex"],
+      "special_abilities": null
+    },
+    {
+      "id": "armored_knight",
+      "name": {"chinese": "装甲骑士", "pinyin": "Zhuangjia qishi", "english": "Armored Knight"},
+      "health": 80,
+      "attack_power": {"min": 15, "max": 28},
+      "defense": 15,
+      "experience_points": 120,
+      "drops": [{"item_id": "health_potion", "chance": 20}],
+      "biome_affinity": ["armory_complex"],
+      "special_abilities": null
+    },
+    {
+      "id": "ghost",
+      "name": {"chinese": "幽灵", "pinyin": "Youling", "english": "Ghost"},
+      "health": 40,
+      "attack_power": {"min": 8, "max": 16},
+      "defense": 10,
+      "experience_points": 55,
+      "drops": [],
+      "biome_affinity": ["hallway_b_complex"],
+      "special_abilities": null
+    },
+    {
+      "id": "shadow_creature",
+      "name": {"chinese": "暗影生物", "pinyin": "Anying shengwu", "english": "Shadow Creature"},
+      "health": 55,
+      "attack_power": {"min": 14, "max": 22},
+      "defense": 8,
+      "experience_points": 80,
+      "drops": [],
+      "biome_affinity": ["anteroom_complex"],
+      "special_abilities": null
+    },
+    {
+      "id": "stone_golem",
+      "name": {"chinese": "石魔像", "pinyin": "Shi moxiang", "english": "Stone Golem"},
+      "health": 100,
+      "attack_power": {"min": 18, "max": 30},
+      "defense": 20,
+      "experience_points": 150,
+      "drops": [{"item_id": "health_potion", "chance": 25}],
+      "biome_affinity": ["hallway_c_complex"],
+      "special_abilities": null
+    },
+    {
+      "id": "royal_guard",
+      "name": {"chinese": "皇家守卫", "pinyin": "Huangjia shouwei", "english": "Royal Guard"},
+      "health": 70,
+      "attack_power": {"min": 16, "max": 26},
+      "defense": 12,
+      "experience_points": 100,
+      "drops": [],
+      "biome_affinity": ["throne_complex"],
+      "special_abilities": null
+    },
+    {
+      "id": "shadow_knight",
+      "name": {"chinese": "暗影骑士", "pinyin": "Anying qishi", "english": "Shadow Knight"},
+      "health": 120,
+      "attack_power": {"min": 20, "max": 35},
+      "defense": 15,
+      "experience_points": 200,
+      "drops": [{"item_id": "enchanted_sword", "chance": 100}],
+      "biome_affinity": ["throne_complex"],
+      "special_abilities": null
+    },
+    {
+      "id": "lich_king",
+      "name": {"chinese": "巫妖王", "pinyin": "Wuyao wang", "english": "Lich King"},
+      "health": 250,
+      "attack_power": {"min": 25, "max": 45},
+      "defense": 20,
+      "experience_points": 500,
+      "drops": [{"item_id": "golden_chalice", "chance": 100}],
+      "biome_affinity": ["throne_complex"],
+      "special_abilities": {
+        "name": "暗影护甲",
+        "description": "对普通武器有50%伤害减免",
+        "damage_bonus": null,
+        "effect_type": "damage_reduction",
+        "effect_duration": null,
+        "chance_to_activate": 100
+      }
     }
   ]
 }

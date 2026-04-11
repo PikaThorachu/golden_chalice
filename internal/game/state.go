@@ -195,7 +195,7 @@ func (gs *GameState) SafeEquipBackpack(itemID string) (string, error) {
 	if !item.IsBackpack() {
 		return "", errors.New(errors.ErrTypeInventory,
 			"这不是一个背包",
-			"Zhè bùshì yī gè bēibāo",
+			"Zhe bu shi yi ge bei bao",
 			"This is not a backpack")
 	}
 
@@ -207,15 +207,18 @@ func (gs *GameState) SafeEquipBackpack(itemID string) (string, error) {
 		return "", errors.New(errors.ErrTypeInventory, message, message, message)
 	}
 
-	gs.Logger.LogPlayerAction("equip_backpack", map[string]interface{}{
-		"item":         itemID,
-		"size_bonus":   sizeBonus,
-		"new_capacity": gs.Player.InventorySize,
-	})
+	if gs.Logger != nil {
+		gs.Logger.LogPlayerAction("equip_backpack", map[string]interface{}{
+			"item":         itemID,
+			"size_bonus":   sizeBonus,
+			"new_capacity": gs.Player.InventorySize,
+		})
+	}
 
+	// Natural Chinese for backpack equipping
 	return gs.Formatter.formatInline(
-		fmt.Sprintf("装备了 %s，背包容量 +%d (当前: %d)", item.Name.Chinese, increase, gs.Player.InventorySize),
-		fmt.Sprintf("Zhuāngbèi le %s，bēibāo róngliàng +%d (dāngqián: %d)", item.Name.Pinyin, increase, gs.Player.InventorySize),
+		fmt.Sprintf("带上了 %s，背包容量 +%d (当前: %d)", item.Name.Chinese, increase, gs.Player.InventorySize),
+		fmt.Sprintf("Dai shang le %s，bei bao rong liang +%d (dang qian: %d)", item.Name.Pinyin, increase, gs.Player.InventorySize),
 		fmt.Sprintf("Equipped %s, inventory +%d (current: %d)", item.Name.English, increase, gs.Player.InventorySize),
 	), nil
 }
@@ -465,16 +468,34 @@ func (gs *GameState) CheckWinCondition() bool {
 		return true
 	}
 
-	winItemID := gs.Config.GetWinConditionItemID()
-	if gs.Player.HasItem(winItemID) {
+	// Check if player has golden chalice
+	if !gs.Player.HasItem("golden_chalice") {
+		return false
+	}
+
+	// Check if player is in Cave Entrance room
+	currentLocation, err := gs.GetCurrentRoom()
+	if err != nil {
+		return false
+	}
+
+	currentRoom, err := gs.World.GetCurrentRoom(currentLocation.ID)
+	if err != nil || currentRoom == nil {
+		return false
+	}
+
+	if currentRoom.ID == "entrance_complex" {
 		gs.GameWon = true
 		gs.GameOver = true
-		gs.Logger.LogGameEvent("victory", map[string]interface{}{
-			"player": gs.Player.Name,
-			"item":   winItemID,
-		})
+		if gs.Logger != nil {
+			gs.Logger.LogGameEvent("victory", map[string]interface{}{
+				"player":   gs.Player.Name,
+				"location": currentLocation.ID,
+			})
+		}
 		return true
 	}
+
 	return false
 }
 

@@ -72,7 +72,9 @@ func validateItems(items map[string]models.Item) error {
 
 		// Validate item type
 		switch item.Type {
-		case models.ItemTypeWeapon, models.ItemTypeQuest, models.ItemTypeConsumable, models.ItemTypeKey, models.ItemTypeArmor, models.ItemTypeBackpack:
+		case models.ItemTypeWeapon, models.ItemTypeQuest, models.ItemTypeConsumable,
+			models.ItemTypeKey, models.ItemTypeArmor, models.ItemTypeBackpack,
+			models.ItemTypeInspectable, models.ItemTypeJunk:
 			// Valid type
 		default:
 			errors = append(errors, fmt.Sprintf("item '%s' has invalid type: %s", id, item.Type))
@@ -137,17 +139,24 @@ func validateItemProperties(item models.Item) error {
 		}
 
 	case models.ItemTypeBackpack:
-		// Backpack validation - size_bonus is required
 		if props.SizeBonus == nil {
 			return fmt.Errorf("backpack missing size_bonus")
 		}
 		if props.SizeBonus != nil && *props.SizeBonus < 0 {
 			return fmt.Errorf("backpack has negative size_bonus: %d", *props.SizeBonus)
 		}
-		// Equippable should be true for backpacks
 		if props.Equippable == nil || !*props.Equippable {
 			return fmt.Errorf("backpack should be equippable")
 		}
+
+	case models.ItemTypeInspectable:
+		// Inspectable items can have contains_item_id or trap_enemy_id
+		// No strict validation needed, but both can be nil for decorative items
+		// Optional: warn if both are nil (but not an error)
+
+	case models.ItemTypeJunk:
+		// Junk items have no special requirements
+		// No validation needed
 	}
 
 	return nil
@@ -196,6 +205,21 @@ func GetKeys(items map[string]models.Item) []models.Item {
 // GetArmor returns all armor items
 func GetArmor(items map[string]models.Item) []models.Item {
 	return GetItemsByType(items, models.ItemTypeArmor)
+}
+
+// GetBackpacks returns all backpack items
+func GetBackpacks(items map[string]models.Item) []models.Item {
+	return GetItemsByType(items, models.ItemTypeBackpack)
+}
+
+// GetInspectableItems returns all inspectable items
+func GetInspectableItems(items map[string]models.Item) []models.Item {
+	return GetItemsByType(items, models.ItemTypeInspectable)
+}
+
+// GetJunkItems returns all junk items
+func GetJunkItems(items map[string]models.Item) []models.Item {
+	return GetItemsByType(items, models.ItemTypeJunk)
 }
 
 // ItemExists checks if an item ID exists in the items map
