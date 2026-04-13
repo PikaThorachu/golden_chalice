@@ -83,7 +83,6 @@ func (df *DisplayFormatter) FormatHealthBar(current, max int, width int) string 
 	bar += strings.Repeat("░", empty)
 	bar += "]"
 
-	// Add percentage
 	percent := int(percentage * 100)
 	bar += fmt.Sprintf(" %d%%", percent)
 
@@ -99,23 +98,23 @@ func (df *DisplayFormatter) FormatHealthStatus(current, max int) string {
 	switch {
 	case percentage >= 75:
 		chinese = "健康"
-		pinyin = "Jiànkāng"
+		pinyin = "Jian Kang"
 		english = "Healthy"
 	case percentage >= 50:
 		chinese = "轻伤"
-		pinyin = "Qīngshāng"
+		pinyin = "Qing Shang"
 		english = "Injured"
 	case percentage >= 25:
 		chinese = "重伤"
-		pinyin = "Zhòngshāng"
+		pinyin = "Zhong Shang"
 		english = "Severely Injured"
 	case percentage > 0:
 		chinese = "濒死"
-		pinyin = "Bīnsǐ"
+		pinyin = "Bin Si"
 		english = "Dying"
 	default:
 		chinese = "死亡"
-		pinyin = "Sǐwáng"
+		pinyin = "Si Wang"
 		english = "Dead"
 	}
 
@@ -141,7 +140,7 @@ func (df *DisplayFormatter) FormatHeal(amount int) string {
 // FormatExperience formats experience gain
 func (df *DisplayFormatter) FormatExperience(amount int) string {
 	chinese := fmt.Sprintf("+%d 经验值", amount)
-	pinyin := fmt.Sprintf("+%d jīngyàn zhí", amount)
+	pinyin := fmt.Sprintf("+%d jing yan zhi", amount)
 	english := fmt.Sprintf("+%d XP", amount)
 	return df.formatInline(chinese, pinyin, english)
 }
@@ -149,7 +148,7 @@ func (df *DisplayFormatter) FormatExperience(amount int) string {
 // FormatLevelUp formats level up message
 func (df *DisplayFormatter) FormatLevelUp(level int) string {
 	chinese := fmt.Sprintf("🎉 升级！当前等级: %d 🎉", level)
-	pinyin := fmt.Sprintf("🎉 Shēngjí! Dāngqián děngjí: %d 🎉", level)
+	pinyin := fmt.Sprintf("🎉 Sheng Ji! Dang Qian Deng Ji: %d 🎉", level)
 	english := fmt.Sprintf("🎉 Level Up! Current level: %d 🎉", level)
 	return df.formatInline(chinese, pinyin, english)
 }
@@ -160,11 +159,11 @@ func (df *DisplayFormatter) FormatCombatMessage(attacker, target, action string,
 
 	if damage > 0 {
 		chinese = fmt.Sprintf("%s %s %s，造成 %d 点伤害！", attacker, action, target, damage)
-		pinyin = fmt.Sprintf("%s %s %s，zàochéng %d diǎn shānghài!", attacker, action, target, damage)
+		pinyin = fmt.Sprintf("%s %s %s，zao cheng %d dian shang hai!", attacker, action, target, damage)
 		english = fmt.Sprintf("%s %s %s for %d damage!", attacker, action, target, damage)
 	} else {
 		chinese = fmt.Sprintf("%s %s %s，但没有造成伤害！", attacker, action, target)
-		pinyin = fmt.Sprintf("%s %s %s，dàn méiyǒu zàochéng shānghài!", attacker, action, target)
+		pinyin = fmt.Sprintf("%s %s %s，dan mei you zao cheng shang hai!", attacker, action, target)
 		english = fmt.Sprintf("%s %s %s but deals no damage!", attacker, action, target)
 	}
 
@@ -174,7 +173,7 @@ func (df *DisplayFormatter) FormatCombatMessage(attacker, target, action string,
 // FormatVictory formats victory message
 func (df *DisplayFormatter) FormatVictory() string {
 	chinese := "✨✨✨ 胜利！ ✨✨✨"
-	pinyin := "✨✨✨ Shènglì! ✨✨✨"
+	pinyin := "✨✨✨ Sheng Li! ✨✨✨"
 	english := "✨✨✨ Victory! ✨✨✨"
 	return df.formatInline(chinese, pinyin, english)
 }
@@ -182,7 +181,7 @@ func (df *DisplayFormatter) FormatVictory() string {
 // FormatGameOver formats game over message
 func (df *DisplayFormatter) FormatGameOver() string {
 	chinese := "☠️ 游戏结束 ☠️"
-	pinyin := "☠️ Yóuxì jiéshù ☠️"
+	pinyin := "☠️ You Xi Jie Shu ☠️"
 	english := "☠️ Game Over ☠️"
 	return df.formatInline(chinese, pinyin, english)
 }
@@ -190,7 +189,7 @@ func (df *DisplayFormatter) FormatGameOver() string {
 // FormatItemPickup formats item pickup message
 func (df *DisplayFormatter) FormatItemPickup(itemName models.Text) string {
 	chinese := fmt.Sprintf("你拿起了 %s", itemName.Chinese)
-	pinyin := fmt.Sprintf("Nǐ ná qǐ le %s", itemName.Pinyin)
+	pinyin := fmt.Sprintf("Ni na qi le %s", itemName.Pinyin)
 	english := fmt.Sprintf("You picked up: %s", itemName.English)
 	return df.formatInline(chinese, pinyin, english)
 }
@@ -198,7 +197,7 @@ func (df *DisplayFormatter) FormatItemPickup(itemName models.Text) string {
 // FormatItemDrop formats item drop message
 func (df *DisplayFormatter) FormatItemDrop(itemName models.Text) string {
 	chinese := fmt.Sprintf("你丢弃了 %s", itemName.Chinese)
-	pinyin := fmt.Sprintf("Nǐ diūqì le %s", itemName.Pinyin)
+	pinyin := fmt.Sprintf("Niu diu qi le %s", itemName.Pinyin)
 	english := fmt.Sprintf("You dropped: %s", itemName.English)
 	return df.formatInline(chinese, pinyin, english)
 }
@@ -206,7 +205,7 @@ func (df *DisplayFormatter) FormatItemDrop(itemName models.Text) string {
 // FormatItemUse formats item use message
 func (df *DisplayFormatter) FormatItemUse(itemName models.Text, effect string) string {
 	chinese := fmt.Sprintf("你使用了 %s，%s", itemName.Chinese, effect)
-	pinyin := fmt.Sprintf("Nǐ shǐyòng le %s，%s", itemName.Pinyin, effect)
+	pinyin := fmt.Sprintf("Ni shi yong le %s，%s", itemName.Pinyin, effect)
 	english := fmt.Sprintf("You used %s, %s", itemName.English, effect)
 	return df.formatInline(chinese, pinyin, english)
 }
@@ -217,11 +216,11 @@ func (df *DisplayFormatter) FormatEquipment(itemName models.Text, action string)
 
 	if action == "equip" {
 		chinese = fmt.Sprintf("装备了 %s", itemName.Chinese)
-		pinyin = fmt.Sprintf("Zhuāngbèi le %s", itemName.Pinyin)
+		pinyin = fmt.Sprintf("Zhuang bei le %s", itemName.Pinyin)
 		english = fmt.Sprintf("Equipped: %s", itemName.English)
 	} else {
 		chinese = fmt.Sprintf("卸下了 %s", itemName.Chinese)
-		pinyin = fmt.Sprintf("Xièxià le %s", itemName.Pinyin)
+		pinyin = fmt.Sprintf("Xie xia le %s", itemName.Pinyin)
 		english = fmt.Sprintf("Unequipped: %s", itemName.English)
 	}
 
@@ -276,21 +275,64 @@ func (df *DisplayFormatter) FormatExitList(exits []models.Direction) string {
 	}
 
 	chinese := "出口: " + strings.Join(exitStrings, ", ")
-	pinyin := "Chūkǒu: " + strings.Join(exitStrings, ", ")
+	pinyin := "Chu Kou: " + strings.Join(exitStrings, ", ")
 	english := "Exits: " + strings.Join(exitStrings, ", ")
 
 	return df.formatInline(chinese, pinyin, english)
 }
 
-// FormatItemList formats a list of items at a location
+// FormatItemList formats a list of already-formatted item names
+// Deprecated: Use FormatItemListFromTexts instead
 func (df *DisplayFormatter) FormatItemList(itemNames []string) string {
 	if len(itemNames) == 0 {
 		return ""
 	}
 
 	chinese := "你可以看到: " + strings.Join(itemNames, ", ")
-	pinyin := "Nǐ kěyǐ kàndào: " + strings.Join(itemNames, ", ")
+	pinyin := "Ni ke yi kan dao: " + strings.Join(itemNames, ", ")
 	english := "You see: " + strings.Join(itemNames, ", ")
+
+	return df.formatInline(chinese, pinyin, english)
+}
+
+// FormatItemListFromTexts formats a list of items from Text structs
+// This is the preferred method for displaying item lists
+func (df *DisplayFormatter) FormatItemListFromTexts(items []models.Text) string {
+	if len(items) == 0 {
+		return ""
+	}
+
+	// Format each item individually using the display formatter
+	formattedItems := make([]string, len(items))
+	for i, item := range items {
+		formattedItems[i] = df.FormatText(item)
+	}
+
+	// Join the formatted items with commas
+	joinedItems := strings.Join(formattedItems, ", ")
+
+	// Create the full trilingual line
+	chinese := "你可以看到: " + joinedItems
+	pinyin := "Ni ke yi kan dao: " + joinedItems
+	english := "You see: " + joinedItems
+
+	return df.formatInline(chinese, pinyin, english)
+}
+
+// FormatSimpleItemList formats a list of already-formatted item names
+// This method does NOT re-format the item names - they should already be formatted
+func (df *DisplayFormatter) FormatSimpleItemList(formattedItemNames []string) string {
+	if len(formattedItemNames) == 0 {
+		return ""
+	}
+
+	// Join the already-formatted item names with commas
+	joinedItems := strings.Join(formattedItemNames, ", ")
+
+	// Create the trilingual prefix only (the items are already trilingual)
+	chinese := "你可以看到: " + joinedItems
+	pinyin := "Ni ke yi kan dao: " + joinedItems
+	english := "You see: " + joinedItems
 
 	return df.formatInline(chinese, pinyin, english)
 }
@@ -344,8 +386,8 @@ func (df *DisplayFormatter) FormatWelcome(version string) string {
 ╚══════════════════════════════════════════════════════════╝`, version)
 
 	pinyin := fmt.Sprintf(`╔══════════════════════════════════════════════════════════╗
-║                     Hēi'àn Dòngxué - Wénzì Màoxiǎn Yóuxì       ║
-║                     Bǎnběn: %s                                  ║
+║                     Hei An Dong Xue - Wen Zi Mao Xian You Xi       ║
+║                     Ban Ben: %s                                  ║
 ╚══════════════════════════════════════════════════════════╝`, version)
 
 	english := fmt.Sprintf(`╔══════════════════════════════════════════════════════════╗

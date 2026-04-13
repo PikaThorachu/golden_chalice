@@ -74,7 +74,7 @@ func validateItems(items map[string]models.Item) error {
 		switch item.Type {
 		case models.ItemTypeWeapon, models.ItemTypeQuest, models.ItemTypeConsumable,
 			models.ItemTypeKey, models.ItemTypeArmor, models.ItemTypeBackpack,
-			models.ItemTypeInspectable, models.ItemTypeJunk:
+			models.ItemTypeInspectable, models.ItemTypeJunk, models.ItemTypeContainer:
 			// Valid type
 		default:
 			errors = append(errors, fmt.Sprintf("item '%s' has invalid type: %s", id, item.Type))
@@ -151,14 +151,27 @@ func validateItemProperties(item models.Item) error {
 
 	case models.ItemTypeInspectable:
 		// Inspectable items can have contains_item_id or trap_enemy_id
-		// No strict validation needed, but both can be nil for decorative items
-		// Optional: warn if both are nil (but not an error)
+		// Also can be containers
+		if props.Capacity != nil && *props.Capacity > 0 {
+			// This inspectable item is also a container
+			// No additional validation needed
+		}
 
 	case models.ItemTypeJunk:
 		// Junk items have no special requirements
 		// No validation needed
-	}
 
+	case models.ItemTypeContainer:
+		// Container validation
+		if props.Capacity == nil || *props.Capacity <= 0 {
+			return fmt.Errorf("container missing capacity or capacity <= 0")
+		}
+		// Container can also be equippable (like a backpack)
+		if props.Equippable != nil && *props.Equippable {
+			// Valid - container can be equipped
+		}
+
+	}
 	return nil
 }
 

@@ -1,4 +1,0 @@
-Add function to map:
-    Add Room (entrance, hallway, store room, etc)
-    Track if visited (if neg, display descrition, if visited then no description)
-    Update Look function: upon Look, display description of Room plus any items in present location

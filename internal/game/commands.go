@@ -38,6 +38,8 @@ const (
 	CmdDrop
 	CmdEquipBackpack
 	CmdUnequipBackpack
+	CmdInspect
+	CmdTeleport
 )
 
 // CommandHandler processes commands and returns results
@@ -112,6 +114,12 @@ func (ch *CommandHandler) ProcessCommand(input string) (string, error) {
 	}
 
 	category := ch.inputValidator.GetCommandCategory(sanitized)
+
+	// Check for teleport command first (testing)
+	if strings.HasPrefix(sanitized, "tp ") || strings.HasPrefix(sanitized, "teleport ") || strings.HasPrefix(sanitized, "传送 ") {
+		cmd := ch.parseCommand(sanitized)
+		return ch.executeTeleport(cmd)
+	}
 
 	switch category {
 	case "movement":
@@ -230,6 +238,8 @@ func (ch *CommandHandler) executeCommandByType(cmd Command) (string, error) {
 		return ch.executeEquipBackpack(cmd)
 	case CmdUnequipBackpack:
 		return ch.executeUnequipBackpack()
+	case CmdTeleport:
+		return ch.executeTeleport(cmd)
 	default:
 		return "", ch.formatError(
 			"未知命令",
@@ -276,6 +286,16 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdMove, Args: []string{dir.String()}, RawInput: input}
 	}
 
+	// Teleport command for testing (only in debug mode)
+	if strings.HasPrefix(input, "tp ") || strings.HasPrefix(input, "teleport ") || strings.HasPrefix(input, "传送 ") {
+		parts := strings.Fields(input)
+		if len(parts) >= 2 {
+			locationID := parts[1]
+			return Command{Type: CmdTeleport, Args: []string{locationID}, RawInput: input}
+		}
+		return Command{Type: CmdUnknown, RawInput: input}
+	}
+
 	// ========== TAKE COMMANDS ==========
 	if strings.HasPrefix(input, "拿") || strings.HasPrefix(input, "取") {
 		itemName := strings.TrimPrefix(input, "拿")
@@ -293,6 +313,17 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		itemName = strings.TrimSpace(itemName)
 		if itemName != "" {
 			return Command{Type: CmdTake, Args: []string{itemName}, RawInput: input}
+		}
+		return Command{Type: CmdUnknown, RawInput: input}
+	}
+
+	if strings.HasPrefix(input, "检查") || strings.HasPrefix(input, "查看") || strings.HasPrefix(input, "inspect") {
+		itemName := strings.TrimPrefix(input, "检查")
+		itemName = strings.TrimPrefix(itemName, "查看")
+		itemName = strings.TrimPrefix(itemName, "inspect")
+		itemName = strings.TrimSpace(itemName)
+		if itemName != "" {
+			return Command{Type: CmdInspect, Args: []string{itemName}, RawInput: input}
 		}
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
@@ -490,6 +521,56 @@ func (ch *CommandHandler) executeMove(cmd Command) (string, error) {
 	return ch.gameState.GetCurrentRoomDescription(), nil
 }
 
+// executeTeleport handles teleport command for testing
+func (ch *CommandHandler) executeTeleport(cmd Command) (string, error) {
+	if len(cmd.Args) == 0 {
+		return "", ch.formatError(
+			"传送去哪里？",
+			"Chuan song qu na li?",
+			"Teleport where?",
+		)
+	}
+
+	locationID := cmd.Args[0]
+
+	// Check if location exists
+	_, err := ch.gameState.World.GetLocation(locationID)
+	if err != nil {
+		return "", ch.formatError(
+			fmt.Sprintf("位置 '%s' 不存在", locationID),
+			fmt.Sprintf("Wei zhi '%s' bu cun zai", locationID),
+			fmt.Sprintf("Location '%s' does not exist", locationID),
+		)
+	}
+
+	// Store old location for logging
+	oldLocationID := ch.gameState.Player.CurrentLocationID
+
+	// Teleport player
+	ch.gameState.Player.CurrentLocationID = locationID
+	ch.gameState.LastLocationID = oldLocationID
+
+	// Update room tracking
+	ch.gameState.updateCurrentRoom()
+
+	// Log teleport
+	if ch.gameState.Logger != nil {
+		ch.gameState.Logger.LogPlayerAction("teleport", map[string]interface{}{
+			"from": oldLocationID,
+			"to":   locationID,
+		})
+	}
+
+	// Return new room description
+	result := ch.formatOutput(
+		fmt.Sprintf("传送到了: %s", locationID),
+		fmt.Sprintf("Chuan song dao le: %s", locationID),
+		fmt.Sprintf("Teleported to: %s", locationID),
+	) + "\n" + ch.gameState.GetCurrentRoomDescription()
+
+	return result, nil
+}
+
 // executeTake handles item pickup commands
 func (ch *CommandHandler) executeTake(cmd Command) (string, error) {
 	if len(cmd.Args) == 0 {
@@ -546,6 +627,93 @@ func (ch *CommandHandler) executeTake(cmd Command) (string, error) {
 // executeInventory displays player inventory
 func (ch *CommandHandler) executeInventory() (string, error) {
 	return ch.gameState.GetInventoryDisplay(), nil
+}
+
+// Add executeInspect function
+func (ch *CommandHandler) executeInspect(cmd Command) (string, error) {
+	if len(cmd.Args) == 0 {
+		return "", ch.formatError(
+			"检查什么？",
+			"Jian cha shen me?",
+			"Inspect what?",
+		)
+	}
+
+	itemName := cmd.Args[0]
+
+	// Check if item exists in current location
+	itemsAtLocation := ch.gameState.GetItemsAtCurrentLocation()
+	var targetItemID string
+	var targetItem models.Item
+
+	for _, itemID := range itemsAtLocation {
+		if item, exists := ch.gameState.Items[itemID]; exists {
+			if item.Name.Chinese == itemName || strings.EqualFold(item.Name.English, itemName) {
+				targetItemID = itemID
+				targetItem = item
+				break
+			}
+		}
+	}
+
+	if targetItemID == "" {
+		return "", ch.formatError(
+			"这里没有 "+itemName,
+			"Zhe li mei you "+itemName,
+			"There is no "+itemName+" here",
+		)
+	}
+
+	// Check for trap first
+	if targetItem.GetTrapEnemyID() != "" {
+		trapEnemyID := targetItem.GetTrapEnemyID()
+		enemy, exists := ch.gameState.Enemies[trapEnemyID]
+		if exists {
+			// Trigger combat with trap enemy
+			return ch.handleTrapInspect(targetItem, &enemy)
+		}
+	}
+
+	// Display inspection message
+	inspectMsg := targetItem.GetInspectMessage()
+	if inspectMsg == "" {
+		inspectMsg = ch.formatOutput(
+			"你检查了 "+targetItem.Name.Chinese+"，但没有发现什么特别的东西。",
+			"Ni jian cha le "+targetItem.Name.Pinyin+"，dan mei you fa xian shen me te bie de dong xi.",
+			"You inspect the "+targetItem.Name.English+" but find nothing special.",
+		)
+	}
+
+	// Check if container has items
+	if targetItem.IsContainer() && len(targetItem.Inventory) > 0 {
+		containerItems := targetItem.Inventory
+		itemNames := make([]string, len(containerItems))
+		for i, itemID := range containerItems {
+			if item, exists := ch.gameState.Items[itemID]; exists {
+				itemNames[i] = ch.gameState.GetDisplayName(item.Name)
+			}
+		}
+
+		inspectMsg += "\n" + ch.formatOutput(
+			"里面发现: "+strings.Join(itemNames, ", "),
+			"Li mian fa xian: "+strings.Join(itemNames, ", "),
+			"Inside you find: "+strings.Join(itemNames, ", "),
+		)
+	}
+
+	return inspectMsg, nil
+}
+
+// handleTrapInspect handles combat triggered by inspection
+func (ch *CommandHandler) handleTrapInspect(item models.Item, enemy *models.Enemy) (string, error) {
+	// Remove the trap item from location (it was a mimic/chest)
+	// Add the enemy to current location
+	// Then trigger combat
+	return ch.formatOutput(
+		item.GetInspectMessage(),
+		item.GetInspectMessage(),
+		item.GetInspectMessage(),
+	), nil
 }
 
 // executeStatus displays player status

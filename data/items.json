@@ -166,24 +166,6 @@
       "consumable": false
     },
     {
-      "id": "old_desk",
-      "name": {"chinese": "旧书桌", "pinyin": "Jiu shuzhuo", "english": "Old Desk"},
-      "description": {"chinese": "一张布满灰尘的旧书桌。", "pinyin": "...", "english": "An old dusty desk."},
-      "type": "inspectable",
-      "properties": {"contains_item_id": "bronze_key", "inspect_message": "你仔细搜查书桌，在抽屉里发现了一把青铜钥匙！"},
-      "usable": true,
-      "consumable": false
-    },
-    {
-      "id": "old_chest",
-      "name": {"chinese": "旧箱子", "pinyin": "Jiu xiangzi", "english": "Old Chest"},
-      "description": {"chinese": "一个看起来很普通的旧箱子。", "pinyin": "...", "english": "An ordinary-looking old chest."},
-      "type": "inspectable",
-      "properties": {"trap_enemy_id": "mimic", "inspect_message": "你打开箱子，突然箱子活了过来！"},
-      "usable": true,
-      "consumable": false
-    },
-    {
       "id": "old_boot",
       "name": {"chinese": "旧靴子", "pinyin": "Jiu xuezi", "english": "Old Boot"},
       "description": {"chinese": "一只破旧的靴子，没什么用。", "pinyin": "...", "english": "A worn-out boot, useless."},
@@ -192,6 +174,92 @@
       "usable": false,
       "consumable": false
     },
+    {
+      "id": "old_desk",
+      "name": {
+        "chinese": "旧书桌",
+        "pinyin": "Jiu shu zhuo",
+        "english": "Old Desk"
+      },
+      "description": {
+        "chinese": "一张布满灰尘的旧书桌，有几个抽屉。",
+        "pinyin": "Yi zhang bu man hui chen de jiu shu zhuo, you ji ge chou ti.",
+        "english": "An old dusty desk with several drawers."
+      },
+      "type": "inspectable",
+      "properties": {
+        "contains_item_id": "bronze_key",
+        "inspect_message": "你仔细搜查书桌，在抽屉里发现了一把青铜钥匙！",
+        "capacity": 5
+      },
+      "usable": true,
+      "consumable": false,
+      "inventory": ["bronze_key"]
+        },
+    {
+      "id": "old_chest",
+      "name": {
+        "chinese": "旧箱子",
+        "pinyin": "Jiu xiang zi",
+        "english": "Old Chest"
+      },
+      "description": {
+        "chinese": "一个看起来很普通的旧箱子。",
+        "pinyin": "Yi ge kan qi lai hen pu tong de jiu xiang zi.",
+        "english": "An ordinary-looking old chest."
+      },
+      "type": "inspectable",
+      "properties": {
+        "trap_enemy_id": "mimic",
+        "inspect_message": "你打开箱子，突然箱子活了过来！",
+        "capacity": 10
+      },
+      "usable": true,
+      "consumable": false,
+      "inventory": ["health_potion", "wooden_sword"]
+        },
+    {
+      "id": "leather_pouch",
+      "name": {
+        "chinese": "皮袋",
+        "pinyin": "Pi dai",
+        "english": "Leather Pouch"
+      },
+      "description": {
+        "chinese": "一个小皮袋，可以存放小件物品。",
+        "pinyin": "Yi ge xiao pi dai, ke yi cun fang xiao jian wu pin.",
+        "english": "A small leather pouch that can hold small items."
+      },
+      "type": "container",
+      "properties": {
+        "capacity": 3
+      },
+      "usable": false,
+      "consumable": false,
+      "inventory": []
+        },
+    {
+      "id": "backpack",
+      "name": {
+        "chinese": "背包",
+        "pinyin": "Bei bao",
+        "english": "Backpack"
+      },
+      "description": {
+        "chinese": "一个结实的背包，可以存放物品。",
+        "pinyin": "Yi ge jie shi de bei bao, ke yi cun fang wu pin.",
+        "english": "A sturdy backpack that can hold items."
+      },
+      "type": "container",
+      "properties": {
+        "capacity": 8,
+        "equippable": true,
+        "equip_slot": "back"
+      },
+      "usable": false,
+      "consumable": false,
+      "inventory": []
+        },
     {
       "id": "old_shield",
       "name": {"chinese": "旧盾牌", "pinyin": "Jiu dunpai", "english": "Old Shield"},

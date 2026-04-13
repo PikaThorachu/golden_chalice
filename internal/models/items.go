@@ -13,9 +13,10 @@ const (
 	ItemTypeConsumable  ItemType = "consumable"
 	ItemTypeKey         ItemType = "key"
 	ItemTypeArmor       ItemType = "armor"
-	ItemTypeBackpack    ItemType = "backpack"    // Add this line
-	ItemTypeInspectable ItemType = "inspectable" // Add this line
-	ItemTypeJunk        ItemType = "junk"        // Add this line
+	ItemTypeBackpack    ItemType = "backpack"
+	ItemTypeInspectable ItemType = "inspectable"
+	ItemTypeJunk        ItemType = "junk"
+	ItemTypeContainer   ItemType = "container"
 )
 
 // ItemProperties contains type-specific properties
@@ -48,6 +49,9 @@ type ItemProperties struct {
 	ContainsItemID *string `json:"contains_item_id"` // Item ID found inside
 	TrapEnemyID    *string `json:"trap_enemy_id"`    // Enemy ID that spawns on inspect
 	InspectMessage *string `json:"inspect_message"`  // Message shown when inspecting
+
+	// Container properties
+	Capacity *int `json:"capacity"` // Maximum items this container can hold
 }
 
 // Item represents any item in the game
@@ -59,6 +63,68 @@ type Item struct {
 	Properties  ItemProperties `json:"properties"`
 	Usable      bool           `json:"usable"`
 	Consumable  bool           `json:"consumable"`
+	Inventory   []string       `json:"inventory"` // Items contained within this item
+}
+
+// IsContainer checks if the item can hold other items
+func (i *Item) IsContainer() bool {
+	return i.Properties.Capacity != nil && *i.Properties.Capacity > 0
+}
+
+// GetCapacity returns the maximum number of items this container can hold
+func (i *Item) GetCapacity() int {
+	if i.Properties.Capacity != nil {
+		return *i.Properties.Capacity
+	}
+	return 0
+}
+
+// IsInventoryFull checks if the container's inventory is full
+func (i *Item) IsInventoryFull() bool {
+	return len(i.Inventory) >= i.GetCapacity()
+}
+
+// GetInventoryCount returns the number of items in the container
+func (i *Item) GetInventoryCount() int {
+	return len(i.Inventory)
+}
+
+// GetRemainingCapacity returns available space in the container
+func (i *Item) GetRemainingCapacity() int {
+	return i.GetCapacity() - len(i.Inventory)
+}
+
+// AddItemToContainer adds an item to the container's inventory
+func (i *Item) AddItemToContainer(itemID string) (bool, string) {
+	if !i.IsContainer() {
+		return false, "这个物品不能存放其他物品"
+	}
+	if i.IsInventoryFull() {
+		return false, fmt.Sprintf("容器已满 (容量: %d/%d)", len(i.Inventory), i.GetCapacity())
+	}
+	i.Inventory = append(i.Inventory, itemID)
+	return true, ""
+}
+
+// RemoveItemFromContainer removes an item from the container's inventory
+func (i *Item) RemoveItemFromContainer(itemID string) bool {
+	for idx, id := range i.Inventory {
+		if id == itemID {
+			i.Inventory = append(i.Inventory[:idx], i.Inventory[idx+1:]...)
+			return true
+		}
+	}
+	return false
+}
+
+// HasItemInContainer checks if the container has a specific item
+func (i *Item) HasItemInContainer(itemID string) bool {
+	for _, id := range i.Inventory {
+		if id == itemID {
+			return true
+		}
+	}
+	return false
 }
 
 // IsWeapon checks if the item is a weapon

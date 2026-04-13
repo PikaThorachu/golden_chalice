@@ -190,3 +190,44 @@ location 'Throne_01' exit 0 references unknown required item 'null' - Context: m
 2026/04/11 01:32:43 [INFO] logger.go:181 - Combat: 宇宙大王 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
 2026/04/11 01:32:43 [INFO] logger.go:181 - Combat: 宇宙大王 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - victory
 2026/04/11 01:35:16 [ERROR] logger.go:191 - Error: 一堵石墙挡住了你的去路 - Context: map[direction:southwest]
+2026/04/12 10:27:04 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:龙]
+2026/04/12 10:27:26 [ERROR] logger.go:191 - Error: 一堵石墙挡住了你的去路 - Context: map[direction:northeast]
+2026/04/12 10:41:58 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:Entrance_9 room_id:hallway_b room_name:走廊B to_location:hallway_b1]
+2026/04/12 10:42:20 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:hallway_b1 room_id:entrance_chamber room_name:入口厅 to_location:Entrance_9]
+2026/04/12 10:42:26 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:Entrance_9 room_id:armory room_name:军械库 to_location:armory_1]
+2026/04/12 10:42:31 [INFO] logger.go:181 - Combat: 龙 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/12 10:42:31 [INFO] logger.go:181 - Combat: 骷髅守卫 (Kulou shouwei) / Skeleton Guard attacked 龙 for 14 damage - enemy_attack
+2026/04/12 10:42:34 [INFO] logger.go:181 - Combat: 龙 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/12 10:42:34 [INFO] logger.go:181 - Combat: 骷髅守卫 (Kulou shouwei) / Skeleton Guard attacked 龙 for 20 damage - enemy_attack
+2026/04/12 10:42:35 [INFO] logger.go:181 - Combat: 龙 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/12 10:42:35 [INFO] logger.go:181 - Combat: 骷髅守卫 (Kulou shouwei) / Skeleton Guard attacked 龙 for 16 damage - enemy_attack
+2026/04/12 10:42:37 [INFO] logger.go:181 - Combat: 龙 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/12 10:42:37 [INFO] logger.go:181 - Combat: 骷髅守卫 (Kulou shouwei) / Skeleton Guard attacked 龙 for 12 damage - enemy_attack
+2026/04/12 10:42:38 [INFO] logger.go:181 - Combat: 龙 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/12 10:42:38 [INFO] logger.go:181 - Combat: 龙 attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - victory
+2026/04/12 10:42:47 [ERROR] logger.go:191 - Error: 一堵石墙挡住了你的去路 - Context: map[direction:east]
+2026/04/12 10:43:05 [ERROR] logger.go:191 - Error: 一堵石墙挡住了你的去路 - Context: map[direction:southwest]
+2026/04/12 10:47:55 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:armory_1 room_id:entrance_chamber room_name:入口厅 to_location:Entrance_9]
+2026/04/12 10:48:08 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:Entrance_7 room_id:store_room room_name:储藏室 to_location:hallway_a1]
+2026/04/12 10:52:05 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:hallway_a1 room_id:entrance_chamber room_name:入口厅 to_location:Entrance_7]
+2026/04/12 10:52:15 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:Entrance_9 room_id:hallway_b room_name:走廊B to_location:hallway_b1]
+2026/04/12 10:55:04 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:姑娘]
+2026/04/12 10:55:19 [ERROR] logger.go:191 - Error: 一堵石墙挡住了你的去路 - Context: map[direction:northeast]
+2026/04/12 10:55:36 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:Entrance_9 room_id:hallway_b room_name:走廊B to_location:hallway_b1]
+2026/04/12 10:55:57 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:hallway_b5 room_id:anteroom room_name:前厅 to_location:anteroom_1]
+2026/04/12 10:56:04 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:anteroom_1 room_id:hallway_b room_name:走廊B to_location:hallway_b5]
+2026/04/12 10:56:13 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:hallway_b5 room_id:anteroom room_name:前厅 to_location:anteroom_1]
+2026/04/12 11:00:23 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:anteroom_5 room_id:hallway_c room_name:走廊C to_location:hallway_c1]
+2026/04/12 11:00:53 [ERROR] logger.go:191 - Error: 门被锁住了 - Context: map[direction:north]
+2026/04/12 11:11:58 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:我怕]
+2026/04/12 11:12:19 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:Entrance_7 room_id:store_room room_name:储藏室 to_location:hallway_a1]
+2026/04/12 11:18:12 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:rr]
+2026/04/12 11:23:45 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:贴吧]
+2026/04/12 11:27:51 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:兔子]
+2026/04/13 10:18:09 [ERROR] logger.go:191 - Error: failed to load items: found 2 item validation errors:
+item 'backpack' has invalid type: container
+item 'leather_pouch' has invalid type: container - Context: map[phase:load_game_data]
+2026/04/13 10:25:25 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:海峡]
+2026/04/13 10:39:10 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:冲突]
+2026/04/13 10:40:04 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:Entrance_1 room_id:anteroom room_name:前厅 to_location:anteroom_1]
+2026/04/13 10:40:57 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:anteroom_1 room_id:armory room_name:军械库 to_location:armory_4]

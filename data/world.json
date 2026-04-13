@@ -378,9 +378,9 @@
         "english": "Armory 1"
       },
       "exits": [
-        {"direction": "west", "destination": "armory_2", "requires_item_id": null},
-        {"direction": "northeast", "destination": "armory_3", "requires_item_id": null},
-        {"direction": "southeast", "destination": "Entrance_9", "requires_item_id": null}
+        {"direction": "northeast", "destination": "armory_2", "requires_item_id": null},
+        {"direction": "southeast", "destination": "armory_3", "requires_item_id": null},
+        {"direction": "west", "destination": "Entrance_9", "requires_item_id": null}
       ],
       "enemy_ids": ["skeleton_guard"],
       "item_ids": null
@@ -536,7 +536,7 @@
       },
       "exits": [
         {"direction": "south", "destination": "hallway_b1", "requires_item_id": null},
-        {"direction": "west", "destination": "hallway_b2", "requires_item_id": null}
+        {"direction": "west", "destination": "hallway_b3", "requires_item_id": null}
       ],
       "enemy_ids": null,
       "item_ids": null
@@ -551,7 +551,7 @@
         "english": "Hallway B3"
       },
       "exits": [
-        {"direction": "east", "destination": "hallway_b3", "requires_item_id": null},
+        {"direction": "east", "destination": "hallway_b2", "requires_item_id": null},
         {"direction": "north", "destination": "hallway_b4", "requires_item_id": null}
       ],
       "enemy_ids": null,
