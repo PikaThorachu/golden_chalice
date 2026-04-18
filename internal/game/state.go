@@ -253,23 +253,18 @@ func (gs *GameState) SafeMove(direction models.Direction) error {
 		gs.Logger.LogMovement(oldLocationID, "unknown", direction.String())
 	}
 
-	// Attempt movement
+	// Attempt movement - return the error directly without re-wrapping
 	destID, err := gs.World.GetDestination(
 		gs.Player.CurrentLocationID,
 		direction,
 		gs.Player.Inventory,
 	)
 	if err != nil {
-		if strings.Contains(err.Error(), "需要") {
-			if gs.Logger != nil {
-				gs.Logger.LogError(errors.ErrExitLocked, map[string]interface{}{"direction": direction.String()})
-			}
-			return errors.Wrap(errors.ErrExitLocked, errors.ErrTypeMovement, err.Error(), err.Error(), err.Error())
-		}
 		if gs.Logger != nil {
-			gs.Logger.LogError(errors.ErrNoExit, map[string]interface{}{"direction": direction.String()})
+			gs.Logger.LogError(err, map[string]interface{}{"direction": direction.String()})
 		}
-		return errors.Wrap(errors.ErrNoExit, errors.ErrTypeMovement, err.Error(), err.Error(), err.Error())
+		// Return the error directly - it's already a GameError from GetDestination
+		return err
 	}
 
 	// Move player
@@ -895,4 +890,79 @@ func (gs *GameState) SafeUnequipBackpack() (string, error) {
 		fmt.Sprintf("Qu xia le %s，bei bao rong liang -%d (dang qian: %d)", backpack.Name.Pinyin, decrease, gs.Player.InventorySize),
 		fmt.Sprintf("Unequipped %s, inventory -%d (current: %d)", backpack.Name.English, decrease, gs.Player.InventorySize),
 	), nil
+}
+
+// game/state.go - Add this method
+
+// GetNearbyItems returns items in locations within 1 move
+func (gs *GameState) GetNearbyItems() ([]struct {
+	LocationID   string
+	LocationName models.Text
+	Item         models.Item
+	IsContainer  bool
+	IsDrop       bool
+}, error) {
+	currentLoc, err := gs.GetCurrentRoom()
+	if err != nil {
+		return nil, err
+	}
+
+	nearbyLocs, err := gs.World.GetNearbyLocations(currentLoc.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	var items []struct {
+		LocationID   string
+		LocationName models.Text
+		Item         models.Item
+		IsContainer  bool
+		IsDrop       bool
+	}
+
+	for _, loc := range nearbyLocs {
+		// Check static items
+		if !gs.TakenItems[loc.ID] {
+			for _, itemID := range loc.ItemIDs {
+				if item, exists := gs.Items[itemID]; exists {
+					items = append(items, struct {
+						LocationID   string
+						LocationName models.Text
+						Item         models.Item
+						IsContainer  bool
+						IsDrop       bool
+					}{
+						LocationID:   loc.ID,
+						LocationName: loc.Name,
+						Item:         item,
+						IsContainer:  item.IsContainer(),
+						IsDrop:       false,
+					})
+				}
+			}
+		}
+
+		// Check pending drops
+		if drops, exists := gs.PendingDrops[loc.ID]; exists {
+			for _, itemID := range drops {
+				if item, exists := gs.Items[itemID]; exists {
+					items = append(items, struct {
+						LocationID   string
+						LocationName models.Text
+						Item         models.Item
+						IsContainer  bool
+						IsDrop       bool
+					}{
+						LocationID:   loc.ID,
+						LocationName: loc.Name,
+						Item:         item,
+						IsContainer:  item.IsContainer(),
+						IsDrop:       true,
+					})
+				}
+			}
+		}
+	}
+
+	return items, nil
 }

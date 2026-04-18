@@ -50,6 +50,21 @@ func (df *DisplayFormatter) FormatText(text models.Text) string {
 	return strings.Join(parts, " ")
 }
 
+// ShowChinese returns whether Chinese text should be displayed
+func (df *DisplayFormatter) ShowChinese() bool {
+	return df.config.ShouldShowChinese()
+}
+
+// ShowPinyin returns whether Pinyin text should be displayed
+func (df *DisplayFormatter) ShowPinyin() bool {
+	return df.config.ShouldShowPinyin()
+}
+
+// ShowEnglish returns whether English text should be displayed
+func (df *DisplayFormatter) ShowEnglish() bool {
+	return df.config.ShouldShowEnglish()
+}
+
 // FormatName is a convenience method for formatting names
 func (df *DisplayFormatter) FormatName(name models.Text) string {
 	return df.FormatText(name)
@@ -380,20 +395,31 @@ func (df *DisplayFormatter) FormatProgress(current, max int, width int) string {
 
 // FormatWelcome formats the welcome message
 func (df *DisplayFormatter) FormatWelcome(version string) string {
-	chinese := fmt.Sprintf(`╔══════════════════════════════════════════════════════════╗
-║                     黑暗洞穴 - 文字冒险游戏                      ║
-║                    版本: %s                                      ║
-╚══════════════════════════════════════════════════════════╝`, version)
+	var parts []string
 
-	pinyin := fmt.Sprintf(`╔══════════════════════════════════════════════════════════╗
-║                     Hei An Dong Xue - Wen Zi Mao Xian You Xi       ║
-║                     Ban Ben: %s                                  ║
-╚══════════════════════════════════════════════════════════╝`, version)
+	// Chinese version
+	if df.config.ShouldShowChinese() {
+		parts = append(parts, fmt.Sprintf(`╔═══════════════════════════════════════════════════════════╗
+║              黑暗洞穴 - 文字冒险游戏                      ║
+║                    版本: %-33s║
+╚═══════════════════════════════════════════════════════════╝`, version))
+	}
 
-	english := fmt.Sprintf(`╔══════════════════════════════════════════════════════════╗
-║                     Dark Caverns - Text Adventure RPG           ║
-║                     Version: %s                                 ║
-╚══════════════════════════════════════════════════════════╝`, version)
+	// Pinyin version
+	if df.config.ShouldShowPinyin() {
+		parts = append(parts, fmt.Sprintf(`╔═══════════════════════════════════════════════════════════╗
+║             Hei An Dong Xue - Wen Zi Mao Xian You Xi      ║
+║                     Ban Ben: %-29s║
+╚═══════════════════════════════════════════════════════════╝`, version))
+	}
 
-	return df.formatInline(chinese, pinyin, english)
+	// English version
+	if df.config.ShouldShowEnglish() {
+		parts = append(parts, fmt.Sprintf(`╔═══════════════════════════════════════════════════════════╗
+║             Dark Caverns - Text Adventure RPG             ║
+║                     Version: %-29s║
+╚═══════════════════════════════════════════════════════════╝`, version))
+	}
+
+	return strings.Join(parts, "\n")
 }

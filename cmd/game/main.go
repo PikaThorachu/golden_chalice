@@ -616,23 +616,54 @@ func runCombat(gs *game.GameState, enemy *models.Enemy, reader *bufio.Reader) st
 	}
 }
 
-// printMainMenu displays the main menu with trilingual text
+// cmd/game/main.go - Updated printMainMenu
+
 func printMainMenu() {
-	fmt.Println("\n╔══════════════════════════════════════════════════════════╗")
+	fmt.Println("\n╔═══════════════════════════════════════════════════════════╗")
 	fmt.Println("║                       主菜单                              ║")
-	fmt.Println("║                       Zhu Cai Dan                         ║")
-	fmt.Println("║                      Main Menu                            ║")
-	fmt.Println("╠══════════════════════════════════════════════════════════╣")
-	fmt.Println("║  1. 新游戏                                               ║")
-	fmt.Println("║      Xin You Xi                                           ║")
-	fmt.Println("║      New Game                                             ║")
-	fmt.Println("║  2. 加载存档                                             ║")
-	fmt.Println("║      Jia Zai Cun Dang                                     ║")
-	fmt.Println("║      Load Game                                            ║")
-	fmt.Println("║  3. 退出                                                 ║")
-	fmt.Println("║      Tui Chu                                              ║")
-	fmt.Println("║      Quit                                                 ║")
-	fmt.Println("╚══════════════════════════════════════════════════════════╝")
+
+	// Add Pinyin if enabled in config
+	if displayFormatter != nil && displayFormatter.ShowPinyin() {
+		fmt.Println("║                       Zhu Cai Dan                         ║")
+	}
+
+	// Add English if enabled in config
+	if displayFormatter != nil && displayFormatter.ShowEnglish() {
+		fmt.Println("║                      Main Menu                            ║")
+	}
+
+	fmt.Println("╠═══════════════════════════════════════════════════════════╣")
+	fmt.Println("║  1. 新游戏                                                ║")
+
+	if displayFormatter != nil && displayFormatter.ShowPinyin() {
+		fmt.Println("║      Xin You Xi                                           ║")
+	}
+
+	if displayFormatter != nil && displayFormatter.ShowEnglish() {
+		fmt.Println("║      New Game                                             ║")
+	}
+
+	fmt.Println("║  2. 加载存档                                              ║")
+
+	if displayFormatter != nil && displayFormatter.ShowPinyin() {
+		fmt.Println("║      Jia Zai Cun Dang                                     ║")
+	}
+
+	if displayFormatter != nil && displayFormatter.ShowEnglish() {
+		fmt.Println("║      Load Game                                            ║")
+	}
+
+	fmt.Println("║  3. 退出                                                  ║")
+
+	if displayFormatter != nil && displayFormatter.ShowPinyin() {
+		fmt.Println("║      Tui Chu                                              ║")
+	}
+
+	if displayFormatter != nil && displayFormatter.ShowEnglish() {
+		fmt.Println("║      Quit                                                 ║")
+	}
+
+	fmt.Println("╚═══════════════════════════════════════════════════════════╝")
 }
 
 // printTrilingual prints a message in Chinese, Pinyin, and English

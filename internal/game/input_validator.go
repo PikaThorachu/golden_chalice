@@ -30,14 +30,18 @@ func NewInputValidator() *InputValidator {
 		allowedCommands: map[string]bool{
 			// Chinese commands
 			"帮助": true, "背包": true, "状态": true, "查看": true, "看": true,
-			"退出": true, "退": true, // Add "退" here
+			"退出": true, "退": true,
 			"保存": true, "加载": true, "存档列表": true,
 			"装备": true, "卸下": true, "使用": true, "丢弃": true, "拿": true, "取": true,
+			"检查": true, "检查周围": true, "查看周围": true,
+			"打开": true,
 			// English commands
 			"help": true, "inventory": true, "i": true, "status": true,
 			"look": true, "quit": true, "exit": true, "save": true,
 			"load": true, "saves": true, "equip": true, "unequip": true,
 			"use": true, "drop": true, "take": true,
+			"inspect": true, "inspect area": true,
+			"open": true,
 		},
 		chineseDirectionPattern: regexp.MustCompile(`^往?[北南东西西北东北西南东南出][走去]?$`),
 		englishDirectionPattern: regexp.MustCompile(`^(go|walk)\s+(north|south|east|west|northwest|northeast|southwest|southeast|out)$`),

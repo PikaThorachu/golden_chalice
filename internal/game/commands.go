@@ -38,7 +38,9 @@ const (
 	CmdDrop
 	CmdEquipBackpack
 	CmdUnequipBackpack
-	CmdInspect
+	CmdInspectArea
+	CmdInspectItem
+	CmdOpen
 	CmdTeleport
 )
 
@@ -164,6 +166,25 @@ func (ch *CommandHandler) ProcessCommand(input string) (string, error) {
 			return ch.executeDeleteSave(Command{Type: CmdDeleteSave, Args: []string{slotName}})
 		}
 
+	case "inspect":
+		cmd := ch.parseCommand(sanitized)
+		switch cmd.Type {
+		case CmdInspectArea:
+			return ch.executeInspectArea()
+		case CmdInspectItem:
+			return ch.executeInspectItem(cmd)
+		default:
+			return "", ch.formatError(
+				"无效的检查命令",
+				"Wu xiao de jian cha ming ling",
+				"Invalid inspect command",
+			)
+		}
+
+	case "open":
+		cmd := ch.parseCommand(sanitized)
+		return ch.executeOpen(cmd)
+
 	case "help", "inventory", "status", "look", "quit", "list_saves":
 		cmd := ch.parseCommand(sanitized)
 		switch cmd.Type {
@@ -238,6 +259,12 @@ func (ch *CommandHandler) executeCommandByType(cmd Command) (string, error) {
 		return ch.executeEquipBackpack(cmd)
 	case CmdUnequipBackpack:
 		return ch.executeUnequipBackpack()
+	case CmdInspectArea:
+		return ch.executeInspectArea()
+	case CmdInspectItem:
+		return ch.executeInspectItem(cmd)
+	case CmdOpen:
+		return ch.executeOpen(cmd)
 	case CmdTeleport:
 		return ch.executeTeleport(cmd)
 	default:
@@ -317,13 +344,29 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
-	if strings.HasPrefix(input, "检查") || strings.HasPrefix(input, "查看") || strings.HasPrefix(input, "inspect") {
-		itemName := strings.TrimPrefix(input, "检查")
-		itemName = strings.TrimPrefix(itemName, "查看")
-		itemName = strings.TrimPrefix(itemName, "inspect")
+	// Inspect area command
+	if input == "检查周围" || input == "inspect area" || input == "查看周围" {
+		return Command{Type: CmdInspectArea, RawInput: input}
+	}
+
+	// Inspect item command
+	if strings.HasPrefix(input, "检查 ") || strings.HasPrefix(input, "inspect ") {
+		itemName := strings.TrimPrefix(input, "检查 ")
+		itemName = strings.TrimPrefix(itemName, "inspect ")
 		itemName = strings.TrimSpace(itemName)
 		if itemName != "" {
-			return Command{Type: CmdInspect, Args: []string{itemName}, RawInput: input}
+			return Command{Type: CmdInspectItem, Args: []string{itemName}, RawInput: input}
+		}
+		return Command{Type: CmdUnknown, RawInput: input}
+	}
+
+	// Open command
+	if strings.HasPrefix(input, "打开 ") || strings.HasPrefix(input, "open ") {
+		target := strings.TrimPrefix(input, "打开 ")
+		target = strings.TrimPrefix(target, "open ")
+		target = strings.TrimSpace(target)
+		if target != "" {
+			return Command{Type: CmdOpen, Args: []string{target}, RawInput: input}
 		}
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
@@ -509,11 +552,13 @@ func (ch *CommandHandler) executeMove(cmd Command) (string, error) {
 	err := ch.gameState.SafeMove(dir)
 	if err != nil {
 		if gameErr, ok := err.(*errors.GameError); ok {
-			return "", ch.formatError(
-				gameErr.Message,
-				gameErr.MessagePinyin,
-				gameErr.MessageEnglish,
-			)
+			// Return the formatted message directly as an error
+			// Don't wrap in fmt.Errorf
+			return "", fmt.Errorf("%s", gameErr.GetUserMessage(
+				ch.gameState.Config.ShouldShowChinese(),
+				ch.gameState.Config.ShouldShowPinyin(),
+				ch.gameState.Config.ShouldShowEnglish(),
+			))
 		}
 		return "", err
 	}
@@ -608,11 +653,11 @@ func (ch *CommandHandler) executeTake(cmd Command) (string, error) {
 	err := ch.gameState.SafeTakeItem(matchedItemID)
 	if err != nil {
 		if gameErr, ok := err.(*errors.GameError); ok {
-			return "", ch.formatError(
-				gameErr.Message,
-				gameErr.MessagePinyin,
-				gameErr.MessageEnglish,
-			)
+			return "", fmt.Errorf(gameErr.GetUserMessage(
+				ch.gameState.Config.ShouldShowChinese(),
+				ch.gameState.Config.ShouldShowPinyin(),
+				ch.gameState.Config.ShouldShowEnglish(),
+			))
 		}
 		return "", err
 	}
@@ -629,24 +674,103 @@ func (ch *CommandHandler) executeInventory() (string, error) {
 	return ch.gameState.GetInventoryDisplay(), nil
 }
 
-// Add executeInspect function
-func (ch *CommandHandler) executeInspect(cmd Command) (string, error) {
+// executeInspectArea inspects all nearby locations
+func (ch *CommandHandler) executeInspectArea() (string, error) {
+	nearbyItems, err := ch.gameState.GetNearbyItems()
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	result.WriteString(ch.formatOutput(
+		"=== 周围环境检查 ===",
+		"=== Zhou Wei Huan Jing Jian Cha ===",
+		"=== Environment Inspection ===",
+	))
+	result.WriteString("\n")
+
+	// Group items by location
+	locationItems := make(map[string][]struct {
+		LocationName models.Text
+		Item         models.Item
+		IsContainer  bool
+		IsDrop       bool
+	})
+
+	for _, item := range nearbyItems {
+		locationItems[item.LocationID] = append(locationItems[item.LocationID], struct {
+			LocationName models.Text
+			Item         models.Item
+			IsContainer  bool
+			IsDrop       bool
+		}{
+			LocationName: item.LocationName,
+			Item:         item.Item,
+			IsContainer:  item.IsContainer,
+			IsDrop:       item.IsDrop,
+		})
+	}
+
+	for locID, items := range locationItems {
+		loc, _ := ch.gameState.World.GetLocation(locID)
+		result.WriteString(ch.formatOutput(
+			fmt.Sprintf("\n%s:", loc.Name.Chinese),
+			fmt.Sprintf("%s:", loc.Name.Pinyin),
+			fmt.Sprintf("%s:", loc.Name.English),
+		))
+		result.WriteString("\n")
+
+		for _, item := range items {
+			itemType := "物品"
+			itemTypePinyin := "wu pin"
+			itemTypeEnglish := "item"
+
+			if item.IsContainer {
+				itemType = "容器"
+				itemTypePinyin = "rong qi"
+				itemTypeEnglish = "container"
+			}
+
+			result.WriteString(fmt.Sprintf("  • %s (%s)\n",
+				ch.formatOutput(
+					item.Item.Name.Chinese,
+					item.Item.Name.Pinyin,
+					item.Item.Name.English,
+				),
+				ch.formatOutput(itemType, itemTypePinyin, itemTypeEnglish),
+			))
+		}
+	}
+
+	if len(nearbyItems) == 0 {
+		result.WriteString(ch.formatOutput(
+			"附近没有发现任何物品或容器。",
+			"Fu jin mei you fa xian ren he wu pin huo rong qi.",
+			"No items or containers found nearby.",
+		))
+	}
+
+	return result.String(), nil
+}
+
+// executeInspectItem inspects a specific item for locks, traps, spells
+func (ch *CommandHandler) executeInspectItem(cmd Command) (string, error) {
 	if len(cmd.Args) == 0 {
 		return "", ch.formatError(
-			"检查什么？",
-			"Jian cha shen me?",
-			"Inspect what?",
+			"检查什么物品？",
+			"Jian cha shen me wu pin?",
+			"What item to inspect?",
 		)
 	}
 
 	itemName := cmd.Args[0]
 
-	// Check if item exists in current location
-	itemsAtLocation := ch.gameState.GetItemsAtCurrentLocation()
+	// Check if item is in current location
+	currentItems := ch.gameState.GetItemsAtCurrentLocation()
 	var targetItemID string
 	var targetItem models.Item
 
-	for _, itemID := range itemsAtLocation {
+	for _, itemID := range currentItems {
 		if item, exists := ch.gameState.Items[itemID]; exists {
 			if item.Name.Chinese == itemName || strings.EqualFold(item.Name.English, itemName) {
 				targetItemID = itemID
@@ -657,55 +781,272 @@ func (ch *CommandHandler) executeInspect(cmd Command) (string, error) {
 	}
 
 	if targetItemID == "" {
-		return "", ch.formatError(
-			"这里没有 "+itemName,
-			"Zhe li mei you "+itemName,
-			"There is no "+itemName+" here",
-		)
-	}
-
-	// Check for trap first
-	if targetItem.GetTrapEnemyID() != "" {
-		trapEnemyID := targetItem.GetTrapEnemyID()
-		enemy, exists := ch.gameState.Enemies[trapEnemyID]
-		if exists {
-			// Trigger combat with trap enemy
-			return ch.handleTrapInspect(targetItem, &enemy)
+		// Check if item is within 1 move
+		currentLoc, err := ch.gameState.GetCurrentRoom()
+		if err != nil {
+			return "", err
 		}
-	}
 
-	// Display inspection message
-	inspectMsg := targetItem.GetInspectMessage()
-	if inspectMsg == "" {
-		inspectMsg = ch.formatOutput(
-			"你检查了 "+targetItem.Name.Chinese+"，但没有发现什么特别的东西。",
-			"Ni jian cha le "+targetItem.Name.Pinyin+"，dan mei you fa xian shen me te bie de dong xi.",
-			"You inspect the "+targetItem.Name.English+" but find nothing special.",
+		nearbyItems, err := ch.gameState.World.GetItemsInNearbyLocations(
+			currentLoc.ID,
+			ch.gameState.TakenItems,
+			ch.gameState.PendingDrops,
+			ch.gameState.Items,
 		)
-	}
+		if err != nil {
+			return "", err
+		}
 
-	// Check if container has items
-	if targetItem.IsContainer() && len(targetItem.Inventory) > 0 {
-		containerItems := targetItem.Inventory
-		itemNames := make([]string, len(containerItems))
-		for i, itemID := range containerItems {
-			if item, exists := ch.gameState.Items[itemID]; exists {
-				itemNames[i] = ch.gameState.GetDisplayName(item.Name)
+		for _, itemInfo := range nearbyItems {
+			if itemInfo.Item.Name.Chinese == itemName || strings.EqualFold(itemInfo.Item.Name.English, itemName) {
+				targetItem = itemInfo.Item
+				targetItemID = itemInfo.Item.ID
+				break
 			}
 		}
 
-		inspectMsg += "\n" + ch.formatOutput(
-			"里面发现: "+strings.Join(itemNames, ", "),
-			"Li mian fa xian: "+strings.Join(itemNames, ", "),
-			"Inside you find: "+strings.Join(itemNames, ", "),
+		if targetItemID == "" {
+			return "", ch.formatError(
+				fmt.Sprintf("在附近找不到物品: %s", itemName),
+				fmt.Sprintf("Zai fu jin zhao bu dao wu pin: %s", itemName),
+				fmt.Sprintf("Cannot find item nearby: %s", itemName),
+			)
+		}
+	}
+
+	// Build inspection result
+	var result strings.Builder
+	result.WriteString(ch.formatOutput(
+		fmt.Sprintf("=== 检查 %s ===", targetItem.Name.Chinese),
+		fmt.Sprintf("=== Jian Cha %s ===", targetItem.Name.Pinyin),
+		fmt.Sprintf("=== Inspecting %s ===", targetItem.Name.English),
+	))
+	result.WriteString("\n")
+
+	// Check for locks
+	if targetItem.Properties.OpensDoorID != nil && *targetItem.Properties.OpensDoorID != "" {
+		result.WriteString(ch.formatOutput(
+			"  这是一个钥匙，可以打开特定的门。",
+			"  Zhe shi yi ge yao chi, ke yi da kai te ding de men.",
+			"  This is a key that can open specific doors.",
+		))
+		result.WriteString("\n")
+	}
+
+	// Check for traps
+	if targetItem.GetTrapEnemyID() != "" {
+		result.WriteString(ch.formatOutput(
+			"  ⚠️ 这个物品带有陷阱！",
+			"  ⚠️ Zhe ge wu pin dai you xian jing!",
+			"  ⚠️ This item is trapped!",
+		))
+		result.WriteString("\n")
+	}
+
+	// Check for spells/enchantments
+	if targetItem.IsWeapon() && targetItem.GetDamageBonus() > 15 {
+		result.WriteString(ch.formatOutput(
+			"  这把武器散发着魔法光芒。",
+			"  Zhe ba wu qi san fa zhe mo fa guang mang.",
+			"  This weapon radiates magical energy.",
+		))
+		result.WriteString("\n")
+	}
+
+	if targetItem.IsContainer() {
+		result.WriteString(ch.formatOutput(
+			fmt.Sprintf("  这是一个容器，可以容纳 %d 件物品。", targetItem.GetCapacity()),
+			fmt.Sprintf("  Zhe shi yi ge rong qi, ke yi rong na %d jian wu pin.", targetItem.GetCapacity()),
+			fmt.Sprintf("  This is a container that can hold %d items.", targetItem.GetCapacity()),
+		))
+		result.WriteString("\n")
+	}
+
+	// Check if item has any special properties
+	hasSpecial := false
+	if targetItem.Properties.WinCondition != nil && *targetItem.Properties.WinCondition {
+		result.WriteString(ch.formatOutput(
+			"  这个物品散发着神圣的光芒，似乎是任务目标。",
+			"  Zhe ge wu pin san fa zhe shen sheng de guang mang, si hu shi ren wu mu biao.",
+			"  This item radiates holy light, seeming to be a quest objective.",
+		))
+		hasSpecial = true
+	}
+
+	if !hasSpecial && targetItem.GetTrapEnemyID() == "" && targetItem.Properties.OpensDoorID == nil && !targetItem.IsContainer() {
+		result.WriteString(ch.formatOutput(
+			"  这个物品看起来很普通，没有什么特别之处。",
+			"  Zhe ge wu pin kan qi lai hen pu tong, mei you shen me te bie zhi chu.",
+			"  This item looks ordinary with nothing special about it.",
+		))
+	}
+
+	return result.String(), nil
+}
+
+// executeOpen opens doors or containers
+func (ch *CommandHandler) executeOpen(cmd Command) (string, error) {
+	if len(cmd.Args) == 0 {
+		return "", ch.formatError(
+			"打开什么？",
+			"Da kai shen me?",
+			"Open what?",
 		)
 	}
 
-	return inspectMsg, nil
+	target := cmd.Args[0]
+
+	// Check if target is a door (exit with required item)
+	currentLoc, err := ch.gameState.GetCurrentRoom()
+	if err != nil {
+		return "", err
+	}
+
+	// Check if target is an exit direction
+	var dir models.Direction
+	switch target {
+	case "北", "北门", "north":
+		dir = models.North
+	case "南", "南门", "south":
+		dir = models.South
+	case "东", "东门", "east":
+		dir = models.East
+	case "西", "西门", "west":
+		dir = models.West
+	case "西北", "西北门", "northwest":
+		dir = models.Northwest
+	case "东北", "东北门", "northeast":
+		dir = models.Northeast
+	case "西南", "西南门", "southwest":
+		dir = models.Southwest
+	case "东南", "东南门", "southeast":
+		dir = models.Southeast
+	default:
+		// Check if target is a container item
+		return ch.openContainer(target)
+	}
+
+	// Try to open a door
+	exit, err := ch.gameState.World.GetExit(currentLoc.ID, dir)
+	if err != nil {
+		return "", ch.formatError(
+			"那里没有门。",
+			"Na li mei you men.",
+			"There is no door there.",
+		)
+	}
+
+	if exit.RequiredItem == nil {
+		return "", ch.formatError(
+			"这门没有锁。",
+			"Zhe men mei you suo.",
+			"This door is not locked.",
+		)
+	}
+
+	// Check if player has the key
+	requiredItem := *exit.RequiredItem
+	if !ch.gameState.Player.HasItem(requiredItem) {
+		return "", ch.formatError(
+			fmt.Sprintf("门被锁住了。需要 %s 才能打开。", requiredItem),
+			fmt.Sprintf("Men bei suo zhu le. Xu yao %s cai neng da kai.", requiredItem),
+			fmt.Sprintf("The door is locked. Need %s to open it.", requiredItem),
+		)
+	}
+
+	// Remove the key from inventory (optional - key might be consumed)
+	ch.gameState.Player.RemoveItem(requiredItem)
+
+	// Mark the exit as unlocked by setting RequiredItem to nil
+	// Note: This modifies the world - consider using a separate tracking map
+	for i, e := range currentLoc.Exits {
+		if e.Direction == dir {
+			currentLoc.Exits[i].RequiredItem = nil
+			ch.gameState.World.Locations[currentLoc.ID] = currentLoc
+			break
+		}
+	}
+
+	return ch.formatOutput(
+		fmt.Sprintf("你用 %s 打开了门。", requiredItem),
+		fmt.Sprintf("Ni yong %s da kai le men.", requiredItem),
+		fmt.Sprintf("You opened the door with %s.", requiredItem),
+	), nil
+}
+
+// openContainer handles opening containers like chests
+func (ch *CommandHandler) openContainer(containerName string) (string, error) {
+	// Find container in current location
+	currentItems := ch.gameState.GetItemsAtCurrentLocation()
+	var containerID string
+	var container models.Item
+
+	for _, itemID := range currentItems {
+		if item, exists := ch.gameState.Items[itemID]; exists {
+			if (item.Name.Chinese == containerName || strings.EqualFold(item.Name.English, containerName)) && item.IsContainer() {
+				containerID = itemID
+				container = item
+				break
+			}
+		}
+	}
+
+	if containerID == "" {
+		return "", ch.formatError(
+			fmt.Sprintf("附近没有 %s 容器。", containerName),
+			fmt.Sprintf("Fu jin mei you %s rong qi.", containerName),
+			fmt.Sprintf("No container named %s nearby.", containerName),
+		)
+	}
+
+	// Display container contents
+	var result strings.Builder
+	result.WriteString(ch.formatOutput(
+		fmt.Sprintf("=== 打开 %s ===", container.Name.Chinese),
+		fmt.Sprintf("=== Da Kai %s ===", container.Name.Pinyin),
+		fmt.Sprintf("=== Opening %s ===", container.Name.English),
+	))
+	result.WriteString("\n")
+
+	if len(container.Inventory) == 0 {
+		result.WriteString(ch.formatOutput(
+			"容器是空的。",
+			"Rong qi shi kong de.",
+			"The container is empty.",
+		))
+	} else {
+		result.WriteString(ch.formatOutput(
+			"里面发现:",
+			"Li mian fa xian:",
+			"Inside you find:",
+		))
+		result.WriteString("\n")
+
+		for _, itemID := range container.Inventory {
+			if item, exists := ch.gameState.Items[itemID]; exists {
+				result.WriteString(fmt.Sprintf("  • %s\n",
+					ch.formatOutput(
+						item.Name.Chinese,
+						item.Name.Pinyin,
+						item.Name.English,
+					),
+				))
+			}
+		}
+
+		// Option to take items from container
+		result.WriteString(ch.formatOutput(
+			"\n使用 '拿 <物品>' 从容器中取出物品。",
+			"\nShi yong 'na <wu pin>' cong rong qi zhong qu chu wu pin.",
+			"\nUse 'take <item>' to take items from the container.",
+		))
+	}
+
+	return result.String(), nil
 }
 
 // handleTrapInspect handles combat triggered by inspection
-func (ch *CommandHandler) handleTrapInspect(item models.Item, enemy *models.Enemy) (string, error) {
+func (ch *CommandHandler) handleTrapInspect(item models.Item, _ *models.Enemy) (string, error) {
 	// Remove the trap item from location (it was a mimic/chest)
 	// Add the enemy to current location
 	// Then trigger combat
@@ -722,69 +1063,175 @@ func (ch *CommandHandler) executeStatus() (string, error) {
 }
 
 // executeHelp displays help text
+// executeHelp displays help text
 func (ch *CommandHandler) executeHelp() (string, error) {
-	helpChinese := `╔══════════════════════════════════════════════════════════╗
-║                      游戏命令帮助                         ║
-╠══════════════════════════════════════════════════════════╣
-║ 移动:                                                      ║
-║   中文: 北, 往北, 往北走, 西北, 往西北走, 往西北去        ║
-║   英文: go north, go northwest, walk south, etc.         ║
-╠══════════════════════════════════════════════════════════╣
-║ 物品操作:                                                  ║
-║   拿取: 拿<物品名> 或 take <item>                         ║
-║   使用: 使用<物品名> 或 use <item>                        ║
-║   装备: 装备<物品名> 或 equip <item>                      ║
-║   卸下: 卸下<武器/护甲> 或 unequip <weapon/armor>         ║
-║   丢弃: 丢弃<物品名> 或 drop <item>                       ║
-╠══════════════════════════════════════════════════════════╣
-║ 信息查看:                                                  ║
-║   背包: 背包 或 i 或 inventory                            ║
-║   状态: 状态 或 status                                    ║
-║   查看: 看 或 查看 或 look                                ║
-║   帮助: 帮助 或 help                                      ║
-╠══════════════════════════════════════════════════════════╣
-║ 存档管理:                                                  ║
-║   保存: save <名称> 或 保存 <名称>                        ║
-║   加载: load <名称> 或 加载 <名称>                        ║
-║   列表: saves 或 存档列表                                 ║
-║   删除: delete <名称> 或 删除 <名称>                      ║
-╠══════════════════════════════════════════════════════════╣
-║ 其他:                                                      ║
-║   退出: quit 或 退出                                      ║
-╚══════════════════════════════════════════════════════════╝`
+	var result strings.Builder
 
-	helpPinyin := "=== You Xi Ming Ling Bang Zhu ==="
-	helpEnglish := `╔══════════════════════════════════════════════════════════╗
-║                      GAME COMMANDS                         ║
-╠══════════════════════════════════════════════════════════╣
-║ Movement:                                                   ║
-║   Chinese: 北, 往北, 往北走, 西北, 往西北走               ║
-║   English: go north, go northwest, walk south, etc.       ║
-╠══════════════════════════════════════════════════════════╣
-║ Items:                                                      ║
-║   Take: 拿<item> or take <item>                           ║
-║   Use: 使用<item> or use <item>                           ║
-║   Equip: 装备<item> or equip <item>                       ║
-║   Unequip: 卸下<weapon/armor> or unequip <weapon/armor>   ║
-║   Drop: 丢弃<item> or drop <item>                         ║
-╠══════════════════════════════════════════════════════════╣
-║ Information:                                                ║
-║   Inventory: 背包, i, or inventory                        ║
-║   Status: 状态 or status                                  ║
-║   Look: 看, 查看, or look                                 ║
-║   Help: 帮助 or help                                      ║
-╠══════════════════════════════════════════════════════════╣
-║ Save/Load:                                                  ║
-║   Save: save <name> or 保存 <name>                        ║
-║   Load: load <name> or 加载 <name>                        ║
-║   List: saves or 存档列表                                 ║
-║   Delete: delete <name> or 删除 <name>                    ║
-╠══════════════════════════════════════════════════════════╣
-║ Other:                                                      ║
-║   Quit: quit or 退出                                       ║
-╚══════════════════════════════════════════════════════════╝`
+	// Header
+	result.WriteString("\n╔═══════════════════════════════════════════════════════════╗")
 
-	return ch.formatOutput(helpChinese, helpPinyin, helpEnglish), nil
+	// Chinese header
+	if ch.gameState.Config.ShouldShowChinese() {
+		result.WriteString("\n║                      游戏命令帮助                         ║")
+	}
+
+	// Pinyin header
+	if ch.gameState.Config.ShouldShowPinyin() {
+		result.WriteString("\n║                    You Xi Ming Ling Bang Zhu              ║")
+	}
+
+	// English header
+	if ch.gameState.Config.ShouldShowEnglish() {
+		result.WriteString("\n║                      Game Commands                        ║")
+	}
+
+	result.WriteString("\n╠═══════════════════════════════════════════════════════════╣")
+
+	// ==================== MOVEMENT ====================
+	// Chinese movement
+	if ch.gameState.Config.ShouldShowChinese() {
+		result.WriteString("\n║ 移动：                                                     ║")
+		result.WriteString("\n║     往<北/南/东/西/西北/东北/西南/东南>走                  ║")
+		result.WriteString("\n║     往<出>走                                               ║")
+	}
+
+	// Pinyin movement
+	if ch.gameState.Config.ShouldShowPinyin() {
+		result.WriteString("\n║ Yi Dong:                                                  ║")
+		result.WriteString("\n║     Wang <bei/nan/dong/xi/xi bei/dong bei/xi nan/dong bei> zou ║")
+		result.WriteString("\n║     Wang <chu> zou                                        ║")
+	}
+
+	// English movement
+	if ch.gameState.Config.ShouldShowEnglish() {
+		result.WriteString("\n║ Movement:                                                 ║")
+		result.WriteString("\n║     Go <north/south/east/west/northwest/northeast/southwest/southeast> ║")
+		result.WriteString("\n║     Go <out>                                              ║")
+	}
+
+	result.WriteString("\n╠═══════════════════════════════════════════════════════════╣")
+
+	// ==================== ITEM OPERATIONS ====================
+	// Chinese item operations
+	if ch.gameState.Config.ShouldShowChinese() {
+		result.WriteString("\n║ 物品操作：                                                 ║")
+		result.WriteString("\n║    拿取: 拿<物品名>                                        ║")
+		result.WriteString("\n║    使用: 使用<物品名>                                      ║")
+		result.WriteString("\n║    装备: 装备<物品名>                                      ║")
+		result.WriteString("\n║    卸下: 卸下<武器/护甲>                                   ║")
+		result.WriteString("\n║    丢弃: 丢弃<物品名>                                      ║")
+		result.WriteString("\n║    检查: 检查<物品名>                                      ║")
+	}
+
+	// Pinyin item operations
+	if ch.gameState.Config.ShouldShowPinyin() {
+		result.WriteString("\n║ Wu Pin Cao Zuo:                                           ║")
+		result.WriteString("\n║     Na Qu: Na <wu pin ming>                               ║")
+		result.WriteString("\n║     Shi Yong: Shi Yong <wu pin ming>                     ║")
+		result.WriteString("\n║     Zhuang Bei: Zhuang Bei <wu pin ming>                 ║")
+		result.WriteString("\n║     Xie Xia: Xie Xia <wu qi / hu jia>                    ║")
+		result.WriteString("\n║     Diu Qi: Diu Qi <wu pin ming>                         ║")
+		result.WriteString("\n║     Jian Cha: Jian Cha <wu pin ming>                     ║")
+	}
+
+	// English item operations
+	if ch.gameState.Config.ShouldShowEnglish() {
+		result.WriteString("\n║ Item Operations:                                          ║")
+		result.WriteString("\n║     Take: take <item name>                               ║")
+		result.WriteString("\n║     Use: use <item name>                                 ║")
+		result.WriteString("\n║     Equip: equip <item name>                             ║")
+		result.WriteString("\n║     Unequip: unequip <weapon/armor>                      ║")
+		result.WriteString("\n║     Drop: drop <item name>                               ║")
+		result.WriteString("\n║     Inspect: inspect <item name>                         ║")
+	}
+
+	result.WriteString("\n╠═══════════════════════════════════════════════════════════╣")
+
+	// ==================== INFORMATION ====================
+	// Chinese information
+	if ch.gameState.Config.ShouldShowChinese() {
+		result.WriteString("\n║ 信息查看：                                                 ║")
+		result.WriteString("\n║    背包: 背包 或 i                                         ║")
+		result.WriteString("\n║    状态: 状态                                              ║")
+		result.WriteString("\n║    查看: 看 或 查看                                        ║")
+		result.WriteString("\n║    帮助: 帮助                                              ║")
+	}
+
+	// Pinyin information
+	if ch.gameState.Config.ShouldShowPinyin() {
+		result.WriteString("\n║ Xin Xi Cha Kan:                                           ║")
+		result.WriteString("\n║     Bei Bao: Bei Bao huo i                                ║")
+		result.WriteString("\n║     Zhuang Tai: Zhuang Tai                                ║")
+		result.WriteString("\n║     Cha Kan: Kan huo Cha Kan                              ║")
+		result.WriteString("\n║     Bang Zhu: Bang Zhu                                    ║")
+	}
+
+	// English information
+	if ch.gameState.Config.ShouldShowEnglish() {
+		result.WriteString("\n║ Information:                                              ║")
+		result.WriteString("\n║     Inventory: inventory or i                            ║")
+		result.WriteString("\n║     Status: status                                       ║")
+		result.WriteString("\n║     Look: look                                           ║")
+		result.WriteString("\n║     Help: help                                           ║")
+	}
+
+	result.WriteString("\n╠═══════════════════════════════════════════════════════════╣")
+
+	// ==================== SAVE/LOAD ====================
+	// Chinese save/load
+	if ch.gameState.Config.ShouldShowChinese() {
+		result.WriteString("\n║ 存档管理：                                                 ║")
+		result.WriteString("\n║    保存: save <名称> 或 保存 <名称>                        ║")
+		result.WriteString("\n║    加载: load <名称> 或 加载 <名称>                        ║")
+		result.WriteString("\n║    列表: saves 或 存档列表                                 ║")
+		result.WriteString("\n║    删除: delete <名称> 或 删除 <名称>                      ║")
+	}
+
+	// Pinyin save/load
+	if ch.gameState.Config.ShouldShowPinyin() {
+		result.WriteString("\n║ Cun Dang Guan Li:                                        ║")
+		result.WriteString("\n║     Bao Cun: save <ming cheng> huo Bao Cun <ming cheng>  ║")
+		result.WriteString("\n║     Jia Zai: load <ming cheng> huo Jia Zai <ming cheng>  ║")
+		result.WriteString("\n║     Lie Biao: saves huo Cun Dang Lie Biao                ║")
+		result.WriteString("\n║     Shan Chu: delete <ming cheng> huo Shan Chu <ming cheng>║")
+	}
+
+	// English save/load
+	if ch.gameState.Config.ShouldShowEnglish() {
+		result.WriteString("\n║ Save/Load:                                                ║")
+		result.WriteString("\n║     Save: save <name>                                    ║")
+		result.WriteString("\n║     Load: load <name>                                    ║")
+		result.WriteString("\n║     List: saves                                          ║")
+		result.WriteString("\n║     Delete: delete <name>                                ║")
+	}
+
+	result.WriteString("\n╠═══════════════════════════════════════════════════════════╣")
+
+	// ==================== OTHER ====================
+	// Chinese other
+	if ch.gameState.Config.ShouldShowChinese() {
+		result.WriteString("\n║ 其他：                                                     ║")
+		result.WriteString("\n║    退出: quit 或 退出                                      ║")
+		result.WriteString("\n║    传送: tp <位置> 或 传送 <位置> (测试用)                  ║")
+	}
+
+	// Pinyin other
+	if ch.gameState.Config.ShouldShowPinyin() {
+		result.WriteString("\n║ Qi Ta:                                                    ║")
+		result.WriteString("\n║     Tui Chu: quit huo Tui Chu                            ║")
+		result.WriteString("\n║     Chuan Song: tp <wei zhi> huo Chuan Song <wei zhi>    ║")
+	}
+
+	// English other
+	if ch.gameState.Config.ShouldShowEnglish() {
+		result.WriteString("\n║ Other:                                                    ║")
+		result.WriteString("\n║     Quit: quit                                           ║")
+		result.WriteString("\n║     Teleport: tp <location> (testing)                    ║")
+	}
+
+	result.WriteString("\n╚═══════════════════════════════════════════════════════════╝")
+
+	return result.String(), nil
 }
 
 // executeQuit handles quit command - now just sets the flag
@@ -1190,14 +1637,15 @@ func (ch *CommandHandler) executeUse(cmd Command) (string, error) {
 		)
 	}
 
+	// In executeMove, update error handling
 	result, err := ch.gameState.SafeUseItem(itemID)
 	if err != nil {
 		if gameErr, ok := err.(*errors.GameError); ok {
-			return "", ch.formatError(
-				gameErr.Message,
-				gameErr.MessagePinyin,
-				gameErr.MessageEnglish,
-			)
+			return "", fmt.Errorf(gameErr.GetUserMessage(
+				ch.gameState.Config.ShouldShowChinese(),
+				ch.gameState.Config.ShouldShowPinyin(),
+				ch.gameState.Config.ShouldShowEnglish(),
+			))
 		}
 		return "", err
 	}

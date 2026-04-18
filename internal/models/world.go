@@ -421,3 +421,75 @@ func (w *World) GetExitDescription(locationID string, dir Direction) string {
 	}
 	return "一条畅通的道路"
 }
+
+// models/world.go - Add these methods
+
+// GetNearbyLocations returns all locations within 1 move from the current location
+func (w *World) GetNearbyLocations(locationID string) ([]Location, error) {
+    currentLoc, err := w.GetLocation(locationID)
+    if err != nil {
+        return nil, err
+    }
+    
+    var nearby []Location
+    for _, exit := range currentLoc.Exits {
+        destLoc, err := w.GetLocation(exit.DestinationID)
+        if err != nil {
+            continue
+        }
+        nearby = append(nearby, destLoc)
+    }
+    
+    return nearby, nil
+}
+
+// GetItemsInNearbyLocations returns all items in locations within 1 move
+func (w *World) GetItemsInNearbyLocations(locationID string, takenItems map[string]bool, pendingDrops map[string][]string, itemsMap map[string]Item) ([]ItemInfo, error) {
+    nearbyLocs, err := w.GetNearbyLocations(locationID)
+    if err != nil {
+        return nil, err
+    }
+    
+    var items []ItemInfo
+    for _, loc := range nearbyLocs {
+        // Check static items
+        if !takenItems[loc.ID] {
+            for _, itemID := range loc.ItemIDs {
+                if item, exists := itemsMap[itemID]; exists {
+                    items = append(items, ItemInfo{
+                        LocationID:   loc.ID,
+                        LocationName: loc.Name,
+                        Item:         item,
+                        IsContainer:  item.IsContainer(),
+                    })
+                }
+            }
+        }
+        
+        // Check pending drops
+        if drops, exists := pendingDrops[loc.ID]; exists {
+            for _, itemID := range drops {
+                if item, exists := itemsMap[itemID]; exists {
+                    items = append(items, ItemInfo{
+                        LocationID:   loc.ID,
+                        LocationName: loc.Name,
+                        Item:         item,
+                        IsContainer:  item.IsContainer(),
+                        IsDrop:       true,
+                    })
+                }
+            }
+        }
+    }
+    
+    return items, nil
+}
+
+// ItemInfo holds information about an item and its location
+type ItemInfo struct {
+    LocationID   string
+    LocationName Text
+    Item         Item
+    IsContainer  bool
+    IsDrop       bool
+}

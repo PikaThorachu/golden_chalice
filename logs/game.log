@@ -231,3 +231,27 @@ item 'leather_pouch' has invalid type: container - Context: map[phase:load_game_
 2026/04/13 10:39:10 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:冲突]
 2026/04/13 10:40:04 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:Entrance_1 room_id:anteroom room_name:前厅 to_location:anteroom_1]
 2026/04/13 10:40:57 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:anteroom_1 room_id:armory room_name:军械库 to_location:armory_4]
+2026/04/16 11:19:15 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:艳玲]
+2026/04/16 11:21:17 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:adsf]
+2026/04/16 11:21:40 [INFO] logger.go:171 - Game Event: enter_room - map[from_location:Entrance_1 room_id:armory room_name:军械库 to_location:armory_1]
+2026/04/16 11:22:32 [INFO] logger.go:181 - Combat: adsf attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/16 11:22:32 [INFO] logger.go:181 - Combat: 骷髅守卫 (Kulou shouwei) / Skeleton Guard attacked adsf for 20 damage - enemy_attack
+2026/04/16 11:22:33 [INFO] logger.go:181 - Combat: adsf attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/16 11:22:33 [INFO] logger.go:181 - Combat: 骷髅守卫 (Kulou shouwei) / Skeleton Guard attacked adsf for 15 damage - enemy_attack
+2026/04/16 11:22:34 [INFO] logger.go:181 - Combat: adsf attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/16 11:22:34 [INFO] logger.go:181 - Combat: 骷髅守卫 (Kulou shouwei) / Skeleton Guard attacked adsf for 14 damage - enemy_attack
+2026/04/16 11:22:35 [INFO] logger.go:181 - Combat: adsf attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/16 11:22:35 [INFO] logger.go:181 - Combat: 骷髅守卫 (Kulou shouwei) / Skeleton Guard attacked adsf for 12 damage - enemy_attack
+2026/04/16 11:22:36 [INFO] logger.go:181 - Combat: adsf attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - player_attack
+2026/04/16 11:22:36 [INFO] logger.go:181 - Combat: adsf attacked 骷髅守卫 (Kulou shouwei) / Skeleton Guard for 10 damage - victory
+2026/04/17 18:05:35 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:asd;lfkj]
+2026/04/17 22:06:33 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:阿斯蒂芬]
+2026/04/17 22:07:49 [ERROR] logger.go:191 - Error: 一堵石墙挡住了你的去路 - Context: map[direction:north]
+2026/04/17 22:09:58 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:asdflk]
+2026/04/17 22:10:12 [ERROR] logger.go:191 - Error: 一堵石墙挡住了你的去路 - Context: map[direction:north]
+2026/04/17 22:30:41 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:asd]
+2026/04/17 22:30:51 [ERROR] logger.go:191 - Error: 一堵石墙挡住了你的去路 - Context: map[direction:north]
+2026/04/17 22:54:42 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:asdf]
+2026/04/17 22:54:58 [ERROR] logger.go:191 - Error: 一堵石墙挡住了你的去路 - Context: map[direction:north]
+2026/04/18 17:34:16 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:asdf]
+2026/04/18 17:39:16 [INFO] logger.go:171 - Game Event: new_game - map[location:Entrance_1 player:asdf]
