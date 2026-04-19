@@ -292,35 +292,65 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdInspectArea, RawInput: input}
 	}
 
+	// ========== INSPECT (bare command) ==========
+	if input == "inspect" || input == "检查" {
+		return Command{Type: CmdInspectArea, RawInput: input}
+	}
+
 	// ========== INSPECT ITEM COMMAND ==========
-	if strings.HasPrefix(input, "检查 ") || strings.HasPrefix(inputLower, "inspect ") {
-		// Extract item name
-		var itemName string
-		if strings.HasPrefix(input, "检查 ") {
-			itemName = strings.TrimPrefix(input, "检查 ")
-		} else {
-			itemName = strings.TrimPrefix(inputLower, "inspect ")
-		}
+	// Handle English: "inspect old_desk" (with space)
+	if strings.HasPrefix(inputLower, "inspect ") {
+		itemName := strings.TrimPrefix(inputLower, "inspect ")
 		itemName = strings.TrimSpace(itemName)
 		if itemName != "" {
 			return Command{Type: CmdInspectItem, Args: []string{itemName}, RawInput: input}
 		}
-		return Command{Type: CmdUnknown, RawInput: input}
+	}
+
+	// Handle Chinese with space: "检查 旧书桌"
+	if strings.HasPrefix(input, "检查 ") {
+		itemName := strings.TrimPrefix(input, "检查 ")
+		itemName = strings.TrimSpace(itemName)
+		if itemName != "" {
+			return Command{Type: CmdInspectItem, Args: []string{itemName}, RawInput: input}
+		}
+	}
+
+	// Handle Chinese without space: "检查旧书桌"
+	if strings.HasPrefix(input, "检查") && len(input) > len("检查") {
+		itemName := strings.TrimPrefix(input, "检查")
+		itemName = strings.TrimSpace(itemName)
+		if itemName != "" {
+			return Command{Type: CmdInspectItem, Args: []string{itemName}, RawInput: input}
+		}
 	}
 
 	// ========== OPEN COMMAND ==========
-	if strings.HasPrefix(input, "打开 ") || strings.HasPrefix(inputLower, "open ") {
-		var target string
-		if strings.HasPrefix(input, "打开 ") {
-			target = strings.TrimPrefix(input, "打开 ")
-		} else {
-			target = strings.TrimPrefix(inputLower, "open ")
-		}
+	// Handle English: "open door"
+	if strings.HasPrefix(inputLower, "open ") {
+		target := strings.TrimPrefix(inputLower, "open ")
 		target = strings.TrimSpace(target)
 		if target != "" {
 			return Command{Type: CmdOpen, Args: []string{target}, RawInput: input}
 		}
-		return Command{Type: CmdUnknown, RawInput: input}
+	}
+
+	// Handle Chinese with space: "打开 门"
+	if strings.HasPrefix(input, "打开 ") {
+		target := strings.TrimPrefix(input, "打开 ")
+		target = strings.TrimSpace(target)
+		if target != "" {
+			return Command{Type: CmdOpen, Args: []string{target}, RawInput: input}
+		}
+	}
+
+	// Handle Chinese without space: "开门" or "打开门"
+	if strings.HasPrefix(input, "打开") && len(input) > len("打开") {
+		target := strings.TrimPrefix(input, "打开")
+		target = strings.TrimSpace(target)
+		if target != "" {
+			return Command{Type: CmdOpen, Args: []string{target}, RawInput: input}
+		}
 	}
 
 	// ========== MOVEMENT COMMANDS ==========
@@ -353,25 +383,25 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
-	// ========== TAKE COMMANDS ==========
-	if strings.HasPrefix(input, "拿") || strings.HasPrefix(input, "取") {
-		itemName := strings.TrimPrefix(input, "拿")
-		itemName = strings.TrimPrefix(itemName, "取")
-		itemName = strings.TrimSpace(itemName)
-		if itemName != "" {
-			return Command{Type: CmdTake, Args: []string{itemName}, RawInput: input}
-		}
-		return Command{Type: CmdUnknown, RawInput: input}
+	// Take command with space
+	if strings.HasPrefix(input, "拿 ") || strings.HasPrefix(input, "取 ") {
+		// ... existing code
 	}
 
-	// Take command (English)
-	if strings.HasPrefix(inputLower, "take ") {
-		itemName := strings.TrimPrefix(inputLower, "take ")
+	// Take command without space
+	if strings.HasPrefix(input, "拿") && len(input) > len("拿") {
+		itemName := strings.TrimPrefix(input, "拿")
 		itemName = strings.TrimSpace(itemName)
 		if itemName != "" {
 			return Command{Type: CmdTake, Args: []string{itemName}, RawInput: input}
 		}
-		return Command{Type: CmdUnknown, RawInput: input}
+	}
+	if strings.HasPrefix(input, "取") && len(input) > len("取") {
+		itemName := strings.TrimPrefix(input, "取")
+		itemName = strings.TrimSpace(itemName)
+		if itemName != "" {
+			return Command{Type: CmdTake, Args: []string{itemName}, RawInput: input}
+		}
 	}
 
 	// ========== INVENTORY COMMANDS ==========
@@ -978,11 +1008,13 @@ func (ch *CommandHandler) executeOpen(cmd Command) (string, error) {
 		)
 	}
 
-	// Remove the key from inventory (optional - key might be consumed)
+	// Get the key item name for display
+	keyItem, keyExists := ch.gameState.Items[requiredItem]
+
+	// Remove the key from inventory
 	ch.gameState.Player.RemoveItem(requiredItem)
 
 	// Mark the exit as unlocked by setting RequiredItem to nil
-	// Note: This modifies the world - consider using a separate tracking map
 	for i, e := range currentLoc.Exits {
 		if e.Direction == dir {
 			currentLoc.Exits[i].RequiredItem = nil
@@ -991,11 +1023,24 @@ func (ch *CommandHandler) executeOpen(cmd Command) (string, error) {
 		}
 	}
 
-	return ch.formatOutput(
-		fmt.Sprintf("你用 %s 打开了门。", requiredItem),
-		fmt.Sprintf("Ni yong %s da kai le men.", requiredItem),
-		fmt.Sprintf("You opened the door with %s.", requiredItem),
-	), nil
+	// Build success message with key usage
+	var result strings.Builder
+
+	if keyExists {
+		result.WriteString(ch.formatOutput(
+			fmt.Sprintf("你用 %s 打开了门。钥匙用过后消失了。", keyItem.Name.Chinese),
+			fmt.Sprintf("Ni yong %s da kai le men. Yaoshi yongguo hou xiaoshi le.", keyItem.Name.Pinyin),
+			fmt.Sprintf("You used %s to open the door. The key was consumed.", keyItem.Name.English),
+		))
+	} else {
+		result.WriteString(ch.formatOutput(
+			fmt.Sprintf("你用 %s 打开了门。钥匙用过后消失了。", requiredItem),
+			fmt.Sprintf("Ni yong %s da kai le men. Yaoshi yongguo hou xiaoshi le.", requiredItem),
+			fmt.Sprintf("You used %s to open the door. The key was consumed.", requiredItem),
+		))
+	}
+
+	return result.String(), nil
 }
 
 // openContainer handles opening containers like chests
@@ -1018,9 +1063,49 @@ func (ch *CommandHandler) openContainer(containerName string) (string, error) {
 	if containerID == "" {
 		return "", ch.formatError(
 			fmt.Sprintf("附近没有 %s 容器。", containerName),
-			fmt.Sprintf("Fu jin mei you %s rong qi.", containerName),
+			fmt.Sprintf("Fujin meiyou %s rongqi.", containerName),
 			fmt.Sprintf("No container named %s nearby.", containerName),
 		)
+	}
+
+	// Check if container is locked (requires a key)
+	if container.Properties.OpensDoorID != nil && *container.Properties.OpensDoorID != "" {
+		requiredKey := *container.Properties.OpensDoorID
+		if !ch.gameState.Player.HasItem(requiredKey) {
+			return "", ch.formatError(
+				fmt.Sprintf("容器被锁住了。需要 %s 才能打开。", requiredKey),
+				fmt.Sprintf("Rongqi bei suozhu le. Xuyao %s cai neng dakai.", requiredKey),
+				fmt.Sprintf("The container is locked. Need %s to open it.", requiredKey),
+			)
+		}
+
+		// Get the key item name for display
+		if keyItem, keyExists := ch.gameState.Items[requiredKey]; keyExists {
+			ch.gameState.Player.RemoveItem(requiredKey)
+			ch.formatOutput(
+				fmt.Sprintf("你用 %s 打开了容器。钥匙用过后消失了。", keyItem.Name.Chinese),
+				fmt.Sprintf("Niyong %s dakai le rongqi. Yaoshi yongguo hou xiaoshi le.", keyItem.Name.Pinyin),
+				fmt.Sprintf("You used %s to open the container. The key was consumed.", keyItem.Name.English),
+			)
+		}
+	}
+
+	// Move container contents to pending drops
+	var itemsFound []string
+	if len(container.Inventory) > 0 {
+		for _, itemID := range container.Inventory {
+			ch.gameState.AddPendingDrop(ch.gameState.Player.CurrentLocationID, itemID)
+			if item, exists := ch.gameState.Items[itemID]; exists {
+				itemsFound = append(itemsFound, ch.formatOutput(
+					item.Name.Chinese,
+					item.Name.Pinyin,
+					item.Name.English,
+				))
+			}
+		}
+		// Clear container inventory
+		container.Inventory = []string{}
+		ch.gameState.Items[containerID] = container
 	}
 
 	// Display container contents
@@ -1032,7 +1117,7 @@ func (ch *CommandHandler) openContainer(containerName string) (string, error) {
 	))
 	result.WriteString("\n")
 
-	if len(container.Inventory) == 0 {
+	if len(itemsFound) == 0 {
 		result.WriteString(ch.formatOutput(
 			"容器是空的。",
 			"Rong qi shi kong de.",
@@ -1046,19 +1131,10 @@ func (ch *CommandHandler) openContainer(containerName string) (string, error) {
 		))
 		result.WriteString("\n")
 
-		for _, itemID := range container.Inventory {
-			if item, exists := ch.gameState.Items[itemID]; exists {
-				result.WriteString(fmt.Sprintf("  • %s\n",
-					ch.formatOutput(
-						item.Name.Chinese,
-						item.Name.Pinyin,
-						item.Name.English,
-					),
-				))
-			}
+		for _, item := range itemsFound {
+			result.WriteString(fmt.Sprintf("  • %s\n", item))
 		}
 
-		// Option to take items from container
 		result.WriteString(ch.formatOutput(
 			"\n使用 '拿 <物品>' 从容器中取出物品。",
 			"\nShi yong 'na <wu pin>' cong rong qi zhong qu chu wu pin.",
