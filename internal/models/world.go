@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"golden_chalice/internal/errors"
 )
 
 // Direction represents cardinal and relative directions for movement
@@ -85,7 +87,7 @@ func (d *Direction) UnmarshalJSON(data []byte) error {
 	case "in":
 		*d = In
 	default:
-		return fmt.Errorf("invalid direction: %s", dirString)
+		return fmt.Errorf("无效方向 (wúxiào fāngxiàng) / invalid direction: %s", dirString)
 	}
 	return nil
 }
@@ -135,7 +137,7 @@ func ParseDirection(input string) (Direction, error) {
 	// Trim whitespace
 	trimmed := strings.TrimSpace(input)
 	if trimmed == "" {
-		return North, fmt.Errorf("方向不能为空")
+		return North, fmt.Errorf("方向不能为空 (fāngxiàng bùnéng wéikōng) / direction cannot be empty")
 	}
 
 	// Check for Chinese format (starts with '往')
@@ -157,7 +159,7 @@ func ParseDirection(input string) (Direction, error) {
 	}
 
 	// Invalid format
-	return North, fmt.Errorf("请输入'往<方向>走'或'往<方向>去'的格式")
+	return North, fmt.Errorf("请输入'往<方向>走'或'往<方向>去'的格式 (Qǐng shūrù'wǎng <fāngxiàng >zǒu'huò'wǎng <fāngxiàng >qù'de géshì) / please use 'Go <direction>' or 'Walk <direction>' format")
 }
 
 // parseRawChineseDirection handles Chinese direction without prefix
@@ -168,7 +170,7 @@ func parseRawChineseDirection(input string) (Direction, error) {
 	cleaned = strings.TrimSpace(cleaned)
 
 	if cleaned == "" {
-		return North, fmt.Errorf("请输入方向")
+		return North, fmt.Errorf("请输入'往<方向>走'或'往<方向>去'的格式 (Qǐng shūrù'wǎng <fāngxiàng >zǒu'huò'wǎng <fāngxiàng >qù'de géshì) / please use 'Go <direction>' or 'Walk <direction>' format")
 	}
 
 	// Handle single-character directions
@@ -197,7 +199,7 @@ func parseRawChineseDirection(input string) (Direction, error) {
 		return Southeast, nil
 	}
 
-	return North, fmt.Errorf("未知的方向: %s", cleaned)
+	return North, fmt.Errorf("未知的方向: %s (wèizhī de fāngxiàng: %s) / unknown direction: %s", cleaned, cleaned, cleaned)
 }
 
 // parseChineseDirection handles Chinese direction formats
@@ -214,7 +216,7 @@ func parseChineseDirection(input string) (Direction, error) {
 	trimmed = strings.TrimSpace(trimmed)
 
 	if trimmed == "" {
-		return North, fmt.Errorf("请输入方向")
+		return North, fmt.Errorf("请输入'往<方向>走'或'往<方向>去'的格式 (Qǐng shūrù'wǎng <fāngxiàng >zǒu'huò'wǎng <fāngxiàng >qù'de géshì) / please use 'Go <direction>' or 'Walk <direction>' format")
 	}
 
 	// Handle single-character directions
@@ -243,7 +245,7 @@ func parseChineseDirection(input string) (Direction, error) {
 		return Southeast, nil
 	}
 
-	return North, fmt.Errorf("未知的方向: %s", trimmed)
+	return North, fmt.Errorf("未知的方向: %s (wèizhī de fāngxiàng: %s) / unknown direction: %s", trimmed, trimmed, trimmed)
 }
 
 // parseEnglishDirection handles "Go <direction>" or "Walk <direction>" format
@@ -284,7 +286,7 @@ func parseEnglishDirection(input string) (Direction, error) {
 	case "out":
 		return Out, nil
 	default:
-		return North, fmt.Errorf("未知的方向: %s", dirWord)
+		return North, fmt.Errorf("未知的方向: %s (wèizhī de fāngxiàng: %s) / unknown direction: %s", dirWord, dirWord, dirWord)
 	}
 }
 
@@ -338,7 +340,7 @@ func (w *World) GetExit(locationID string, dir Direction) (Exit, error) {
 	}
 
 	// No exit in that direction - immersive error message
-	return Exit{}, fmt.Errorf("一堵石墙挡住了你的去路")
+	return Exit{}, errors.ErrNoExit
 }
 
 // CanUseExit checks if the player can use the given exit
@@ -372,7 +374,7 @@ func (w *World) GetDestination(locationID string, dir Direction, playerInventory
 	// Check if player can use the exit
 	canUse, missingItem := w.CanUseExit(playerInventory, exit)
 	if !canUse {
-		return "", fmt.Errorf("你需要 %s 才能通过这里", missingItem)
+		return "", fmt.Errorf("你需要 %s 才能通过这里 (Nǐ xūyào%s cáinéng tōngguò zhèlǐ) / you need %s to pass through here", missingItem, missingItem, missingItem)
 	}
 
 	return exit.DestinationID, nil
@@ -417,79 +419,77 @@ func (w *World) GetExitDescription(locationID string, dir Direction) string {
 	}
 
 	if exit.RequiredItem != nil {
-		return fmt.Sprintf("一扇锁着的门 (需要 %s)", *exit.RequiredItem)
+		return fmt.Sprintf("一扇锁着的门 (需要 %s) Yī shàn suǒzhe de mén (xūyào%s) / a locked door (requires %s)", *exit.RequiredItem, *exit.RequiredItem, *exit.RequiredItem)
 	}
-	return "一条畅通的道路"
+	return "一条畅通的道路 (Yītiáo chàngtōng de dàolù) / an open path"
 }
-
-// models/world.go - Add these methods
 
 // GetNearbyLocations returns all locations within 1 move from the current location
 func (w *World) GetNearbyLocations(locationID string) ([]Location, error) {
-    currentLoc, err := w.GetLocation(locationID)
-    if err != nil {
-        return nil, err
-    }
-    
-    var nearby []Location
-    for _, exit := range currentLoc.Exits {
-        destLoc, err := w.GetLocation(exit.DestinationID)
-        if err != nil {
-            continue
-        }
-        nearby = append(nearby, destLoc)
-    }
-    
-    return nearby, nil
+	currentLoc, err := w.GetLocation(locationID)
+	if err != nil {
+		return nil, err
+	}
+
+	var nearby []Location
+	for _, exit := range currentLoc.Exits {
+		destLoc, err := w.GetLocation(exit.DestinationID)
+		if err != nil {
+			continue
+		}
+		nearby = append(nearby, destLoc)
+	}
+
+	return nearby, nil
 }
 
 // GetItemsInNearbyLocations returns all items in locations within 1 move
 func (w *World) GetItemsInNearbyLocations(locationID string, takenItems map[string]bool, pendingDrops map[string][]string, itemsMap map[string]Item) ([]ItemInfo, error) {
-    nearbyLocs, err := w.GetNearbyLocations(locationID)
-    if err != nil {
-        return nil, err
-    }
-    
-    var items []ItemInfo
-    for _, loc := range nearbyLocs {
-        // Check static items
-        if !takenItems[loc.ID] {
-            for _, itemID := range loc.ItemIDs {
-                if item, exists := itemsMap[itemID]; exists {
-                    items = append(items, ItemInfo{
-                        LocationID:   loc.ID,
-                        LocationName: loc.Name,
-                        Item:         item,
-                        IsContainer:  item.IsContainer(),
-                    })
-                }
-            }
-        }
-        
-        // Check pending drops
-        if drops, exists := pendingDrops[loc.ID]; exists {
-            for _, itemID := range drops {
-                if item, exists := itemsMap[itemID]; exists {
-                    items = append(items, ItemInfo{
-                        LocationID:   loc.ID,
-                        LocationName: loc.Name,
-                        Item:         item,
-                        IsContainer:  item.IsContainer(),
-                        IsDrop:       true,
-                    })
-                }
-            }
-        }
-    }
-    
-    return items, nil
+	nearbyLocs, err := w.GetNearbyLocations(locationID)
+	if err != nil {
+		return nil, err
+	}
+
+	var items []ItemInfo
+	for _, loc := range nearbyLocs {
+		// Check static items
+		if !takenItems[loc.ID] {
+			for _, itemID := range loc.ItemIDs {
+				if item, exists := itemsMap[itemID]; exists {
+					items = append(items, ItemInfo{
+						LocationID:   loc.ID,
+						LocationName: loc.Name,
+						Item:         item,
+						IsContainer:  item.IsContainer(),
+					})
+				}
+			}
+		}
+
+		// Check pending drops
+		if drops, exists := pendingDrops[loc.ID]; exists {
+			for _, itemID := range drops {
+				if item, exists := itemsMap[itemID]; exists {
+					items = append(items, ItemInfo{
+						LocationID:   loc.ID,
+						LocationName: loc.Name,
+						Item:         item,
+						IsContainer:  item.IsContainer(),
+						IsDrop:       true,
+					})
+				}
+			}
+		}
+	}
+
+	return items, nil
 }
 
 // ItemInfo holds information about an item and its location
 type ItemInfo struct {
-    LocationID   string
-    LocationName Text
-    Item         Item
-    IsContainer  bool
-    IsDrop       bool
+	LocationID   string
+	LocationName Text
+	Item         Item
+	IsContainer  bool
+	IsDrop       bool
 }

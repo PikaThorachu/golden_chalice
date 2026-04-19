@@ -280,17 +280,47 @@ func (ch *CommandHandler) executeCommandByType(cmd Command) (string, error) {
 func (ch *CommandHandler) parseCommand(input string) Command {
 	inputLower := strings.ToLower(input)
 
-	fmt.Printf("DEBUG: parseCommand received: '%s'\n", input) // Debug line
 	inputLower = strings.ToLower(input)
-
-	if input == "退出" || input == "quit" || input == "exit" || input == "退" {
-		fmt.Println("DEBUG: Quit command detected") // Debug line
-		return Command{Type: CmdQuit, RawInput: input}
-	}
 
 	// ========== CHECK QUIT COMMANDS FIRST ==========
 	if input == "退出" || input == "quit" || input == "exit" || input == "退" {
 		return Command{Type: CmdQuit, RawInput: input}
+	}
+
+	// ========== INSPECT AREA COMMAND ==========
+	if input == "检查周围" || input == "inspect area" || input == "查看周围" {
+		return Command{Type: CmdInspectArea, RawInput: input}
+	}
+
+	// ========== INSPECT ITEM COMMAND ==========
+	if strings.HasPrefix(input, "检查 ") || strings.HasPrefix(inputLower, "inspect ") {
+		// Extract item name
+		var itemName string
+		if strings.HasPrefix(input, "检查 ") {
+			itemName = strings.TrimPrefix(input, "检查 ")
+		} else {
+			itemName = strings.TrimPrefix(inputLower, "inspect ")
+		}
+		itemName = strings.TrimSpace(itemName)
+		if itemName != "" {
+			return Command{Type: CmdInspectItem, Args: []string{itemName}, RawInput: input}
+		}
+		return Command{Type: CmdUnknown, RawInput: input}
+	}
+
+	// ========== OPEN COMMAND ==========
+	if strings.HasPrefix(input, "打开 ") || strings.HasPrefix(inputLower, "open ") {
+		var target string
+		if strings.HasPrefix(input, "打开 ") {
+			target = strings.TrimPrefix(input, "打开 ")
+		} else {
+			target = strings.TrimPrefix(inputLower, "open ")
+		}
+		target = strings.TrimSpace(target)
+		if target != "" {
+			return Command{Type: CmdOpen, Args: []string{target}, RawInput: input}
+		}
+		return Command{Type: CmdUnknown, RawInput: input}
 	}
 
 	// ========== MOVEMENT COMMANDS ==========
@@ -340,33 +370,6 @@ func (ch *CommandHandler) parseCommand(input string) Command {
 		itemName = strings.TrimSpace(itemName)
 		if itemName != "" {
 			return Command{Type: CmdTake, Args: []string{itemName}, RawInput: input}
-		}
-		return Command{Type: CmdUnknown, RawInput: input}
-	}
-
-	// Inspect area command
-	if input == "检查周围" || input == "inspect area" || input == "查看周围" {
-		return Command{Type: CmdInspectArea, RawInput: input}
-	}
-
-	// Inspect item command
-	if strings.HasPrefix(input, "检查 ") || strings.HasPrefix(input, "inspect ") {
-		itemName := strings.TrimPrefix(input, "检查 ")
-		itemName = strings.TrimPrefix(itemName, "inspect ")
-		itemName = strings.TrimSpace(itemName)
-		if itemName != "" {
-			return Command{Type: CmdInspectItem, Args: []string{itemName}, RawInput: input}
-		}
-		return Command{Type: CmdUnknown, RawInput: input}
-	}
-
-	// Open command
-	if strings.HasPrefix(input, "打开 ") || strings.HasPrefix(input, "open ") {
-		target := strings.TrimPrefix(input, "打开 ")
-		target = strings.TrimPrefix(target, "open ")
-		target = strings.TrimSpace(target)
-		if target != "" {
-			return Command{Type: CmdOpen, Args: []string{target}, RawInput: input}
 		}
 		return Command{Type: CmdUnknown, RawInput: input}
 	}
@@ -552,13 +555,12 @@ func (ch *CommandHandler) executeMove(cmd Command) (string, error) {
 	err := ch.gameState.SafeMove(dir)
 	if err != nil {
 		if gameErr, ok := err.(*errors.GameError); ok {
-			// Return the formatted message directly as an error
-			// Don't wrap in fmt.Errorf
-			return "", fmt.Errorf("%s", gameErr.GetUserMessage(
+			msg := gameErr.GetUserMessage(
 				ch.gameState.Config.ShouldShowChinese(),
 				ch.gameState.Config.ShouldShowPinyin(),
 				ch.gameState.Config.ShouldShowEnglish(),
-			))
+			)
+			return "", fmt.Errorf("%s", msg)
 		}
 		return "", err
 	}
@@ -765,23 +767,28 @@ func (ch *CommandHandler) executeInspectItem(cmd Command) (string, error) {
 
 	itemName := cmd.Args[0]
 
-	// Check if item is in current location
+	// First, check items in current location
 	currentItems := ch.gameState.GetItemsAtCurrentLocation()
 	var targetItemID string
 	var targetItem models.Item
+	var foundInCurrentLocation bool
 
 	for _, itemID := range currentItems {
 		if item, exists := ch.gameState.Items[itemID]; exists {
-			if item.Name.Chinese == itemName || strings.EqualFold(item.Name.English, itemName) {
+			// Check by Chinese name, English name, or ID
+			if item.Name.Chinese == itemName ||
+				strings.EqualFold(item.Name.English, itemName) ||
+				item.ID == itemName {
 				targetItemID = itemID
 				targetItem = item
+				foundInCurrentLocation = true
 				break
 			}
 		}
 	}
 
-	if targetItemID == "" {
-		// Check if item is within 1 move
+	// If not found in current location, check nearby locations
+	if !foundInCurrentLocation {
 		currentLoc, err := ch.gameState.GetCurrentRoom()
 		if err != nil {
 			return "", err
@@ -798,9 +805,12 @@ func (ch *CommandHandler) executeInspectItem(cmd Command) (string, error) {
 		}
 
 		for _, itemInfo := range nearbyItems {
-			if itemInfo.Item.Name.Chinese == itemName || strings.EqualFold(itemInfo.Item.Name.English, itemName) {
+			if itemInfo.Item.Name.Chinese == itemName ||
+				strings.EqualFold(itemInfo.Item.Name.English, itemName) ||
+				itemInfo.Item.ID == itemName {
 				targetItem = itemInfo.Item
-				targetItemID = itemInfo.Item.ID
+				targetItemID = targetItem.ID
+				foundInCurrentLocation = false
 				break
 			}
 		}
@@ -822,6 +832,36 @@ func (ch *CommandHandler) executeInspectItem(cmd Command) (string, error) {
 		fmt.Sprintf("=== Inspecting %s ===", targetItem.Name.English),
 	))
 	result.WriteString("\n")
+
+	// Check if it's a container
+	if targetItem.IsContainer() {
+		result.WriteString(ch.formatOutput(
+			fmt.Sprintf("  这是一个容器，可以容纳 %d 件物品。", targetItem.GetCapacity()),
+			fmt.Sprintf("  Zhe shi yi ge rong qi, ke yi rong na %d jian wu pin.", targetItem.GetCapacity()),
+			fmt.Sprintf("  This is a container that can hold %d items.", targetItem.GetCapacity()),
+		))
+		result.WriteString("\n")
+
+		// Show contents if any
+		if len(targetItem.Inventory) > 0 {
+			result.WriteString(ch.formatOutput(
+				"  里面包含:",
+				"  Li mian bao han:",
+				"  Contains:",
+			))
+			result.WriteString("\n")
+			for _, containedID := range targetItem.Inventory {
+				if containedItem, exists := ch.gameState.Items[containedID]; exists {
+					result.WriteString(fmt.Sprintf("    • %s\n",
+						ch.formatOutput(
+							containedItem.Name.Chinese,
+							containedItem.Name.Pinyin,
+							containedItem.Name.English,
+						)))
+				}
+			}
+		}
+	}
 
 	// Check for locks
 	if targetItem.Properties.OpensDoorID != nil && *targetItem.Properties.OpensDoorID != "" {
@@ -853,27 +893,11 @@ func (ch *CommandHandler) executeInspectItem(cmd Command) (string, error) {
 		result.WriteString("\n")
 	}
 
-	if targetItem.IsContainer() {
-		result.WriteString(ch.formatOutput(
-			fmt.Sprintf("  这是一个容器，可以容纳 %d 件物品。", targetItem.GetCapacity()),
-			fmt.Sprintf("  Zhe shi yi ge rong qi, ke yi rong na %d jian wu pin.", targetItem.GetCapacity()),
-			fmt.Sprintf("  This is a container that can hold %d items.", targetItem.GetCapacity()),
-		))
-		result.WriteString("\n")
-	}
-
-	// Check if item has any special properties
-	hasSpecial := false
-	if targetItem.Properties.WinCondition != nil && *targetItem.Properties.WinCondition {
-		result.WriteString(ch.formatOutput(
-			"  这个物品散发着神圣的光芒，似乎是任务目标。",
-			"  Zhe ge wu pin san fa zhe shen sheng de guang mang, si hu shi ren wu mu biao.",
-			"  This item radiates holy light, seeming to be a quest objective.",
-		))
-		hasSpecial = true
-	}
-
-	if !hasSpecial && targetItem.GetTrapEnemyID() == "" && targetItem.Properties.OpensDoorID == nil && !targetItem.IsContainer() {
+	// If nothing special found
+	if targetItem.GetTrapEnemyID() == "" &&
+		targetItem.Properties.OpensDoorID == nil &&
+		!targetItem.IsContainer() &&
+		!(targetItem.IsWeapon() && targetItem.GetDamageBonus() > 15) {
 		result.WriteString(ch.formatOutput(
 			"  这个物品看起来很普通，没有什么特别之处。",
 			"  Zhe ge wu pin kan qi lai hen pu tong, mei you shen me te bie zhi chu.",

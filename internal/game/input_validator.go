@@ -380,7 +380,19 @@ func (iv *InputValidator) GetCommandCategory(input string) string {
 				return "item"
 			}
 		}
-
+		// In GetCommandCategory, add these checks before the switch or in the default section
+		if strings.HasPrefix(sanitized, "inspect ") {
+			return "inspect"
+		}
+		if sanitized == "inspect area" {
+			return "inspect"
+		}
+		if strings.HasPrefix(sanitized, "检查 ") {
+			return "inspect"
+		}
+		if sanitized == "检查周围" || sanitized == "查看周围" {
+			return "inspect"
+		}
 		// Check for save commands
 		if strings.HasPrefix(sanitized, "save ") || strings.HasPrefix(sanitized, "保存 ") ||
 			strings.HasPrefix(sanitized, "load ") || strings.HasPrefix(sanitized, "加载 ") ||

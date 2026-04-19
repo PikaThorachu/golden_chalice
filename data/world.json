@@ -657,7 +657,7 @@
         {"direction": "southeast", "destination": "hallway_c1", "requires_item_id": null}
       ],
       "enemy_ids": null,
-      "item_ids": null
+      "item_ids": ["old_desk"]
     },
     "anteroom_5": {
       "id": "anteroom_5",

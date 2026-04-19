@@ -49,6 +49,13 @@ func (e *GameError) Unwrap() error {
 	return e.Err
 }
 
+// In errors.go, add this temporary debug function
+func (e *GameError) Debug() {
+	fmt.Printf("Chinese: %s\n", e.Message.Chinese)
+	fmt.Printf("Pinyin: %s\n", e.Message.Pinyin)
+	fmt.Printf("English: %s\n", e.Message.English)
+}
+
 // New creates a new GameError
 func New(errType ErrorType, chinese, pinyin, english string) *GameError {
 	return &GameError{
@@ -110,6 +117,7 @@ func (e *GameError) GetUserMessage(showChinese, showPinyin, showEnglish bool) st
 		return e.Message.Chinese
 	}
 
+	// Join with spaces, not newlines
 	return strings.Join(parts, " ")
 }
 

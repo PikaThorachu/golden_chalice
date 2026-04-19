@@ -189,7 +189,7 @@
       "type": "inspectable",
       "properties": {
         "contains_item_id": "bronze_key",
-        "inspect_message": "你仔细搜查书桌，在抽屉里发现了一把青铜钥匙！",
+        "inspect_message": "旧书桌没有上锁。你应该把它打开。(Jiù shūzhuō méiyǒu shàng suǒ. Nǐ yīnggāi bǎ tā dǎkāi.) / The old desk is not locked. You should open it.",
         "capacity": 5
       },
       "usable": true,

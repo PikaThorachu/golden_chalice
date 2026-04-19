@@ -263,7 +263,6 @@ func (gs *GameState) SafeMove(direction models.Direction) error {
 		if gs.Logger != nil {
 			gs.Logger.LogError(err, map[string]interface{}{"direction": direction.String()})
 		}
-		// Return the error directly - it's already a GameError from GetDestination
 		return err
 	}
 
@@ -386,7 +385,7 @@ func (gs *GameState) getLocationDescription() string {
 			}
 		}
 		// Use a simple formatter that doesn't re-format
-		result.WriteString(gs.Formatter.FormatSimpleItemList(formattedItemNames))
+		result.WriteString(gs.Formatter.FormatItemListFromStrings(formattedItemNames))
 		result.WriteString("\n\n")
 	}
 

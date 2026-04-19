@@ -310,46 +310,40 @@ func (df *DisplayFormatter) FormatItemList(itemNames []string) string {
 	return df.formatInline(chinese, pinyin, english)
 }
 
-// FormatItemListFromTexts formats a list of items from Text structs
-// This is the preferred method for displaying item lists
+// FormatItemListFromTexts formats a list of raw Text structs
 func (df *DisplayFormatter) FormatItemListFromTexts(items []models.Text) string {
 	if len(items) == 0 {
 		return ""
 	}
 
-	// Format each item individually using the display formatter
-	formattedItems := make([]string, len(items))
-	for i, item := range items {
-		formattedItems[i] = df.FormatText(item)
+	var chineseItems, pinyinItems, englishItems []string
+
+	for _, item := range items {
+		chineseItems = append(chineseItems, item.Chinese)
+		pinyinItems = append(pinyinItems, item.Pinyin)
+		englishItems = append(englishItems, item.English)
 	}
 
-	// Join the formatted items with commas
-	joinedItems := strings.Join(formattedItems, ", ")
-
-	// Create the full trilingual line
-	chinese := "你可以看到: " + joinedItems
-	pinyin := "Ni ke yi kan dao: " + joinedItems
-	english := "You see: " + joinedItems
+	chinese := "你可以看到: " + strings.Join(chineseItems, ", ")
+	pinyin := "Ni ke yi kan dao: " + strings.Join(pinyinItems, ", ")
+	english := "You see: " + strings.Join(englishItems, ", ")
 
 	return df.formatInline(chinese, pinyin, english)
 }
 
-// FormatSimpleItemList formats a list of already-formatted item names
-// This method does NOT re-format the item names - they should already be formatted
-func (df *DisplayFormatter) FormatSimpleItemList(formattedItemNames []string) string {
-	if len(formattedItemNames) == 0 {
+// FormatItemListFromStrings formats a list of already-formatted item strings
+// Use this when items are already formatted (e.g., from GetDisplayName)
+func (df *DisplayFormatter) FormatItemListFromStrings(formattedItems []string) string {
+	if len(formattedItems) == 0 {
 		return ""
 	}
 
-	// Join the already-formatted item names with commas
-	joinedItems := strings.Join(formattedItemNames, ", ")
+	joinedItems := strings.Join(formattedItems, ", ")
 
-	// Create the trilingual prefix only (the items are already trilingual)
-	chinese := "你可以看到: " + joinedItems
-	pinyin := "Ni ke yi kan dao: " + joinedItems
-	english := "You see: " + joinedItems
-
-	return df.formatInline(chinese, pinyin, english)
+	// For already-formatted items, we need to be careful not to double-format
+	// The items themselves already contain their trilingual formatting
+	// So we just add the prefix in Chinese (the items will display their own formatting)
+	return "你可以看到: " + joinedItems
 }
 
 // formatInline is an internal helper for simple trilingual strings

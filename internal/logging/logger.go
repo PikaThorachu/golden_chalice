@@ -2,6 +2,7 @@ package logging
 
 import (
 	"fmt"
+	"golden_chalice/internal/errors"
 	"io"
 	"log"
 	"os"
@@ -188,5 +189,13 @@ func (l *Logger) LogMovement(from, to string, direction string) {
 
 // LogError logs an error with context
 func (l *Logger) LogError(err error, context map[string]interface{}) {
+	// Check if it's a GameError with trilingual support
+	if gameErr, ok := err.(*errors.GameError); ok {
+		// Log the full trilingual message for debugging
+		l.Error("Error: %s - Context: %v",
+			gameErr.GetUserMessage(true, true, true), // Log all languages
+			context)
+		return
+	}
 	l.Error("Error: %v - Context: %v", err, context)
 }
