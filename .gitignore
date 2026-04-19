@@ -2,3 +2,7 @@
 working_files_storage/
 logs/
 saves/
+
+// Files
+*.log
+golden_chalice
